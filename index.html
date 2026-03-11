@@ -186,6 +186,10 @@
       background: color-mix(in srgb, var(--focus-color) 12%, white);
     }
 
+    .browser-btn.runtime-detected {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus-color) 40%, transparent);
+    }
+
     .browser-btn small {
       display: block;
       color: var(--muted);
@@ -349,6 +353,26 @@
       margin-top: 0.65rem;
       font-size: 0.8rem;
       color: var(--muted);
+    }
+
+    .runtime-chip {
+      margin-top: 0.5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.32rem 0.6rem;
+      background: rgba(255, 255, 255, 0.9);
+      font-size: 0.8rem;
+      color: #31403d;
+    }
+
+    .runtime-chip.prerelease {
+      border-color: #8a5a0c;
+      background: rgba(255, 243, 219, 0.95);
+      color: #6b4612;
+      font-weight: 700;
     }
 
     .tests-actions {
@@ -654,6 +678,7 @@
           </button>
         </div>
         <p class="sim-meta" id="browserSummary"></p>
+        <p class="runtime-chip" id="runtimeChip">Detecting runtime browser...</p>
       </aside>
     </section>
 
@@ -699,11 +724,14 @@
               <option value="compare">Compare options</option>
             </select>
           </label>
-          <button class="cta" id="runPrompt">Run AI Demo</button>
+          <div style="display:flex; gap:0.55rem; flex-wrap:wrap; justify-content:flex-end;">
+            <button class="cta-secondary" id="shufflePrompt">Shuffle Prompt Idea</button>
+            <button class="cta" id="runPrompt">Run AI Demo</button>
+          </div>
         </div>
 
         <div class="output" id="outputBox" aria-live="polite">Press "Run AI Demo" to generate a browser-specific response.</div>
-        <p class="hint">Tip: switch browser profile, then run the same prompt again to demonstrate different positioning and strengths.</p>
+        <p class="hint" id="promptHint">Tip: copy this prompt, paste your own page text, and edit before running. Switch browser profile and rerun to compare behavior.</p>
       </article>
 
       <aside class="scenario">
@@ -712,22 +740,7 @@
         </div>
 
         <div class="scenario-grid">
-          <button class="scenario-btn" data-seed="shopping">
-            Shopping Assistant
-            <span>Compare products, summarize reviews, highlight tradeoffs.</span>
-          </button>
-          <button class="scenario-btn" data-seed="research">
-            Research Sprint
-            <span>Extract insights from multiple tabs and create an outline.</span>
-          </button>
-          <button class="scenario-btn" data-seed="accessibility">
-            Accessibility Check
-            <span>Generate alt text and flag readability issues.</span>
-          </button>
-          <button class="scenario-btn" data-seed="security">
-            Security Posture Review
-            <span>Identify suspicious patterns and suggest safer actions.</span>
-          </button>
+          <div class="note">Loading randomized scenarios from YAML...</div>
         </div>
       </aside>
     </section>
@@ -842,6 +855,17 @@
     const testsLastRun = document.getElementById("testsLastRun");
     const liveCapabilityResults = document.getElementById("liveCapabilityResults");
     const liveTestOutput = document.getElementById("liveTestOutput");
+    const runtimeChip = document.getElementById("runtimeChip");
+    const scenarioGrid = document.querySelector(".scenario-grid");
+    const promptHint = document.getElementById("promptHint");
+
+    const yamlContentFiles = {
+      prompts: "data/prompt-simulator.yml",
+      scenarios: "data/quick-scenarios.yml"
+    };
+
+    let loadedPromptIdeas = [];
+    let loadedScenarios = [];
 
     const getCellClass = (value) => {
       if (value === "Strong") return "ok";
@@ -893,6 +917,102 @@
         li.textContent = line;
         talkTrack.appendChild(li);
       });
+    }
+
+    function pickRandom(array) {
+      if (!array.length) return null;
+      return array[Math.floor(Math.random() * array.length)];
+    }
+
+    function pickRandomSubset(array, size) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy.slice(0, size);
+    }
+
+    async function parseYamlString(yamlText) {
+      try {
+        const yaml = await import("https://cdn.jsdelivr.net/npm/yaml@2/+esm");
+        const parsed = yaml.parse(yamlText);
+        return parsed || {};
+      } catch (_error) {
+        return {};
+      }
+    }
+
+    async function loadYamlFile(path) {
+      try {
+        const response = await fetch(path, { cache: "no-store" });
+        if (!response.ok) return {};
+        const text = await response.text();
+        return parseYamlString(text);
+      } catch (_error) {
+        return {};
+      }
+    }
+
+    function renderScenarioButtons(list) {
+      if (!scenarioGrid) return;
+      scenarioGrid.innerHTML = "";
+
+      if (!list.length) {
+        const fallback = document.createElement("div");
+        fallback.className = "note";
+        fallback.textContent = "No YAML scenarios loaded. You can still type custom prompts in the simulator.";
+        scenarioGrid.appendChild(fallback);
+        return;
+      }
+
+      list.forEach((scenario) => {
+        const button = document.createElement("button");
+        button.className = "scenario-btn";
+        button.type = "button";
+        button.dataset.prompt = scenario.prompt || "";
+        button.dataset.mode = scenario.mode || "summarize";
+
+        button.appendChild(document.createTextNode(scenario.label || "Scenario"));
+
+        const span = document.createElement("span");
+        span.textContent = scenario.description || "Load this scenario into the prompt box.";
+        button.appendChild(span);
+
+        button.addEventListener("click", () => {
+          promptInput.value = button.dataset.prompt || promptInput.value;
+          if (button.dataset.mode) taskType.value = button.dataset.mode;
+          outputBox.textContent = generateResponse(promptInput.value, taskType.value, currentBrowser);
+        });
+
+        scenarioGrid.appendChild(button);
+      });
+    }
+
+    function applyRandomPromptIdea() {
+      const idea = pickRandom(loadedPromptIdeas);
+      if (!idea) return;
+      if (idea.prompt) promptInput.value = idea.prompt;
+      if (idea.mode) taskType.value = idea.mode;
+
+      if (promptHint) {
+        const cta = idea.call_to_action ? ` CTA: ${idea.call_to_action}` : "";
+        promptHint.textContent = `Try this starter, then cut/paste your own content and edit it before running.${cta}`;
+      }
+    }
+
+    async function initDynamicContent() {
+      const [promptDoc, scenarioDoc] = await Promise.all([
+        loadYamlFile(yamlContentFiles.prompts),
+        loadYamlFile(yamlContentFiles.scenarios)
+      ]);
+
+      loadedPromptIdeas = Array.isArray(promptDoc.prompts) ? promptDoc.prompts : [];
+      loadedScenarios = Array.isArray(scenarioDoc.scenarios) ? scenarioDoc.scenarios : [];
+
+      if (loadedPromptIdeas.length) applyRandomPromptIdea();
+      if (loadedScenarios.length) renderScenarioButtons(pickRandomSubset(loadedScenarios, 4));
+      if (!loadedScenarios.length) renderScenarioButtons([]);
     }
 
     function generateResponse(promptText, mode, browser) {
@@ -1276,9 +1396,69 @@
         const pkg = await import("https://cdn.jsdelivr.net/npm/@tgwf/co2/+esm");
         const swd = new pkg.co2({ model: "swd" });
         const grams = swd.perVisit(totalBytes, hostIsGreen);
-        co2El.textContent = `${grams.toFixed(2)} g CO2e`;
+        co2El.textContent = `${grams.toFixed(4)} g CO2e`;
       } catch (_error) {
         co2El.textContent = "CO2.js unavailable";
+      }
+    }
+
+    function detectBrowserRuntime() {
+      const ua = navigator.userAgent.toLowerCase();
+      let browser = "chrome";
+      let browserLabel = "Chrome";
+
+      if (ua.includes("firefox/")) {
+        browser = "firefox";
+        browserLabel = "Firefox";
+      } else if (ua.includes("edg/")) {
+        browser = "edge";
+        browserLabel = "Edge";
+      }
+
+      let channel = "stable";
+      let channelLabel = "Stable";
+
+      if (ua.includes("canary")) {
+        channel = "canary";
+        channelLabel = "Canary";
+      } else if (ua.includes("nightly")) {
+        channel = "nightly";
+        channelLabel = "Nightly";
+      } else if (ua.includes("beta")) {
+        channel = "beta";
+        channelLabel = "Beta";
+      } else if (ua.includes("dev") || ua.includes("developer")) {
+        channel = "dev";
+        channelLabel = "Dev";
+      }
+
+      return {
+        browser,
+        browserLabel,
+        channel,
+        channelLabel,
+        prerelease: channel !== "stable"
+      };
+    }
+
+    function applyDetectedRuntimeToProfile() {
+      const runtime = detectBrowserRuntime();
+
+      document.querySelectorAll(".browser-btn").forEach((button) => {
+        button.classList.remove("active", "runtime-detected");
+        if (button.dataset.browser === runtime.browser) {
+          button.classList.add("active", "runtime-detected");
+        }
+      });
+
+      currentBrowser = runtime.browser;
+      renderProfile();
+
+      if (runtimeChip) {
+        runtimeChip.textContent = runtime.prerelease
+          ? `Detected runtime: ${runtime.browserLabel} ${runtime.channelLabel} (AI testing channel)`
+          : `Detected runtime: ${runtime.browserLabel} ${runtime.channelLabel}`;
+        runtimeChip.classList.toggle("prerelease", runtime.prerelease);
       }
     }
 
@@ -1295,19 +1475,8 @@
       outputBox.textContent = generateResponse(promptInput.value, taskType.value, currentBrowser);
     });
 
-    document.querySelectorAll(".scenario-btn").forEach((button) => {
-      button.addEventListener("click", () => {
-        const scenario = button.dataset.seed;
-        const templates = {
-          shopping: "Compare three laptops for remote work. Prioritize battery life, screen quality, and value.",
-          research: "Summarize these article findings and produce a four-part briefing outline with risks.",
-          accessibility: "Review this page content and suggest better alt text and clearer headings.",
-          security: "Analyze this login prompt flow and flag suspicious behavior or unsafe patterns."
-        };
-
-        promptInput.value = templates[scenario] || promptInput.value;
-        outputBox.textContent = generateResponse(promptInput.value, taskType.value, currentBrowser);
-      });
+    document.getElementById("shufflePrompt").addEventListener("click", () => {
+      applyRandomPromptIdea();
     });
 
     document.getElementById("runTests").addEventListener("click", () => {
@@ -1321,9 +1490,10 @@
     userAgentText.textContent = navigator.userAgent;
 
     renderMatrix();
-    renderProfile();
+    applyDetectedRuntimeToProfile();
     renderBuiltInTests();
     initSustainabilityFooter();
+    initDynamicContent();
   </script>
 </body>
 </html>

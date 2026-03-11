@@ -1,0 +1,48 @@
+prompts:
+  - id: board-briefing-risk
+    mode: summarize
+    prompt: |
+      Summarize this browser capability report for a board briefing.
+      Include top opportunities, top risks, and one recommendation for the next 30 days.
+    call_to_action: Copy in your own report text and ask for a one-slide executive summary.
+
+  - id: procurement-comparison
+    mode: compare
+    prompt: |
+      Compare these two browser AI rollout options.
+      Option A: Fast pilot with limited controls.
+      Option B: Slower rollout with stricter governance.
+      Provide tradeoffs in cost, security, and user adoption.
+    call_to_action: Paste your actual implementation options and request a decision memo.
+
+  - id: policy-rewrite
+    mode: rewrite
+    prompt: |
+      Rewrite this policy excerpt for non-technical staff.
+      Keep the legal meaning, but make it plain language and actionable.
+      End with a three-item checklist.
+    call_to_action: Paste your policy text and ask for versions by audience (staff, leadership, public).
+
+  - id: accessibility-audit
+    mode: summarize
+    prompt: |
+      Summarize this accessibility review.
+      Group issues by severity and include quick wins vs structural fixes.
+      Return output as: Findings, Impact, Next Step.
+    call_to_action: Paste your own audit output and ask for a remediation roadmap.
+
+  - id: security-incident-draft
+    mode: rewrite
+    prompt: |
+      Rewrite this incident timeline into a clear customer update.
+      Keep it transparent and concise.
+      Include what happened, what was impacted, and what happens next.
+    call_to_action: Replace with your timeline draft and test tone in multiple browsers.
+
+  - id: innovation-pitch
+    mode: compare
+    prompt: |
+      Compare three AI browser pilot ideas for a public sector team.
+      Score each idea for public value, privacy risk, and implementation effort.
+      End with a recommended pilot order.
+    call_to_action: Paste your team ideas and ask for a phased pilot plan.

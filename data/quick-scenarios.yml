@@ -1,0 +1,68 @@
+scenarios:
+  - id: newsroom-digest
+    label: Newsroom Digest
+    description: Summarize several articles and produce an editor-ready brief.
+    mode: summarize
+    prompt: |
+      You are supporting a newsroom editor.
+      Summarize the pasted articles into one briefing with: top story, context, and open questions.
+
+  - id: grant-review
+    label: Grant Review Assistant
+    description: Compare proposals and identify strongest community outcomes.
+    mode: compare
+    prompt: |
+      Compare these grant proposals.
+      Rank them by expected impact, feasibility, and equity outcomes.
+      Explain why each rank was assigned.
+
+  - id: service-announcement
+    label: Public Service Announcement
+    description: Rewrite technical updates for broad public readability.
+    mode: rewrite
+    prompt: |
+      Rewrite this technical update for the public.
+      Keep it accurate, plain-language, and under 180 words.
+
+  - id: privacy-notice
+    label: Privacy Notice Clarity
+    description: Convert legal privacy text into practical guidance.
+    mode: rewrite
+    prompt: |
+      Rewrite this privacy notice so users can quickly understand what data is collected and why.
+      Add a short "What you can control" section.
+
+  - id: vendor-evaluation
+    label: Vendor Evaluation
+    description: Compare AI browser options for policy-sensitive environments.
+    mode: compare
+    prompt: |
+      Compare browser AI options for an organization with strict compliance requirements.
+      Score each option for controls, transparency, and deployment complexity.
+
+  - id: classroom-support
+    label: Classroom Support
+    description: Summarize lesson resources into a one-page teaching plan.
+    mode: summarize
+    prompt: |
+      Summarize these lesson notes into a one-page teaching plan.
+      Include learning objectives, activities, and assessment prompts.
+
+  - id: accessibility-check
+    label: Accessibility Sprint
+    description: Turn page findings into prioritized remediation actions.
+    mode: summarize
+    prompt: |
+      Summarize this accessibility review and return:
+      1) critical blockers
+      2) moderate issues
+      3) quick improvements for this week
+
+  - id: incident-war-room
+    label: Incident War Room
+    description: Compare incident response paths and recommend next action.
+    mode: compare
+    prompt: |
+      Compare these incident response options.
+      Evaluate user impact, legal risk, and recovery time.
+      Recommend what to do in the next 2 hours.

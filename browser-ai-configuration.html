@@ -404,7 +404,7 @@
         const pkg = await import("https://cdn.jsdelivr.net/npm/@tgwf/co2/+esm");
         const swd = new pkg.co2({ model: "swd" });
         const grams = swd.perVisit(totalBytes, hostIsGreen);
-        co2El.textContent = `${grams.toFixed(2)} g CO2e`;
+        co2El.textContent = `${grams.toFixed(4)} g CO2e`;
       } catch (_error) {
         co2El.textContent = "CO2.js unavailable";
       }

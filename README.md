@@ -15,6 +15,8 @@ It is designed for live presentations where you need to:
 
 - `index.html`: Main UI and demo logic
 - `browser-ai-configuration.html`: Guide for enabling/testing AI abilities in browser beta/nightly channels
+- `data/prompt-simulator.yml`: Randomized starter prompts and calls to action for AI Prompt Simulator
+- `data/quick-scenarios.yml`: Randomized Quick Scenarios shown on load
 - `LICENSE`: GNU Affero General Public License v3.0 (AGPL-3.0)
 - `.nojekyll`: Ensures GitHub Pages serves files as-is
 - `ACCESSIBILITY.md`: Accessibility commitments and checklist
@@ -24,16 +26,17 @@ It is designed for live presentations where you need to:
 ## Demo features
 
 - Browser profile switcher for Chrome, Firefox, and Edge
+- Automatic runtime detection that highlights the currently used browser in Demo Profile
+- Visible runtime channel chip that calls out prerelease channels (Beta/Canary/Nightly/Dev) for AI testing
 - Capability matrix for AI-related browser functionality
 - AI prompt simulator modes:
 	- Summarize
 	- Rewrite for executive audience
 	- Compare options
+- YAML-backed randomized starter prompts with different calls to action on each load
+- Editable prompt workflow that encourages users to cut/paste and refine their own content in the textarea
 - Scenario presets:
-	- Shopping assistant
-	- Research sprint
-	- Accessibility check
-	- Security posture review
+	- Randomized from YAML content pools on each load
 - Built-in AI API test panel with one-click detection for common interfaces:
 	- Prompt API candidates
 	- Summarizer API
@@ -80,6 +83,14 @@ The page now includes a local AI lab that:
 1. Probes runtime readiness (not just global presence)
 2. Exposes per-API test buttons only when runnable
 3. Runs in-browser test calls for available built-in APIs
+
+## Customizing prompt and scenario content
+
+You can edit sample content without touching JavaScript:
+
+1. Update [data/prompt-simulator.yml](data/prompt-simulator.yml) to add or revise starter prompts and calls to action.
+2. Update [data/quick-scenarios.yml](data/quick-scenarios.yml) to add or revise scenario cards.
+3. Reload the page to see different randomized selections.
 
 For setup guidance before testing, use:
 
