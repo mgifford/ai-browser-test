@@ -840,6 +840,13 @@
     ];
 
     const browserOrder = ["chrome", "firefox", "edge"];
+    let runtimeContext = {
+      browser: "chrome",
+      browserLabel: "Chrome",
+      channel: "stable",
+      channelLabel: "Stable",
+      prerelease: false
+    };
 
     let currentBrowser = "chrome";
 
@@ -873,9 +880,61 @@
       return "no";
     };
 
+    function getLiveEntryById(id) {
+      return liveCapabilityState.find((entry) => entry.id === id);
+    }
+
+    function getRuntimeFeatureStatus(featureName) {
+      const map = {
+        "Built-in AI assistant": "prompt",
+        "Page summarize": "summarizer",
+        "On-device model options": "prompt"
+      };
+
+      if (featureName === "Tab context awareness") {
+        return { value: "Context-limited", className: "warn" };
+      }
+
+      if (featureName === "Privacy controls") {
+        return { value: "Settings-driven", className: "warn" };
+      }
+
+      if (featureName === "Enterprise policy controls") {
+        return { value: "Admin-managed", className: "warn" };
+      }
+
+      const key = map[featureName];
+      if (!key) {
+        return { value: "Unknown", className: "warn" };
+      }
+
+      const live = getLiveEntryById(key);
+      if (!live) {
+        return { value: "Scanning...", className: "warn" };
+      }
+
+      if (live.canRunTest) {
+        return { value: "Live", className: "ok" };
+      }
+
+      if (live.status === "Detected but not ready") {
+        return { value: "Detected", className: "warn" };
+      }
+
+      return { value: "Not available", className: "no" };
+    }
+
     function renderMatrix() {
       matrix.innerHTML = "";
-      const headers = ["Capability", "Chrome", "Firefox", "Edge"];
+      const orderedBrowsers = [currentBrowser, ...browserOrder.filter((browser) => browser !== currentBrowser)];
+      const runtimeHeader = runtimeContext.prerelease
+        ? `Your ${runtimeContext.browserLabel} (${runtimeContext.channelLabel})`
+        : `Your ${runtimeContext.browserLabel}`;
+      const headers = [
+        "Capability",
+        runtimeHeader,
+        ...orderedBrowsers.slice(1).map((browser) => browserData[browser].label)
+      ];
       headers.forEach((name) => {
         const div = document.createElement("div");
         div.className = "cell head";
@@ -889,10 +948,12 @@
         featureCell.textContent = feature;
         matrix.appendChild(featureCell);
 
-        browserOrder.forEach((browser) => {
-          const value = browserData[browser].features[feature];
+        orderedBrowsers.forEach((browser, idx) => {
+          const runtimeColumn = idx === 0;
+          const runtimeValue = runtimeColumn ? getRuntimeFeatureStatus(feature) : null;
+          const value = runtimeColumn ? runtimeValue.value : browserData[browser].features[feature];
           const valueCell = document.createElement("div");
-          valueCell.className = `cell ${getCellClass(value)}`;
+          valueCell.className = `cell ${runtimeColumn ? runtimeValue.className : getCellClass(value)}`;
           valueCell.textContent = value;
           matrix.appendChild(valueCell);
         });
@@ -1350,6 +1411,7 @@
       liveCapabilityState.length = 0;
       liveRows.forEach((entry) => liveCapabilityState.push(entry));
       renderLiveCapabilityTable();
+      renderMatrix();
 
       const now = new Date();
       testsLastRun.textContent = `Last run: ${now.toLocaleString()}`;
@@ -1443,6 +1505,7 @@
 
     function applyDetectedRuntimeToProfile() {
       const runtime = detectBrowserRuntime();
+      runtimeContext = runtime;
 
       document.querySelectorAll(".browser-btn").forEach((button) => {
         button.classList.remove("active", "runtime-detected");
@@ -1453,6 +1516,7 @@
 
       currentBrowser = runtime.browser;
       renderProfile();
+      renderMatrix();
 
       if (runtimeChip) {
         runtimeChip.textContent = runtime.prerelease

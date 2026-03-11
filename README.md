@@ -29,6 +29,8 @@ It is designed for live presentations where you need to:
 - Automatic runtime detection that highlights the currently used browser in Demo Profile
 - Visible runtime channel chip that calls out prerelease channels (Beta/Canary/Nightly/Dev) for AI testing
 - Capability matrix for AI-related browser functionality
+- Runtime-first matrix ordering where the detected browser column is shown first
+- Active browser column reflects live in-page capability status where measurable
 - AI prompt simulator modes:
 	- Summarize
 	- Rewrite for executive audience
