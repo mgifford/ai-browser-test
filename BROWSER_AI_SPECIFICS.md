@@ -64,8 +64,22 @@ A good presentation flow is:
 2. Show the specific docs/support page for concrete behavior.
 3. Run the built-in test panel in the demo to validate what is actually exposed in the current browser runtime.
 
+Current implementation tie-ins:
+
+- Capability matrix uses runtime-first ordering and live status for the active browser column
+- Feature details panel links each capability to supporting references
+- Built-in assistant and on-device model probes provide local observability signals
+- Tab Context Probe validates same-origin tab awareness limits from page scope
+
 ## Caveats
 
 - Vendor pages change frequently, and some details move between docs, support, and marketing pages.
 - Feature availability can vary by browser version, channel, geography, account, and experiment flags.
 - This source map should be reviewed periodically for moved URLs and updated API naming.
+
+## Link maintenance checklist
+
+- Re-validate URLs every quarter or before major demos
+- Replace moved support pages with canonical current endpoints
+- Note when a source is marketing-only vs implementation-specific
+- Keep [README.md](README.md) and feature-detail links in sync with this map

@@ -15,6 +15,7 @@ This file documents the intended agent behavior and collaboration conventions fo
 - Validate modified files after edits
 - Keep static-site compatibility for GitHub Pages
 - Preserve accessibility and sustainability commitments
+- Keep markdown documentation aligned with runtime feature behavior and probe outputs
 
 ## Repository priorities
 
@@ -31,5 +32,5 @@ This file documents the intended agent behavior and collaboration conventions fo
 ## Public links
 
 - [AGENTS.md](https://agents.md/)
-- [ACCESSIBILITY.md](https://mgifford.github.io/ACCESSIBILITY.md)
-- [SUSTAINABILITY.md](https://mgifford.github.io/SUSTAINABILITY.md)
+- [ACCESSIBILITY.md](https://mgifford.github.io/ai-browser-test/ACCESSIBILITY.md)
+- [SUSTAINABILITY.md](https://mgifford.github.io/ai-browser-test/SUSTAINABILITY.md)

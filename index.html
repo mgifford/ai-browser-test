@@ -437,6 +437,21 @@
       font-weight: 700;
     }
 
+    .runtime-debug {
+      margin-top: 0.55rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.88);
+      padding: 0.5rem 0.55rem;
+      font-size: 0.78rem;
+      color: #3a4b47;
+      word-break: break-word;
+    }
+
+    .runtime-debug strong {
+      color: var(--ink);
+    }
+
     .tests-actions {
       margin-top: 0.7rem;
       display: flex;
@@ -790,6 +805,7 @@
         </div>
         <p class="sim-meta" id="browserSummary"></p>
         <p class="runtime-chip" id="runtimeChip">Detecting runtime browser...</p>
+        <div class="runtime-debug" id="runtimeDebug">Runtime debug pending...</div>
       </aside>
     </section>
 
@@ -1031,7 +1047,9 @@
       browserLabel: "Chrome",
       channel: "stable",
       channelLabel: "Stable",
-      prerelease: false
+      prerelease: false,
+      mappedComparison: "chrome",
+      isMapped: false
     };
 
     let currentBrowser = "chrome";
@@ -1049,6 +1067,7 @@
     const liveCapabilityResults = document.getElementById("liveCapabilityResults");
     const liveTestOutput = document.getElementById("liveTestOutput");
     const runtimeChip = document.getElementById("runtimeChip");
+    const runtimeDebug = document.getElementById("runtimeDebug");
     const scenarioGrid = document.querySelector(".scenario-grid");
     const promptHint = document.getElementById("promptHint");
     const featureInfoTitle = document.getElementById("featureInfoTitle");
@@ -1974,8 +1993,8 @@
 
     function detectBrowserRuntime() {
       const ua = navigator.userAgent.toLowerCase();
-      let browser = "chrome";
-      let browserLabel = "Chrome";
+      let browser = "unknown";
+      let browserLabel = "Unknown browser";
 
       if (ua.includes("firefox/")) {
         browser = "firefox";
@@ -1983,6 +2002,15 @@
       } else if (ua.includes("edg/")) {
         browser = "edge";
         browserLabel = "Edge";
+      } else if (ua.includes("opr/") || ua.includes("opera")) {
+        browser = "opera";
+        browserLabel = "Opera";
+      } else if (ua.includes("safari/") && !ua.includes("chrome/") && !ua.includes("crios/")) {
+        browser = "safari";
+        browserLabel = "Safari";
+      } else if (ua.includes("chrome/") || ua.includes("crios/")) {
+        browser = "chrome";
+        browserLabel = "Chrome";
       }
 
       let channel = "stable";
@@ -2002,12 +2030,18 @@
         channelLabel = "Dev";
       }
 
+      const mappedComparison = browserOrder.includes(browser)
+        ? browser
+        : "chrome";
+
       return {
         browser,
         browserLabel,
         channel,
         channelLabel,
-        prerelease: channel !== "stable"
+        prerelease: channel !== "stable",
+        mappedComparison,
+        isMapped: !browserOrder.includes(browser)
       };
     }
 
@@ -2022,7 +2056,7 @@
         }
       });
 
-      currentBrowser = runtime.browser;
+      currentBrowser = runtime.mappedComparison;
       renderProfile();
       renderMatrix();
 
@@ -2030,7 +2064,19 @@
         runtimeChip.textContent = runtime.prerelease
           ? `Detected runtime: ${runtime.browserLabel} ${runtime.channelLabel} (AI testing channel)`
           : `Detected runtime: ${runtime.browserLabel} ${runtime.channelLabel}`;
+        if (runtime.isMapped) {
+          runtimeChip.textContent += ` | comparison baseline: ${runtime.mappedComparison}`;
+        }
         runtimeChip.classList.toggle("prerelease", runtime.prerelease);
+      }
+
+      if (runtimeDebug) {
+        runtimeDebug.innerHTML = [
+          `<strong>Parsed runtime:</strong> ${runtime.browserLabel} (${runtime.browser})`,
+          `<strong>Channel:</strong> ${runtime.channelLabel} (${runtime.channel})`,
+          `<strong>Comparison baseline:</strong> ${runtime.mappedComparison}`,
+          `<strong>Raw UA:</strong> ${navigator.userAgent}`
+        ].join("<br>");
       }
     }
 

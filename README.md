@@ -1,6 +1,6 @@
 # AI Browser Capability Demo
 
-Interactive single-page app to demonstrate AI-enabled browsing in Chrome, Firefox, and Edge, including visible built-in AI API detection tests.
+Interactive single-page app to demonstrate AI-enabled browsing in Chrome, Firefox, and Edge, including runtime probes for built-in AI behavior.
 
 ## What this is
 
@@ -32,6 +32,7 @@ It is designed for live presentations where you need to:
 - Capability matrix for AI-related browser functionality
 - Runtime-first matrix ordering where the detected browser column is shown first
 - Active browser column reflects live in-page capability status where measurable
+- Clickable capability names with a Feature details panel and documentation links
 - Local Tab Context Probe for same-origin tab count, related-tab detection, and heuristic high-tab energy risk
 - AI prompt simulator modes:
 	- Summarize
@@ -51,13 +52,23 @@ It is designed for live presentations where you need to:
 	- On-device ML signals
 - Live runtime capability probe that checks API readiness state
 - One-click local API test runners for detected and ready interfaces
+- Built-in assistant probe for callable capabilities and local-vs-cloud observability limits
+- On-device model identity probe (best-effort, browser-dependent)
 - Dynamic talk track for presentation flow
 - Responsive layout for desktop and mobile
 - CO2.js-powered sustainability footer on HTML pages with page-weight and estimated CO2e disclosure
 
 ## Quick start
 
-No build step or dependencies are required.
+No build step is required.
+
+Runtime dependencies:
+
+- Google Fonts stylesheet
+- CO2.js loaded from jsDelivr ESM CDN
+- YAML parser loaded from jsDelivr ESM CDN
+
+If external CDNs are blocked/offline, the app remains usable with reduced functionality for those features.
 
 1. Clone this repository.
 2. Open `index.html` in a browser.
@@ -87,6 +98,7 @@ The page now includes a local AI lab that:
 1. Probes runtime readiness (not just global presence)
 2. Exposes per-API test buttons only when runnable
 3. Runs in-browser test calls for available built-in APIs
+4. Includes feature-level probes for built-in assistant behavior and on-device model identity
 
 ## Customizing prompt and scenario content
 
@@ -108,6 +120,20 @@ The demo includes a local Tab Context Probe in [index.html](index.html) that can
 3. Show a heuristic high-tab energy risk hint (including 100+ tab warning)
 
 Important limitation: a normal webpage cannot enumerate all browser tabs globally. Full tab inventory requires extension-level APIs.
+
+## Feature details and limits
+
+The Feature details panel in [index.html](index.html):
+
+1. Explains what each capability means in practice
+2. Links to vendor docs/support pages for feature specifics
+3. Exposes local probes where available
+
+Important scope limits for browser-page probing:
+
+- Exact cloud provider routing is usually not exposed to normal webpage JavaScript
+- Model identity may be hidden even when local inference is available
+- Assistant surface internals (for example, full Copilot UI behavior) are not fully introspectable from page scope
 
 For setup guidance before testing, use:
 

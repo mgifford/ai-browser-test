@@ -15,6 +15,8 @@ This project is designed to be understandable, operable, and testable across mod
 - Maintain sufficient color contrast for key text and controls
 - Support responsive layouts for mobile and desktop
 - Keep dynamic status updates visible on screen
+- Keep interactive probe results understandable to screen-reader users
+- Avoid motion-heavy interactions that could reduce usability
 
 ## Test checklist
 
@@ -23,6 +25,19 @@ This project is designed to be understandable, operable, and testable across mod
 - Verify visible focus styles are not removed
 - Verify readable layout at small viewport widths
 - Verify no critical issues in browser accessibility tooling
+- Verify dynamically injected controls (scenario buttons, feature probes) are keyboard reachable
+- Verify probe result changes are announced by assistive technologies where relevant (`aria-live` regions)
+- Verify click targets remain usable at mobile widths (minimum practical touch target sizing)
+- Verify color-only status indicators are paired with text labels
+- Verify reduced-motion preference does not block reading or interaction flow
+
+## Implementation-specific areas to retest
+
+- Capability matrix with runtime-first reordering
+- Feature details panel and probe output region
+- Tab Context Probe result updates
+- Built-in assistant and on-device model probe outputs
+- Prompt simulator randomized content loading
 
 ## Related policy files
 
@@ -31,6 +46,6 @@ This project is designed to be understandable, operable, and testable across mod
 
 ## Public links
 
-- [ACCESSIBILITY.md](https://mgifford.github.io/ACCESSIBILITY.md)
-- [SUSTAINABILITY.md](https://mgifford.github.io/SUSTAINABILITY.md)
+- [ACCESSIBILITY.md](https://mgifford.github.io/ai-browser-test/ACCESSIBILITY.md)
+- [SUSTAINABILITY.md](https://mgifford.github.io/ai-browser-test/SUSTAINABILITY.md)
 - [AGENTS.md](https://agents.md/)
