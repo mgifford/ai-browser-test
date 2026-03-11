@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browser AI Experimentation Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f3efe6;
+      --ink: #1b2623;
+      --muted: #4d615b;
+      --line: rgba(25, 38, 34, 0.15);
+      --card: rgba(255, 255, 255, 0.85);
+      --accent: #0d5ad4;
+      --radius: 14px;
+      --shadow: 0 16px 34px rgba(20, 33, 29, 0.1);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 12%, rgba(236, 95, 63, 0.14), transparent 28%),
+        radial-gradient(circle at 83% 18%, rgba(13, 90, 212, 0.15), transparent 29%),
+        var(--bg);
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    .shell {
+      width: min(1080px, calc(100% - 2rem));
+      margin: 1.3rem auto 3rem;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    h1, h2, h3 {
+      font-family: "Fraunces", Georgia, serif;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+
+    h1 { font-size: clamp(1.7rem, 4vw, 2.6rem); }
+
+    .lede { color: var(--muted); margin-top: 0.65rem; }
+
+    .chips { margin-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.55rem; }
+
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.35rem 0.7rem;
+      background: rgba(255, 255, 255, 0.95);
+      text-decoration: none;
+      color: var(--ink);
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 0.7rem;
+      font: inherit;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--ink);
+      resize: vertical;
+    }
+
+    .actions { margin-top: 0.55rem; display: flex; flex-wrap: wrap; gap: 0.45rem; }
+
+    button {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--ink);
+      border-radius: 10px;
+      padding: 0.5rem 0.7rem;
+      font: inherit;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .hint { margin-top: 0.45rem; font-size: 0.83rem; color: var(--muted); }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 0.65rem; }
+    th, td { border: 1px solid var(--line); padding: 0.5rem; text-align: left; font-size: 0.88rem; background: rgba(255,255,255,0.9); }
+
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="panel">
+      <h1>Browser AI Experimentation Lab</h1>
+      <p class="lede">Use this page to run repeatable tests with copy-ready prompts and source material. The goal is to make differences between browsers and channels obvious.</p>
+      <div class="chips">
+        <a class="chip" href="index.html">Back to Main Demo</a>
+        <a class="chip" href="browser-ai-configuration.html">Browser Channel Setup</a>
+        <a class="chip" href="data/sample-corpus.yml">Long-form Source Corpus</a>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>What To Notice</h2>
+      <ol>
+        <li>Fidelity: does output preserve key facts and qualifiers?</li>
+        <li>Structure: does output follow requested format consistently?</li>
+        <li>Actionability: does output produce useful next steps?</li>
+        <li>Stability: does rerunning the same prompt produce similar quality?</li>
+        <li>Transparency: can you tell what is local, cloud-dependent, or unknown?</li>
+      </ol>
+    </section>
+
+    <section class="panel grid">
+      <article>
+        <h3>Prompt Pack A (Summarize)</h3>
+        <textarea id="packA">Summarize this source into:
+1) Three key findings
+2) Two risks
+3) One recommendation for the next 30 days
+
+Return output with explicit headings and concise bullets.</textarea>
+        <div class="actions">
+          <button data-copy="packA">Copy Prompt A</button>
+        </div>
+        <p class="hint">Use with long-form source text for strongest signal.</p>
+      </article>
+
+      <article>
+        <h3>Prompt Pack B (Compare)</h3>
+        <textarea id="packB">Compare two browser AI rollout options:
+Option A: fast pilot with limited controls.
+Option B: slower rollout with strict governance.
+
+Score both options for risk, speed, and adoption.
+End with a recommended path and why.</textarea>
+        <div class="actions">
+          <button data-copy="packB">Copy Prompt B</button>
+        </div>
+        <p class="hint">Use this to compare decision quality across browsers.</p>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>Paste-in Source Block (5+ Paragraphs)</h2>
+      <textarea id="sourceBlock">A regional civic services team evaluated AI-assisted browser workflows across support and policy units. The trial focused on summarization quality, writing clarity, and response consistency under repeated runs. Teams tracked whether generated outputs preserved source qualifiers and whether recommendations remained actionable without oversimplifying risk.
+
+During testing, teams noticed that short prompts produced generic summaries, while structured prompts with explicit output requirements delivered better results. Requests specifying sections such as findings, risks, and next steps were easier to compare across browsers. Teams also observed that adding audience context improved readability and reduced ambiguous wording.
+
+Governance review highlighted that availability signals and feature labels can vary by browser channel. In some runtimes, APIs were detectable but not ready, while in others they were callable but did not expose model identity details. This made direct local-vs-cloud attribution difficult and reinforced the need for explicit probe outputs in the demo workflow.
+
+Accessibility reviewers noted that generated summaries often improved scanability but occasionally removed nuance from legally sensitive text. To mitigate this, teams added constraints requiring preservation of uncertainty language and specific terms. Structured prompts helped maintain critical detail while still improving readability for non-technical audiences.
+
+The final recommendation emphasized repeatable test design: use the same long-form source, run the same prompt across browsers, compare structure and fidelity, and document what is directly measurable versus inferred. This allowed stakeholders to evaluate browser AI behavior based on observable evidence rather than assumptions.</textarea>
+      <div class="actions">
+        <button data-copy="sourceBlock">Copy Source Block</button>
+      </div>
+      <p class="hint">Copy this block into the main simulator to benchmark summary quality and consistency.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Quick Result Log Template</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Browser / Channel</th>
+            <th>Prompt Pack</th>
+            <th>What improved</th>
+            <th>What failed</th>
+            <th>Local/Cloud confidence</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Chrome Canary</td><td>Pack A</td><td></td><td></td><td></td></tr>
+          <tr><td>Firefox Nightly</td><td>Pack A</td><td></td><td></td><td></td></tr>
+          <tr><td>Edge Stable</td><td>Pack A</td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    document.querySelectorAll("button[data-copy]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const target = document.getElementById(button.dataset.copy);
+        if (!target) return;
+        try {
+          await navigator.clipboard.writeText(target.value);
+          button.textContent = "Copied";
+          setTimeout(() => {
+            button.textContent = button.dataset.copy === "packA"
+              ? "Copy Prompt A"
+              : button.dataset.copy === "packB"
+                ? "Copy Prompt B"
+                : "Copy Source Block";
+          }, 900);
+        } catch (_error) {
+          button.textContent = "Copy failed";
+        }
+      });
+    });
+  </script>
+</body>
+</html>

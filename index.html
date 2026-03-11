@@ -452,6 +452,28 @@
       color: var(--ink);
     }
 
+    .runtime-debug-controls {
+      margin-top: 0.45rem;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .runtime-debug-controls label {
+      font-size: 0.76rem;
+      color: #435450;
+    }
+
+    .runtime-debug-controls select {
+      font: inherit;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 0.2rem 0.35rem;
+      color: var(--ink);
+    }
+
     .tests-actions {
       margin-top: 0.7rem;
       display: flex;
@@ -653,6 +675,22 @@
       animation: reveal 1.2s ease both;
     }
 
+    .experiment-panel {
+      margin-top: 1rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.84);
+      box-shadow: var(--shadow);
+      padding: 1rem;
+    }
+
+    .experiment-links {
+      margin-top: 0.6rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+    }
+
     .timeline {
       margin: 0;
       padding-left: 1.2rem;
@@ -667,6 +705,58 @@
       margin-top: 0.85rem;
       font-size: 0.85rem;
       color: var(--muted);
+    }
+
+    .bench {
+      margin-top: 0.8rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    .bench h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .bench-grid {
+      margin-top: 0.55rem;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.45rem;
+    }
+
+    .bench-stat {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 0.45rem;
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .bench-stat strong {
+      display: block;
+      margin-top: 0.15rem;
+      font-size: 0.97rem;
+    }
+
+    .bench-list {
+      margin-top: 0.6rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 0.55rem;
+      min-height: 72px;
+      background: rgba(255, 255, 255, 0.95);
+      white-space: pre-wrap;
+      color: #344640;
+    }
+
+    .bench-actions {
+      margin-top: 0.55rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
     }
 
     .sustainability-footer {
@@ -768,6 +858,10 @@
       .context-probe-grid {
         grid-template-columns: 1fr;
       }
+
+      .bench-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -805,7 +899,20 @@
         </div>
         <p class="sim-meta" id="browserSummary"></p>
         <p class="runtime-chip" id="runtimeChip">Detecting runtime browser...</p>
-        <div class="runtime-debug" id="runtimeDebug">Runtime debug pending...</div>
+        <div class="runtime-debug" id="runtimeDebug">
+          Runtime debug pending...
+          <div class="runtime-debug-controls">
+            <label for="channelOverride">Channel override:</label>
+            <select id="channelOverride">
+              <option value="auto" selected>Auto (detect)</option>
+              <option value="stable">Stable</option>
+              <option value="beta">Beta</option>
+              <option value="dev">Dev</option>
+              <option value="canary">Canary</option>
+              <option value="nightly">Nightly</option>
+            </select>
+          </div>
+        </div>
       </aside>
     </section>
 
@@ -874,6 +981,7 @@
             </select>
           </label>
           <div style="display:flex; gap:0.55rem; flex-wrap:wrap; justify-content:flex-end;">
+            <button class="cta-secondary" id="loadBenchmark">Load Benchmark Pack</button>
             <button class="cta-secondary" id="shufflePrompt">Shuffle Prompt Idea</button>
             <button class="cta" id="runPrompt">Run AI Demo</button>
           </div>
@@ -881,22 +989,57 @@
 
         <div class="output" id="outputBox" aria-live="polite">Press "Run AI Demo" to generate a browser-specific response.</div>
         <p class="hint" id="promptHint">Tip: copy this prompt, paste your own page text, and edit before running. Switch browser profile and rerun to compare behavior.</p>
+
+        <section class="bench" aria-label="Prompt simulator test bench">
+          <h3>Prompt Test Bench</h3>
+          <div class="bench-grid">
+            <div class="bench-stat">Input length<strong id="benchLength">-</strong></div>
+            <div class="bench-stat">Paragraphs<strong id="benchParagraphs">-</strong></div>
+            <div class="bench-stat">Mode fit<strong id="benchModeFit">-</strong></div>
+          </div>
+          <div class="bench-actions">
+            <button class="cta-secondary" id="evaluatePrompt">Evaluate Prompt Quality</button>
+            <button class="cta-secondary" id="rerunSamePrompt">Run Twice Consistency Check</button>
+          </div>
+          <div class="bench-list" id="benchNotes">Run an evaluation to see what the browser AI demo is expected to show.</div>
+        </section>
       </article>
 
       <aside class="scenario">
         <div class="scenario-header">
           <h2>Quick Scenarios</h2>
+          <button class="cta-secondary" id="reshuffleScenarios">Reshuffle</button>
         </div>
 
         <div class="scenario-grid">
           <div class="note">Loading randomized scenarios from YAML...</div>
         </div>
+        <div class="bench" style="margin-top:0.7rem;">
+          <h3>Scenario Debug</h3>
+          <div class="bench-list" id="scenarioDebug">Waiting for YAML content...</div>
+        </div>
       </aside>
     </section>
 
     <section class="log">
-      <h2>Suggested Talk Track</h2>
+      <h2>Optional Demo Script</h2>
+      <p class="sim-meta">This section is a presenter script. Use it if you are running a live demo for others. If you are experimenting solo, skip to the experiment panel below.</p>
       <ol class="timeline" id="talkTrack"></ol>
+    </section>
+
+    <section class="experiment-panel" aria-label="How to experiment">
+      <h2>How To Experiment Today</h2>
+      <ol class="timeline">
+        <li>Use <strong>Load Benchmark Pack</strong> in the simulator for a consistent long-form summarization test.</li>
+        <li>Switch browser/channel and rerun the same prompt to compare quality and behavior differences.</li>
+        <li>Run built-in API tests and local probes to verify what is actually available in this runtime.</li>
+        <li>Use the experimentation page for copy-ready prompts, source blocks, and test workflows.</li>
+      </ol>
+      <div class="experiment-links">
+        <a class="hero-link" href="experiment-recipes.html">Open Experimentation Lab</a>
+        <a class="hero-link" href="browser-ai-configuration.html">Channel Setup Guide</a>
+        <a class="hero-link" href="BROWSER_AI_SPECIFICS.md">Feature Source Map</a>
+      </div>
     </section>
 
     <footer class="sustainability-footer" aria-label="Sustainability metrics footer">
@@ -1068,6 +1211,8 @@
     const liveTestOutput = document.getElementById("liveTestOutput");
     const runtimeChip = document.getElementById("runtimeChip");
     const runtimeDebug = document.getElementById("runtimeDebug");
+    const channelOverride = document.getElementById("channelOverride");
+    const browserGroup = document.querySelector(".browser-group");
     const scenarioGrid = document.querySelector(".scenario-grid");
     const promptHint = document.getElementById("promptHint");
     const featureInfoTitle = document.getElementById("featureInfoTitle");
@@ -1079,11 +1224,24 @@
     const relatedTabsValue = document.getElementById("relatedTabsValue");
     const tabEnergyRisk = document.getElementById("tabEnergyRisk");
     const relatedTabsList = document.getElementById("relatedTabsList");
+    const benchLength = document.getElementById("benchLength");
+    const benchParagraphs = document.getElementById("benchParagraphs");
+    const benchModeFit = document.getElementById("benchModeFit");
+    const benchNotes = document.getElementById("benchNotes");
+    const scenarioDebug = document.getElementById("scenarioDebug");
 
     const tabContextChannelName = "ai-browser-tab-context-v1";
     const tabContextId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
     const tabPeers = new Map();
     let tabContextChannel = null;
+    const channelLabels = {
+      unknown: "Unknown",
+      stable: "Stable",
+      beta: "Beta",
+      dev: "Dev",
+      canary: "Canary",
+      nightly: "Nightly"
+    };
 
     const yamlContentFiles = {
       prompts: "data/prompt-simulator.yml",
@@ -1483,6 +1641,92 @@
         .length;
     }
 
+    function wordCount(text) {
+      return (text || "").trim().split(/\s+/).filter(Boolean).length;
+    }
+
+    function sentenceCount(text) {
+      return (text || "").split(/[.!?]+/).map((s) => s.trim()).filter(Boolean).length;
+    }
+
+    function extractLeadSentences(text, maxSentences = 4) {
+      const paragraphs = (text || "")
+        .split(/\n\s*\n/g)
+        .map((p) => p.trim())
+        .filter(Boolean);
+      const leads = [];
+      for (const para of paragraphs) {
+        const first = para.split(/(?<=[.!?])\s+/)[0] || para;
+        if (first.trim()) leads.push(first.trim());
+        if (leads.length >= maxSentences) break;
+      }
+      return leads;
+    }
+
+    function evaluatePromptQuality() {
+      const text = promptInput.value;
+      const mode = taskType.value;
+      const words = wordCount(text);
+      const paragraphs = paragraphCount(text);
+      const sentences = sentenceCount(text);
+
+      benchLength.textContent = `${words} words / ${sentences} sentences`;
+      benchParagraphs.textContent = `${paragraphs}`;
+
+      const hasConstraint = /(include|format|return|limit|under|exactly|must)/i.test(text);
+      const hasAudience = /(audience|public|executive|staff|customer|resident)/i.test(text);
+      const longEnough = paragraphs >= 5;
+
+      let fit = "Good";
+      if (mode === "summarize" && !longEnough) fit = "Weak";
+      if (!hasConstraint) fit = fit === "Good" ? "Fair" : fit;
+      benchModeFit.textContent = fit;
+
+      const notes = [];
+      notes.push(`Mode: ${mode}`);
+      notes.push(longEnough ? "- Source depth: good for summarization (5+ paragraphs)." : "- Source depth: add more content for stronger summary signal.");
+      notes.push(hasConstraint ? "- Instruction constraints: present." : "- Instruction constraints: missing. Add output format/limits.");
+      notes.push(hasAudience ? "- Audience targeting: present." : "- Audience targeting: missing. Specify target reader.");
+      notes.push("- What to notice: fidelity to source, structure quality, and actionability of output.");
+
+      benchNotes.textContent = notes.join("\n");
+    }
+
+    function describeScenarioPool() {
+      if (!scenarioDebug) return;
+      const scenarioCount = loadedScenarios.length;
+      const promptCount = loadedPromptIdeas.length;
+      const corpusCount = loadedCorpusDocs.length;
+      const avgPromptWords = loadedScenarios.length
+        ? Math.round(loadedScenarios.reduce((sum, s) => sum + wordCount(s.prompt || ""), 0) / loadedScenarios.length)
+        : 0;
+
+      scenarioDebug.textContent = [
+        `Prompt starters loaded: ${promptCount}`,
+        `Quick scenarios loaded: ${scenarioCount}`,
+        `Long-form corpus docs loaded: ${corpusCount}`,
+        `Average scenario prompt size: ${avgPromptWords} words`,
+        "What to notice: are scenarios varied, specific, and long enough to test quality consistently?"
+      ].join("\n");
+    }
+
+    function loadBenchmarkPack() {
+      const doc = pickRandom(loadedCorpusDocs);
+      if (!doc) return;
+      taskType.value = "summarize";
+      promptInput.value = [
+        "Summarize this source into:",
+        "1) Three key findings",
+        "2) Two risks",
+        "3) One recommendation with a 30-day action",
+        "Return output with clear headings and concise bullets.",
+        "",
+        "Source content for analysis:",
+        doc.content
+      ].join("\n");
+      evaluatePromptQuality();
+    }
+
     function buildSummarizationInput(promptText) {
       const selectedDoc = pickRandom(loadedCorpusDocs);
       if (!selectedDoc || !selectedDoc.content) return promptText;
@@ -1597,20 +1841,30 @@
       if (loadedPromptIdeas.length) applyRandomPromptIdea();
       if (loadedScenarios.length) renderScenarioButtons(pickRandomSubset(loadedScenarios, 4));
       if (!loadedScenarios.length) renderScenarioButtons([]);
+      describeScenarioPool();
 
       if (promptHint && loadedCorpusDocs.length) {
         promptHint.textContent = "Tip: each summarize starter now includes a local 5+ paragraph sample text. Cut/paste your own content, edit, then rerun across browsers.";
       }
+
+      evaluatePromptQuality();
     }
 
     function generateResponse(promptText, mode, browser) {
       const profile = browserData[browser];
-      const clipped = promptText.replace(/\s+/g, " ").trim().slice(0, 130) || "the selected page";
+      const clean = promptText.replace(/\s+/g, " ").trim();
+      const clipped = clean.slice(0, 140) || "the selected page";
+      const leads = extractLeadSentences(promptText, 4);
+      const words = wordCount(promptText);
+      const paras = paragraphCount(promptText);
 
       if (mode === "summarize") {
         return [
           `${profile.label} AI (${profile.voice})`,
-          `Summary: The content emphasizes ${clipped.toLowerCase()}.`,
+          `Summary signal: analyzed ${words} words across ${paras} paragraphs.`,
+          `Scope: ${clipped.toLowerCase()}.`,
+          "Lead points:",
+          ...leads.map((line, idx) => `${idx + 1}) ${line}`),
           "Top actions:",
           "1) Capture key points into a short brief.",
           "2) Ask follow-up questions on risk, cost, and timeline.",
@@ -1623,7 +1877,8 @@
           `${profile.label} AI (${profile.voice})`,
           "Executive rewrite:",
           `This topic can be summarized as: ${clipped}.`,
-          "Recommendation: prioritize low-risk pilots, define success metrics, and review governance before scaling."
+          "Recommendation: prioritize low-risk pilots, define success metrics, and review governance before scaling.",
+          `Readability target: concise language for ${words > 700 ? "long-form" : "short-form"} input.`
         ].join("\n");
       }
 
@@ -2013,21 +2268,33 @@
         browserLabel = "Chrome";
       }
 
-      let channel = "stable";
-      let channelLabel = "Stable";
+      let channel = "unknown";
+      let channelLabel = "Unknown";
+      let channelSource = "not exposed";
 
       if (ua.includes("canary")) {
         channel = "canary";
         channelLabel = "Canary";
+        channelSource = "userAgent token";
       } else if (ua.includes("nightly")) {
         channel = "nightly";
         channelLabel = "Nightly";
+        channelSource = "userAgent token";
       } else if (ua.includes("beta")) {
         channel = "beta";
         channelLabel = "Beta";
+        channelSource = "userAgent token";
       } else if (ua.includes("dev") || ua.includes("developer")) {
         channel = "dev";
         channelLabel = "Dev";
+        channelSource = "userAgent token";
+      }
+
+      const override = channelOverride ? channelOverride.value : "auto";
+      if (override && override !== "auto") {
+        channel = override;
+        channelLabel = channelLabels[override] || override;
+        channelSource = "manual override";
       }
 
       const mappedComparison = browserOrder.includes(browser)
@@ -2039,7 +2306,8 @@
         browserLabel,
         channel,
         channelLabel,
-        prerelease: channel !== "stable",
+        channelSource,
+        prerelease: ["beta", "dev", "canary", "nightly"].includes(channel),
         mappedComparison,
         isMapped: !browserOrder.includes(browser)
       };
@@ -2049,21 +2317,34 @@
       const runtime = detectBrowserRuntime();
       runtimeContext = runtime;
 
+      const leadBrowser = browserOrder.includes(runtime.browser)
+        ? runtime.browser
+        : runtime.mappedComparison;
+
+      if (browserGroup) {
+        const leadButton = browserGroup.querySelector(`.browser-btn[data-browser="${leadBrowser}"]`);
+        if (leadButton) {
+          browserGroup.prepend(leadButton);
+        }
+      }
+
       document.querySelectorAll(".browser-btn").forEach((button) => {
         button.classList.remove("active", "runtime-detected");
-        if (button.dataset.browser === runtime.browser) {
+        if (button.dataset.browser === leadBrowser) {
           button.classList.add("active", "runtime-detected");
         }
       });
 
-      currentBrowser = runtime.mappedComparison;
+      currentBrowser = leadBrowser;
       renderProfile();
       renderMatrix();
 
       if (runtimeChip) {
-        runtimeChip.textContent = runtime.prerelease
-          ? `Detected runtime: ${runtime.browserLabel} ${runtime.channelLabel} (AI testing channel)`
-          : `Detected runtime: ${runtime.browserLabel} ${runtime.channelLabel}`;
+        runtimeChip.textContent = runtime.channel === "unknown"
+          ? `Detected runtime: ${runtime.browserLabel} (channel not exposed)`
+          : runtime.prerelease
+            ? `Detected runtime: ${runtime.browserLabel} ${runtime.channelLabel} (AI testing channel)`
+            : `Detected runtime: ${runtime.browserLabel} ${runtime.channelLabel}`;
         if (runtime.isMapped) {
           runtimeChip.textContent += ` | comparison baseline: ${runtime.mappedComparison}`;
         }
@@ -2071,30 +2352,65 @@
       }
 
       if (runtimeDebug) {
+        const controls = runtimeDebug.querySelector(".runtime-debug-controls");
         runtimeDebug.innerHTML = [
           `<strong>Parsed runtime:</strong> ${runtime.browserLabel} (${runtime.browser})`,
           `<strong>Channel:</strong> ${runtime.channelLabel} (${runtime.channel})`,
+          `<strong>Channel source:</strong> ${runtime.channelSource}`,
           `<strong>Comparison baseline:</strong> ${runtime.mappedComparison}`,
           `<strong>Raw UA:</strong> ${navigator.userAgent}`
         ].join("<br>");
+        if (controls) {
+          runtimeDebug.appendChild(controls);
+        }
       }
     }
 
     document.querySelectorAll(".browser-btn").forEach((button) => {
       button.addEventListener("click", () => {
+        if (browserGroup) {
+          browserGroup.prepend(button);
+        }
         document.querySelectorAll(".browser-btn").forEach((el) => el.classList.remove("active"));
         button.classList.add("active");
         currentBrowser = button.dataset.browser;
         renderProfile();
+        renderMatrix();
       });
     });
 
     document.getElementById("runPrompt").addEventListener("click", () => {
       outputBox.textContent = generateResponse(promptInput.value, taskType.value, currentBrowser);
+      evaluatePromptQuality();
     });
 
     document.getElementById("shufflePrompt").addEventListener("click", () => {
       applyRandomPromptIdea();
+      evaluatePromptQuality();
+    });
+
+    document.getElementById("evaluatePrompt").addEventListener("click", evaluatePromptQuality);
+    document.getElementById("loadBenchmark").addEventListener("click", loadBenchmarkPack);
+    document.getElementById("rerunSamePrompt").addEventListener("click", () => {
+      const once = generateResponse(promptInput.value, taskType.value, currentBrowser);
+      const twice = generateResponse(promptInput.value, taskType.value, currentBrowser);
+      const consistent = once === twice;
+      benchNotes.textContent = [
+        `Consistency check: ${consistent ? "pass" : "fail"}`,
+        "What to notice: deterministic output across repeated runs in this demo harness.",
+        "If outputs differ in real browser AI systems, compare grounding, structure, and omitted details."
+      ].join("\n");
+      outputBox.textContent = once;
+    });
+    document.getElementById("reshuffleScenarios").addEventListener("click", () => {
+      renderScenarioButtons(pickRandomSubset(loadedScenarios, 4));
+      describeScenarioPool();
+    });
+    promptInput.addEventListener("input", () => {
+      evaluatePromptQuality();
+    });
+    taskType.addEventListener("change", () => {
+      evaluatePromptQuality();
     });
 
     document.getElementById("runTests").addEventListener("click", () => {
@@ -2104,6 +2420,11 @@
       renderBuiltInTests();
     });
     document.getElementById("runAllLocalTests").addEventListener("click", runAllAvailableLocalTests);
+    if (channelOverride) {
+      channelOverride.addEventListener("change", () => {
+        applyDetectedRuntimeToProfile();
+      });
+    }
     document.getElementById("runTabContextProbe").addEventListener("click", () => {
       broadcastTabMeta("hello");
       renderTabProbe();

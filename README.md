@@ -15,6 +15,7 @@ It is designed for live presentations where you need to:
 
 - `index.html`: Main UI and demo logic
 - `browser-ai-configuration.html`: Guide for enabling/testing AI abilities in browser beta/nightly channels
+- `experiment-recipes.html`: Hands-on experimentation lab with copy-ready prompts and source blocks
 - `data/prompt-simulator.yml`: Randomized starter prompts and calls to action for AI Prompt Simulator
 - `data/quick-scenarios.yml`: Randomized Quick Scenarios shown on load
 - `data/sample-corpus.yml`: Local long-form source documents (5+ paragraphs) used for summarize testing
@@ -110,6 +111,10 @@ You can edit sample content without touching JavaScript:
 4. Reload the page to see different randomized selections.
 
 For summarize mode, the app now auto-injects a random local 5+ paragraph source document when a prompt is too short.
+
+For guided testing and copy-ready assets, use:
+
+- [experiment-recipes.html](experiment-recipes.html)
 
 ## Tab context awareness validation
 
