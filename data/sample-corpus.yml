@@ -1,0 +1,39 @@
+documents:
+  - id: municipal-ai-readiness
+    title: Municipal AI Readiness Review
+    content: |
+      The city launched a cross-department pilot to evaluate AI-assisted browsing for service delivery teams. Staff from transit, libraries, and permitting participated in weekly testing sessions. The pilot tracked response quality, readability, and staff confidence when using summarize and rewrite features on public-facing documents. Early findings showed that staff used summary tools most often to reduce long policy pages into action-oriented notes.
+
+      Adoption varied significantly by role. Frontline staff favored quick summaries and language simplification, while policy analysts prioritized traceability and source fidelity. Several participants reported that generated summaries were useful starting points but still required verification against original text. Teams with existing documentation standards integrated browser AI output into current review workflows more smoothly than teams without common templates.
+
+      Governance constraints shaped how the pilot proceeded. Teams avoided submitting personal or sensitive case details into any external service without explicit approval. Participants were instructed to use synthetic or anonymized examples for scenario training. IT security required browser-channel tracking so reports could distinguish stable, beta, and nightly behavior before any broader recommendation.
+
+      Accessibility outcomes were promising but inconsistent. In several tests, rewritten content improved reading level and reduced sentence complexity. However, summary quality dropped when source material mixed technical jargon, legal clauses, and tabular references. This highlighted a need for better prompt framing, including clear instructions on audience, output structure, and terminology preservation.
+
+      The final recommendation was to continue with a phased rollout tied to governance maturity. The report suggested a three-stage plan: team training, monitored pilot extension, and conditional production use with policy controls. Success criteria included reduced time-to-brief, improved readability scores, and documented staff confidence gains across multiple browser channels.
+
+  - id: health-info-translation
+    title: Public Health Information Translation Pilot
+    content: |
+      A regional health network evaluated AI-assisted browser workflows to improve multilingual access to public guidance. The team focused on translating advisories, clinic notices, and prevention materials into plain-language formats. Reviewers compared browser-generated outputs against certified human translations to assess tone, clinical accuracy, and cultural relevance.
+
+      The strongest performance appeared in short, procedural content such as appointment steps and eligibility summaries. Longer advisories with nuanced risk language required additional editing to avoid over-simplification. Reviewers found that explicit instructions like "preserve medical terms" and "avoid reducing uncertainty qualifiers" improved output quality in repeated tests.
+
+      Operationally, the pilot exposed differences between channels and environments. Some builds surfaced relevant interfaces but failed readiness checks due to missing models or permissions. Other builds completed tests but produced inconsistent formatting across runs. This reinforced the value of runtime capability checks before declaring features available for policy-sensitive work.
+
+      The team implemented a quality rubric across four categories: fidelity, clarity, inclusivity, and actionability. Scores improved when prompts included audience context and required a fixed output template. For example, asking for "key message, who is affected, and what to do now" led to clearer and more comparable drafts across languages.
+
+      The final report recommended a hybrid model: browser AI for drafting, human review for publication, and an auditable change log for all edited output. Program leaders also asked for quarterly evaluations of model behavior, especially during seasonal health campaigns when message urgency and precision are both critical.
+
+  - id: emergency-comms-analysis
+    title: Emergency Communications Post-Incident Analysis
+    content: |
+      After a severe weather event, a public communications team reviewed how quickly updates were drafted and distributed across web, social, and SMS channels. The post-incident analysis tested browser AI features to summarize field reports, rewrite updates for different audiences, and compare response options during timeline reconstruction.
+
+      Analysts discovered that summaries were most accurate when source notes were grouped by timestamp and location. Mixed inputs from email threads, spreadsheets, and chat logs produced weaker results unless normalized first. A standardized "incident digest" format improved consistency and allowed teams to compare outputs between Chrome, Firefox, and Edge test channels.
+
+      Risk management remained central throughout the review. Legal advisors required strict separation between operational data and public-facing drafts, especially when casualty reports were still being validated. The team established guidance for AI-assisted drafting that prohibited speculative language and required explicit confidence labels for uncertain details.
+
+      Communication quality improved where prompts specified audience and channel constraints. For example, prompts that requested "plain-language update for residents in under 120 words" generated clearer results than open-ended requests. Similar gains appeared in multilingual drafts when output requirements included culturally neutral wording and direct next steps.
+
+      The analysis concluded that AI-assisted browser workflows can reduce drafting time under pressure, but only with disciplined input hygiene and review controls. Recommendations included cross-channel templates, mandatory human approval before publication, and recurring drills that measure both speed and message clarity under simulated emergency conditions.

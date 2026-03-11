@@ -268,6 +268,68 @@
       animation: reveal 1050ms ease both;
     }
 
+    .feature-info {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: var(--shadow);
+      animation: reveal 980ms ease both;
+    }
+
+    .feature-info h3 {
+      font-size: 1.2rem;
+    }
+
+    .feature-links {
+      margin-top: 0.7rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+    }
+
+    .feature-link {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.35rem 0.65rem;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 0.83rem;
+      font-weight: 600;
+    }
+
+    .feature-link:hover {
+      text-decoration: underline;
+    }
+
+    .feature-btn {
+      border: none;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+      font: inherit;
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .feature-runtime {
+      margin-top: 0.65rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem;
+      background: rgba(255, 255, 255, 0.92);
+      font-size: 0.84rem;
+      color: #32423e;
+      white-space: pre-wrap;
+    }
+
     .tests-header {
       display: flex;
       align-items: center;
@@ -380,6 +442,51 @@
       display: flex;
       flex-wrap: wrap;
       gap: 0.55rem;
+    }
+
+    .context-probe {
+      margin-top: 1rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.88);
+      padding: 0.85rem;
+    }
+
+    .context-probe h3 {
+      font-size: 1.08rem;
+      margin: 0;
+    }
+
+    .context-probe-grid {
+      margin-top: 0.65rem;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.55rem;
+    }
+
+    .probe-stat {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 0.55rem;
+      background: rgba(255, 255, 255, 0.94);
+      font-size: 0.85rem;
+    }
+
+    .probe-stat strong {
+      display: block;
+      font-size: 1rem;
+      margin-top: 0.15rem;
+    }
+
+    .probe-list {
+      margin-top: 0.65rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem;
+      background: rgba(255, 255, 255, 0.9);
+      font-size: 0.85rem;
+      color: #344742;
+      min-height: 70px;
     }
 
     .cta-secondary {
@@ -642,6 +749,10 @@
       .test-row .test-cell:last-child {
         border-bottom: none;
       }
+
+      .context-probe-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -684,6 +795,14 @@
 
     <section class="matrix" id="capabilityMatrix" aria-label="Capability matrix"></section>
 
+    <section class="feature-info" aria-label="Feature details">
+      <h3 id="featureInfoTitle">Feature details: Page summarize</h3>
+      <p id="featureInfoText">Select a capability in the matrix to see what it does and where feature specifics are documented.</p>
+      <div class="feature-links" id="featureInfoLinks"></div>
+      <div class="tests-actions" id="featureInfoActions"></div>
+      <div class="feature-runtime" id="featureRuntimeInfo">Runtime probe not run yet.</div>
+    </section>
+
     <section class="tests" aria-label="Built-in AI browser API tests">
       <div class="tests-header">
         <h2>Built-in AI API Tests</h2>
@@ -703,6 +822,20 @@
       </div>
       <div class="test-table" id="liveCapabilityResults"></div>
       <div class="output" id="liveTestOutput" aria-live="polite">Run a capability scan, then launch available local API tests from this panel.</div>
+
+      <div class="context-probe" aria-label="Tab context probe">
+        <h3>Tab Context Probe (Local)</h3>
+        <p class="tests-note">Validates what this page can learn locally about tab context. This can count same-origin tabs, but not all browser tabs unless an extension API is used.</p>
+        <div class="tests-actions">
+          <button class="cta-secondary" id="runTabContextProbe">Run Tab Context Probe</button>
+        </div>
+        <div class="context-probe-grid">
+          <div class="probe-stat">Same-origin tabs (this site)<strong id="tabCountValue">Unknown</strong></div>
+          <div class="probe-stat">Related tabs detected<strong id="relatedTabsValue">Unknown</strong></div>
+          <div class="probe-stat">High-tab energy risk (heuristic)<strong id="tabEnergyRisk">Unknown</strong></div>
+        </div>
+        <div class="probe-list" id="relatedTabsList">Run probe to inspect same-origin related tabs.</div>
+      </div>
     </section>
 
     <section class="grid">
@@ -839,6 +972,59 @@
       "Enterprise policy controls"
     ];
 
+    const featureReference = {
+      "Built-in AI assistant": {
+        description: "Assistance interface for drafting, answering, or transforming text in-browser.",
+        links: [
+          { label: "Chrome Prompt API", url: "https://developer.chrome.com/docs/ai/prompt-api" },
+          { label: "Firefox AI chatbot", url: "https://support.mozilla.org/kb/ai-chatbot" },
+          { label: "Edge Copilot", url: "https://www.microsoft.com/en-us/edge/features/copilot" }
+        ]
+      },
+      "Page summarize": {
+        description: "Condenses long content into shorter key points, action items, or digest formats.",
+        links: [
+          { label: "Chrome Summarizer API", url: "https://developer.chrome.com/docs/ai/summarizer-api" },
+          { label: "Gemini in Chrome Help", url: "https://support.google.com/chrome?p=gemini_in_chrome#topic=7439538" },
+          { label: "Edge Copilot feature page", url: "https://www.microsoft.com/en-us/edge/features/copilot" }
+        ]
+      },
+      "Tab context awareness": {
+        description: "Uses page or browsing context to improve relevance of generated output.",
+        links: [
+          { label: "Chrome AI docs index", url: "https://developer.chrome.com/docs/ai" },
+          { label: "Chrome extension tabs API", url: "https://developer.chrome.com/docs/extensions/reference/api/tabs" },
+          { label: "MDN tabs API", url: "https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/tabs" },
+          { label: "Firefox AI controls", url: "https://blog.mozilla.org/en/firefox/how-to-use-ai-controls/" },
+          { label: "Edge AI features", url: "https://www.microsoft.com/en-us/edge/features/ai" }
+        ]
+      },
+      "On-device model options": {
+        description: "Model execution or acceleration available locally for some capabilities.",
+        links: [
+          { label: "AI on Chrome docs", url: "https://developer.chrome.com/docs/ai" },
+          { label: "Chrome Canary", url: "https://www.google.com/intl/en_ca/chrome/canary/" },
+          { label: "Firefox channel builds", url: "https://www.firefox.com/en-CA/channel/desktop/" }
+        ]
+      },
+      "Privacy controls": {
+        description: "Settings and policy boundaries that influence AI data handling and behavior.",
+        links: [
+          { label: "Firefox AI controls", url: "https://blog.mozilla.org/en/firefox/how-to-use-ai-controls/" },
+          { label: "Mozilla privacy", url: "https://www.mozilla.org/privacy/" },
+          { label: "Microsoft privacy", url: "https://privacy.microsoft.com/" }
+        ]
+      },
+      "Enterprise policy controls": {
+        description: "Organization-level management for enabling and governing browser AI capabilities.",
+        links: [
+          { label: "Chrome enterprise", url: "https://chromeenterprise.google/" },
+          { label: "Firefox enterprise support", url: "https://support.mozilla.org/products/firefox-enterprise" },
+          { label: "Edge for business", url: "https://www.microsoft.com/edge/business" }
+        ]
+      }
+    };
+
     const browserOrder = ["chrome", "firefox", "edge"];
     let runtimeContext = {
       browser: "chrome",
@@ -865,14 +1051,31 @@
     const runtimeChip = document.getElementById("runtimeChip");
     const scenarioGrid = document.querySelector(".scenario-grid");
     const promptHint = document.getElementById("promptHint");
+    const featureInfoTitle = document.getElementById("featureInfoTitle");
+    const featureInfoText = document.getElementById("featureInfoText");
+    const featureInfoLinks = document.getElementById("featureInfoLinks");
+    const featureInfoActions = document.getElementById("featureInfoActions");
+    const featureRuntimeInfo = document.getElementById("featureRuntimeInfo");
+    const tabCountValue = document.getElementById("tabCountValue");
+    const relatedTabsValue = document.getElementById("relatedTabsValue");
+    const tabEnergyRisk = document.getElementById("tabEnergyRisk");
+    const relatedTabsList = document.getElementById("relatedTabsList");
+
+    const tabContextChannelName = "ai-browser-tab-context-v1";
+    const tabContextId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const tabPeers = new Map();
+    let tabContextChannel = null;
 
     const yamlContentFiles = {
       prompts: "data/prompt-simulator.yml",
-      scenarios: "data/quick-scenarios.yml"
+      scenarios: "data/quick-scenarios.yml",
+      corpus: "data/sample-corpus.yml"
     };
 
     let loadedPromptIdeas = [];
     let loadedScenarios = [];
+    let loadedCorpusDocs = [];
+    let onDeviceModelIdentity = "Not probed";
 
     const getCellClass = (value) => {
       if (value === "Strong") return "ok";
@@ -887,12 +1090,29 @@
     function getRuntimeFeatureStatus(featureName) {
       const map = {
         "Built-in AI assistant": "prompt",
-        "Page summarize": "summarizer",
-        "On-device model options": "prompt"
+        "Page summarize": "summarizer"
       };
 
       if (featureName === "Tab context awareness") {
         return { value: "Context-limited", className: "warn" };
+      }
+
+      if (featureName === "On-device model options") {
+        const livePrompt = getLiveEntryById("prompt");
+        if (!livePrompt) {
+          return { value: "Scanning...", className: "warn" };
+        }
+        if (livePrompt.canRunTest) {
+          if (onDeviceModelIdentity.startsWith("Model:")) {
+            const shortId = onDeviceModelIdentity.replace("Model:", "").trim().slice(0, 18);
+            return { value: `Live (${shortId})`, className: "ok" };
+          }
+          return { value: "Live (unlabeled)", className: "ok" };
+        }
+        if (livePrompt.status === "Detected but not ready") {
+          return { value: "Detected", className: "warn" };
+        }
+        return { value: "Not available", className: "no" };
       }
 
       if (featureName === "Privacy controls") {
@@ -945,7 +1165,12 @@
       featureOrder.forEach((feature) => {
         const featureCell = document.createElement("div");
         featureCell.className = "cell feature";
-        featureCell.textContent = feature;
+        const featureBtn = document.createElement("button");
+        featureBtn.className = "feature-btn";
+        featureBtn.type = "button";
+        featureBtn.textContent = feature;
+        featureBtn.addEventListener("click", () => renderFeatureInfo(feature));
+        featureCell.appendChild(featureBtn);
         matrix.appendChild(featureCell);
 
         orderedBrowsers.forEach((browser, idx) => {
@@ -958,6 +1183,251 @@
           matrix.appendChild(valueCell);
         });
       });
+    }
+
+    function renderFeatureInfo(featureName) {
+      const info = featureReference[featureName];
+      if (!info || !featureInfoTitle || !featureInfoText || !featureInfoLinks || !featureInfoActions || !featureRuntimeInfo) return;
+
+      featureInfoTitle.textContent = `Feature details: ${featureName}`;
+      featureInfoText.textContent = info.description;
+      featureInfoLinks.innerHTML = "";
+      featureInfoActions.innerHTML = "";
+
+      info.links.forEach((link) => {
+        const a = document.createElement("a");
+        a.className = "feature-link";
+        a.href = link.url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = link.label;
+        featureInfoLinks.appendChild(a);
+      });
+
+      if (featureName === "On-device model options") {
+        featureRuntimeInfo.textContent = `Model runtime status: ${onDeviceModelIdentity}`;
+        const button = document.createElement("button");
+        button.className = "cta-secondary";
+        button.type = "button";
+        button.textContent = "Probe On-device Model Identity";
+        button.addEventListener("click", probeOnDeviceModelIdentity);
+        featureInfoActions.appendChild(button);
+      } else if (featureName === "Built-in AI assistant") {
+        featureRuntimeInfo.textContent = "Run the assistant probe to see what is callable, what may be local, and what is not knowable from page scope.";
+        const button = document.createElement("button");
+        button.className = "cta-secondary";
+        button.type = "button";
+        button.textContent = "Probe Built-in Assistant";
+        button.addEventListener("click", probeBuiltInAssistant);
+        featureInfoActions.appendChild(button);
+      } else {
+        featureRuntimeInfo.textContent = "Select On-device model options to run a local model identity probe.";
+      }
+    }
+
+    async function probeOnDeviceModelIdentity() {
+      if (!featureRuntimeInfo) return;
+      featureRuntimeInfo.textContent = "Running local model probe...";
+
+      try {
+        const api = resolvePath("ai.languageModel") || resolvePath("LanguageModel");
+        if (!api || typeof api.create !== "function") {
+          onDeviceModelIdentity = "No on-device language model API detected in this runtime.";
+          featureRuntimeInfo.textContent = `Model runtime status: ${onDeviceModelIdentity}`;
+          return;
+        }
+
+        const session = await api.create({ temperature: 0 });
+        const candidates = [
+          session && session.model,
+          session && session.modelId,
+          session && session.name,
+          session && session.version
+        ].filter((v) => typeof v === "string" && v.trim());
+
+        if (!candidates.length && session && typeof session.capabilities === "function") {
+          const caps = await session.capabilities();
+          [caps && caps.model, caps && caps.modelId, caps && caps.name, caps && caps.version]
+            .filter((v) => typeof v === "string" && v.trim())
+            .forEach((v) => candidates.push(v));
+        }
+
+        if (typeof session.destroy === "function") session.destroy();
+
+        if (candidates.length) {
+          onDeviceModelIdentity = `Model: ${candidates[0]}`;
+        } else {
+          onDeviceModelIdentity = "On-device model is available, but model identity is not exposed by this browser API.";
+        }
+      } catch (error) {
+        onDeviceModelIdentity = `Probe failed: ${error.message}`;
+      }
+
+      featureRuntimeInfo.textContent = `Model runtime status: ${onDeviceModelIdentity}`;
+      renderMatrix();
+    }
+
+    async function probeBuiltInAssistant() {
+      if (!featureRuntimeInfo) return;
+      featureRuntimeInfo.textContent = "Running built-in assistant probe...";
+
+      const lines = [];
+      const promptLive = getLiveEntryById("prompt");
+      const summarizeLive = getLiveEntryById("summarizer");
+      const writerLive = getLiveEntryById("writer");
+      const rewriterLive = getLiveEntryById("rewriter");
+      const translatorLive = getLiveEntryById("translator");
+
+      lines.push("Built-in AI assistant probe");
+      lines.push(`Runtime: ${runtimeContext.browserLabel} ${runtimeContext.channelLabel}`);
+      lines.push("");
+
+      if (promptLive && promptLive.canRunTest) {
+        lines.push("Prompt capability: callable from this page (live)");
+      } else if (promptLive && promptLive.status === "Detected but not ready") {
+        lines.push("Prompt capability: detected, but not ready in this runtime");
+      } else {
+        lines.push("Prompt capability: not available to this page");
+      }
+
+      const callable = [summarizeLive, writerLive, rewriterLive, translatorLive]
+        .filter((entry) => entry && entry.canRunTest)
+        .map((entry) => entry.name);
+
+      lines.push(`Additional callable AI tools: ${callable.length ? callable.join(", ") : "none detected"}`);
+
+      if (onDeviceModelIdentity.startsWith("Model:")) {
+        lines.push(`On-device indicator: ${onDeviceModelIdentity}`);
+      } else if (promptLive && promptLive.canRunTest) {
+        lines.push("On-device indicator: prompt API is live, but model identity is not exposed.");
+      } else {
+        lines.push("On-device indicator: no confirmed local language model in page scope.");
+      }
+
+      lines.push("");
+      lines.push("Cloud/copilot detectability from a normal webpage:");
+      lines.push("- Copilot UI presence cannot be reliably confirmed from this page.");
+      lines.push("- Exact provider routing (local vs cloud) is not fully knowable in page scope.");
+      lines.push("- You can only infer from exposed APIs, readiness, and feature behavior.");
+
+      lines.push("");
+      lines.push("Validation guidance:");
+      lines.push("1) Run Built-in AI API tests above for concrete callable interfaces.");
+      lines.push("2) Use On-device model identity probe for local model clues.");
+      lines.push("3) Compare behavior across stable/beta/canary/nightly channels.");
+
+      featureRuntimeInfo.textContent = lines.join("\n");
+    }
+
+    function tokenize(value) {
+      return (value || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .split(/\s+/)
+        .filter((token) => token.length > 2);
+    }
+
+    function sharedTokenCount(a, b) {
+      const setB = new Set(b);
+      return a.filter((token) => setB.has(token)).length;
+    }
+
+    function currentTabMeta() {
+      return {
+        id: tabContextId,
+        ts: Date.now(),
+        title: document.title,
+        path: location.pathname,
+        href: location.href
+      };
+    }
+
+    function cleanupOldPeers(maxAgeMs = 22000) {
+      const now = Date.now();
+      for (const [id, meta] of tabPeers.entries()) {
+        if (now - meta.ts > maxAgeMs) {
+          tabPeers.delete(id);
+        }
+      }
+    }
+
+    function estimateTabRisk(tabCount) {
+      if (tabCount >= 100) return "Very high (100+ tabs)";
+      if (tabCount >= 50) return "High";
+      if (tabCount >= 20) return "Moderate";
+      return "Low";
+    }
+
+    function estimateTabEnergyHint(tabCount) {
+      const baselineWhPerTabDay = 0.35;
+      const estWhDay = tabCount * baselineWhPerTabDay;
+      return `${estimateTabRisk(tabCount)} | ~${estWhDay.toFixed(1)} Wh/day (rough estimate)`;
+    }
+
+    function renderTabProbe() {
+      cleanupOldPeers();
+      const peers = [...tabPeers.values()];
+      const totalTabs = peers.length + 1;
+
+      tabCountValue.textContent = String(totalTabs);
+
+      const selfTokens = tokenize(`${document.title} ${location.pathname}`);
+      const related = peers.filter((peer) => {
+        const tokens = tokenize(`${peer.title} ${peer.path}`);
+        return sharedTokenCount(selfTokens, tokens) >= 2;
+      });
+
+      relatedTabsValue.textContent = String(related.length);
+      tabEnergyRisk.textContent = estimateTabEnergyHint(totalTabs);
+
+      if (!related.length) {
+        relatedTabsList.textContent = "No related same-origin tabs detected right now.";
+        return;
+      }
+
+      const lines = related.slice(0, 8).map((peer) => `- ${peer.title || "Untitled"} (${peer.path || ""})`);
+      relatedTabsList.textContent = lines.join("\n");
+    }
+
+    function broadcastTabMeta(kind = "ping") {
+      if (!tabContextChannel) return;
+      tabContextChannel.postMessage({ kind, ...currentTabMeta() });
+    }
+
+    function initTabContextChannel() {
+      if (!("BroadcastChannel" in window)) {
+        tabCountValue.textContent = "Unsupported";
+        relatedTabsValue.textContent = "Unsupported";
+        tabEnergyRisk.textContent = "Unsupported";
+        relatedTabsList.textContent = "BroadcastChannel is not available in this browser runtime.";
+        return;
+      }
+
+      tabContextChannel = new BroadcastChannel(tabContextChannelName);
+      tabContextChannel.onmessage = (event) => {
+        const data = event.data || {};
+        if (!data.id || data.id === tabContextId) return;
+
+        tabPeers.set(data.id, {
+          id: data.id,
+          ts: data.ts || Date.now(),
+          title: data.title || "",
+          path: data.path || "",
+          href: data.href || ""
+        });
+
+        if (data.kind === "hello") {
+          broadcastTabMeta("ack");
+        }
+
+        renderTabProbe();
+      };
+
+      broadcastTabMeta("hello");
+      setInterval(() => {
+        broadcastTabMeta("ping");
+        renderTabProbe();
+      }, 9000);
     }
 
     function renderProfile() {
@@ -983,6 +1453,29 @@
     function pickRandom(array) {
       if (!array.length) return null;
       return array[Math.floor(Math.random() * array.length)];
+    }
+
+    function paragraphCount(text) {
+      if (!text) return 0;
+      return text
+        .split(/\n\s*\n/g)
+        .map((part) => part.trim())
+        .filter(Boolean)
+        .length;
+    }
+
+    function buildSummarizationInput(promptText) {
+      const selectedDoc = pickRandom(loadedCorpusDocs);
+      if (!selectedDoc || !selectedDoc.content) return promptText;
+
+      if (paragraphCount(promptText) >= 5) return promptText;
+
+      return [
+        promptText.trim(),
+        "",
+        "Source content for analysis:",
+        selectedDoc.content.trim()
+      ].join("\n");
     }
 
     function pickRandomSubset(array, size) {
@@ -1041,8 +1534,11 @@
         button.appendChild(span);
 
         button.addEventListener("click", () => {
-          promptInput.value = button.dataset.prompt || promptInput.value;
+          const rawPrompt = button.dataset.prompt || promptInput.value;
           if (button.dataset.mode) taskType.value = button.dataset.mode;
+          promptInput.value = taskType.value === "summarize"
+            ? buildSummarizationInput(rawPrompt)
+            : rawPrompt;
           outputBox.textContent = generateResponse(promptInput.value, taskType.value, currentBrowser);
         });
 
@@ -1053,7 +1549,11 @@
     function applyRandomPromptIdea() {
       const idea = pickRandom(loadedPromptIdeas);
       if (!idea) return;
-      if (idea.prompt) promptInput.value = idea.prompt;
+      if (idea.prompt) {
+        promptInput.value = idea.mode === "summarize"
+          ? buildSummarizationInput(idea.prompt)
+          : idea.prompt;
+      }
       if (idea.mode) taskType.value = idea.mode;
 
       if (promptHint) {
@@ -1063,17 +1563,25 @@
     }
 
     async function initDynamicContent() {
-      const [promptDoc, scenarioDoc] = await Promise.all([
+      const [promptDoc, scenarioDoc, corpusDoc] = await Promise.all([
         loadYamlFile(yamlContentFiles.prompts),
-        loadYamlFile(yamlContentFiles.scenarios)
+        loadYamlFile(yamlContentFiles.scenarios),
+        loadYamlFile(yamlContentFiles.corpus)
       ]);
 
       loadedPromptIdeas = Array.isArray(promptDoc.prompts) ? promptDoc.prompts : [];
       loadedScenarios = Array.isArray(scenarioDoc.scenarios) ? scenarioDoc.scenarios : [];
+      loadedCorpusDocs = Array.isArray(corpusDoc.documents)
+        ? corpusDoc.documents
+        : [];
 
       if (loadedPromptIdeas.length) applyRandomPromptIdea();
       if (loadedScenarios.length) renderScenarioButtons(pickRandomSubset(loadedScenarios, 4));
       if (!loadedScenarios.length) renderScenarioButtons([]);
+
+      if (promptHint && loadedCorpusDocs.length) {
+        promptHint.textContent = "Tip: each summarize starter now includes a local 5+ paragraph sample text. Cut/paste your own content, edit, then rerun across browsers.";
+      }
     }
 
     function generateResponse(promptText, mode, browser) {
@@ -1550,6 +2058,10 @@
       renderBuiltInTests();
     });
     document.getElementById("runAllLocalTests").addEventListener("click", runAllAvailableLocalTests);
+    document.getElementById("runTabContextProbe").addEventListener("click", () => {
+      broadcastTabMeta("hello");
+      renderTabProbe();
+    });
 
     userAgentText.textContent = navigator.userAgent;
 
@@ -1558,6 +2070,9 @@
     renderBuiltInTests();
     initSustainabilityFooter();
     initDynamicContent();
+    renderFeatureInfo("Page summarize");
+    initTabContextChannel();
+    renderTabProbe();
   </script>
 </body>
 </html>

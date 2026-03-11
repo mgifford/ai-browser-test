@@ -17,6 +17,7 @@ It is designed for live presentations where you need to:
 - `browser-ai-configuration.html`: Guide for enabling/testing AI abilities in browser beta/nightly channels
 - `data/prompt-simulator.yml`: Randomized starter prompts and calls to action for AI Prompt Simulator
 - `data/quick-scenarios.yml`: Randomized Quick Scenarios shown on load
+- `data/sample-corpus.yml`: Local long-form source documents (5+ paragraphs) used for summarize testing
 - `LICENSE`: GNU Affero General Public License v3.0 (AGPL-3.0)
 - `.nojekyll`: Ensures GitHub Pages serves files as-is
 - `ACCESSIBILITY.md`: Accessibility commitments and checklist
@@ -31,6 +32,7 @@ It is designed for live presentations where you need to:
 - Capability matrix for AI-related browser functionality
 - Runtime-first matrix ordering where the detected browser column is shown first
 - Active browser column reflects live in-page capability status where measurable
+- Local Tab Context Probe for same-origin tab count, related-tab detection, and heuristic high-tab energy risk
 - AI prompt simulator modes:
 	- Summarize
 	- Rewrite for executive audience
@@ -92,7 +94,20 @@ You can edit sample content without touching JavaScript:
 
 1. Update [data/prompt-simulator.yml](data/prompt-simulator.yml) to add or revise starter prompts and calls to action.
 2. Update [data/quick-scenarios.yml](data/quick-scenarios.yml) to add or revise scenario cards.
-3. Reload the page to see different randomized selections.
+3. Update [data/sample-corpus.yml](data/sample-corpus.yml) with richer source text for deeper summary tests.
+4. Reload the page to see different randomized selections.
+
+For summarize mode, the app now auto-injects a random local 5+ paragraph source document when a prompt is too short.
+
+## Tab context awareness validation
+
+The demo includes a local Tab Context Probe in [index.html](index.html) that can:
+
+1. Count same-origin tabs open with the demo (via BroadcastChannel)
+2. Detect related tabs using title/path token overlap
+3. Show a heuristic high-tab energy risk hint (including 100+ tab warning)
+
+Important limitation: a normal webpage cannot enumerate all browser tabs globally. Full tab inventory requires extension-level APIs.
 
 For setup guidance before testing, use:
 
