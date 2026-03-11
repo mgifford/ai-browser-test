@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>README | AI Browser Capability Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+:root { --bg:#f3efe7; --ink:#1b2623; --muted:#4f625d; --line:rgba(26,39,35,.16); --card:rgba(255,255,255,.88); --accent:#0f5cda; }
+* { box-sizing:border-box; }
+body { margin:0; font-family:"Space Grotesk","Segoe UI",sans-serif; color:var(--ink); background:
+radial-gradient(circle at 12% 12%, rgba(236,95,63,.13), transparent 30%),
+radial-gradient(circle at 85% 18%, rgba(15,92,218,.15), transparent 28%), var(--bg); }
+.shell { width:min(980px, calc(100% - 2rem)); margin:1.2rem auto 3rem; }
+.card { border:1px solid var(--line); border-radius:16px; background:var(--card); padding:1rem 1.1rem; box-shadow:0 16px 34px rgba(20,33,29,.09); }
+.topnav { display:flex; gap:.55rem; flex-wrap:wrap; margin-bottom:.8rem; }
+.topnav a { text-decoration:none; border:1px solid var(--line); border-radius:999px; padding:.35rem .65rem; color:var(--ink); background:rgba(255,255,255,.95); font-size:.84rem; font-weight:600; }
+.topnav a:hover { text-decoration:underline; }
+.prose h1,.prose h2,.prose h3 { font-family:"Fraunces",Georgia,serif; letter-spacing:-.02em; }
+.prose h1 { margin:.2rem 0 .7rem; }
+.prose h2 { margin:1rem 0 .45rem; }
+.prose p,.prose li { line-height:1.55; }
+.prose a { color:var(--accent); }
+.prose table { width:100%; border-collapse:collapse; margin:.65rem 0; }
+.prose th,.prose td { border:1px solid var(--line); padding:.45rem .55rem; text-align:left; background:rgba(255,255,255,.92); }
+.prose code { background:rgba(20,33,29,.08); padding:.08rem .25rem; border-radius:4px; }
+.prose pre code { display:block; padding:.6rem; overflow:auto; }
+.meta { margin-top:1rem; font-size:.8rem; color:var(--muted); }
+</style>
+</head><body>
+<main class="shell"><section class="card"><nav class="topnav">
+  <a href="index.html">Main Demo</a>
+  <a href="browser-ai-configuration.html">Configuration Guide</a>
+  <a href="experiment-recipes.html">Experimentation Lab</a>
+</nav><article class="prose"><h1>AI Browser Capability Demo</h1>
+<p>Interactive single-page app to demonstrate AI-enabled browsing in Chrome, Firefox, and Edge, including runtime probes for built-in AI behavior.</p>
+<h2>What this is</h2>
+<p>This repo contains a static, front-end-only demo that works locally and on GitHub Pages.
+It is designed for live presentations where you need to:</p>
+<ul>
+<li>Compare browser AI positioning and strengths</li>
+<li>Run the same prompt flow across browser profiles</li>
+<li>Show what built-in AI browser interfaces are actually exposed at runtime</li>
+</ul>
+<h2>Project files</h2>
+<ul>
+<li><code>index.html</code>: Main UI and demo logic</li>
+<li><code>browser-ai-configuration.html</code>: Guide for enabling/testing AI abilities in browser beta/nightly channels</li>
+<li><code>experiment-recipes.html</code>: Hands-on experimentation lab with copy-ready prompts and source blocks</li>
+<li><code>data/prompt-simulator.yml</code>: Randomized starter prompts and calls to action for AI Prompt Simulator</li>
+<li><code>data/quick-scenarios.yml</code>: Randomized Quick Scenarios shown on load</li>
+<li><code>data/sample-corpus.yml</code>: Local long-form source documents (5+ paragraphs) used for summarize testing</li>
+<li><code>LICENSE</code>: GNU Affero General Public License v3.0 (AGPL-3.0)</li>
+<li><code>.nojekyll</code>: Ensures GitHub Pages serves files as-is</li>
+<li><code>ACCESSIBILITY.md</code>: Accessibility commitments and checklist</li>
+<li><code>SUSTAINABILITY.md</code>: Sustainability goals and practices</li>
+<li><code>AGENTS.md</code>: Agent workflow and repository conventions</li>
+</ul>
+<h2>Demo features</h2>
+<ul>
+<li>Browser profile switcher for Chrome, Firefox, and Edge</li>
+<li>Automatic runtime detection that highlights the currently used browser in Demo Profile</li>
+<li>Visible runtime channel chip that calls out prerelease channels (Beta/Canary/Nightly/Dev) for AI testing</li>
+<li>Capability matrix for AI-related browser functionality</li>
+<li>Runtime-first matrix ordering where the detected browser column is shown first</li>
+<li>Active browser column reflects live in-page capability status where measurable</li>
+<li>Clickable capability names with a Feature details panel and documentation links</li>
+<li>Local Tab Context Probe for same-origin tab count, related-tab detection, and heuristic high-tab energy risk</li>
+<li>AI prompt simulator modes:<ul>
+<li>Summarize</li>
+<li>Rewrite for executive audience</li>
+<li>Compare options</li>
+</ul>
+</li>
+<li>YAML-backed randomized starter prompts with different calls to action on each load</li>
+<li>Editable prompt workflow that encourages users to cut/paste and refine their own content in the textarea</li>
+<li>Scenario presets:<ul>
+<li>Randomized from YAML content pools on each load</li>
+</ul>
+</li>
+<li>Built-in AI API test panel with one-click detection for common interfaces:<ul>
+<li>Prompt API candidates</li>
+<li>Summarizer API</li>
+<li>Writer API</li>
+<li>Rewriter API</li>
+<li>Translator API</li>
+<li>Language Detector API</li>
+<li>On-device ML signals</li>
+</ul>
+</li>
+<li>Live runtime capability probe that checks API readiness state</li>
+<li>One-click local API test runners for detected and ready interfaces</li>
+<li>Built-in assistant probe for callable capabilities and local-vs-cloud observability limits</li>
+<li>On-device model identity probe (best-effort, browser-dependent)</li>
+<li>Dynamic talk track for presentation flow</li>
+<li>Responsive layout for desktop and mobile</li>
+<li>CO2.js-powered sustainability footer on HTML pages with page-weight and estimated CO2e disclosure</li>
+</ul>
+<h2>Quick start</h2>
+<p>No build step is required.</p>
+<p>Runtime dependencies:</p>
+<ul>
+<li>Google Fonts stylesheet</li>
+<li>CO2.js loaded from jsDelivr ESM CDN</li>
+<li>YAML parser loaded from jsDelivr ESM CDN</li>
+</ul>
+<p>If external CDNs are blocked/offline, the app remains usable with reduced functionality for those features.</p>
+<ol>
+<li>Clone this repository.</li>
+<li>Open <code>index.html</code> in a browser.</li>
+</ol>
+<p>Optional local server:</p>
+<pre><code class="language-bash">cd /workspaces/ai-browser-test
+python3 -m http.server 8000
+</code></pre>
+<p>Then visit <code>http://localhost:8000</code>.</p>
+<h2>Built-in browser AI tests</h2>
+<p>To compare popular browsers directly:</p>
+<ol>
+<li>Open the same hosted page in Chrome.</li>
+<li>Click <strong>Run Built-in Tests</strong> and review detected interfaces.</li>
+<li>Repeat in Firefox.</li>
+<li>Repeat in Edge.</li>
+</ol>
+<p>The results are rendered directly on the page so you can show them live.</p>
+<p>The page now includes a local AI lab that:</p>
+<ol>
+<li>Probes runtime readiness (not just global presence)</li>
+<li>Exposes per-API test buttons only when runnable</li>
+<li>Runs in-browser test calls for available built-in APIs</li>
+<li>Includes feature-level probes for built-in assistant behavior and on-device model identity</li>
+</ol>
+<h2>Customizing prompt and scenario content</h2>
+<p>You can edit sample content without touching JavaScript:</p>
+<ol>
+<li>Update <a href="data/prompt-simulator.yml">data/prompt-simulator.yml</a> to add or revise starter prompts and calls to action.</li>
+<li>Update <a href="data/quick-scenarios.yml">data/quick-scenarios.yml</a> to add or revise scenario cards.</li>
+<li>Update <a href="data/sample-corpus.yml">data/sample-corpus.yml</a> with richer source text for deeper summary tests.</li>
+<li>Reload the page to see different randomized selections.</li>
+</ol>
+<p>For summarize mode, the app now auto-injects a random local 5+ paragraph source document when a prompt is too short.</p>
+<p>For guided testing and copy-ready assets, use:</p>
+<ul>
+<li><a href="experiment-recipes.html">experiment-recipes.html</a></li>
+</ul>
+<h2>Tab context awareness validation</h2>
+<p>The demo includes a local Tab Context Probe in <a href="index.html">index.html</a> that can:</p>
+<ol>
+<li>Count same-origin tabs open with the demo (via BroadcastChannel)</li>
+<li>Detect related tabs using title/path token overlap</li>
+<li>Show a heuristic high-tab energy risk hint (including 100+ tab warning)</li>
+</ol>
+<p>Important limitation: a normal webpage cannot enumerate all browser tabs globally. Full tab inventory requires extension-level APIs.</p>
+<h2>Feature details and limits</h2>
+<p>The Feature details panel in <a href="index.html">index.html</a>:</p>
+<ol>
+<li>Explains what each capability means in practice</li>
+<li>Links to vendor docs/support pages for feature specifics</li>
+<li>Exposes local probes where available</li>
+</ol>
+<p>Important scope limits for browser-page probing:</p>
+<ul>
+<li>Exact cloud provider routing is usually not exposed to normal webpage JavaScript</li>
+<li>Model identity may be hidden even when local inference is available</li>
+<li>Assistant surface internals (for example, full Copilot UI behavior) are not fully introspectable from page scope</li>
+</ul>
+<p>For setup guidance before testing, use:</p>
+<ul>
+<li><a href="browser-ai-configuration.html">browser-ai-configuration.html</a></li>
+</ul>
+<h2>GitHub Pages deployment</h2>
+<p>This repository is ready for GitHub Pages as a static site.</p>
+<ol>
+<li>Push <code>main</code> to GitHub.</li>
+<li>In GitHub, go to <strong>Settings &gt; Pages</strong>.</li>
+<li>Under <strong>Build and deployment</strong>, choose:<ul>
+<li><strong>Source</strong>: Deploy from a branch</li>
+<li><strong>Branch</strong>: <code>main</code> / <code>/ (root)</code></li>
+</ul>
+</li>
+<li>Save and wait for publishing.</li>
+<li>Open your Pages URL and run the demo in each browser.</li>
+</ol>
+<p>No extra bundling, frameworks, or server-side code is required.</p>
+<h2>License</h2>
+<p>This project is licensed under the GNU Affero General Public License v3.0.
+See <code>LICENSE</code> for full text.</p>
+<h2>Governance and policy docs</h2>
+<ul>
+<li><a href="ACCESSIBILITY.html">ACCESSIBILITY.md</a></li>
+<li><a href="SUSTAINABILITY.html">SUSTAINABILITY.md</a></li>
+<li><a href="AGENTS.html">AGENTS.md</a></li>
+</ul>
+<h2>Research notes</h2>
+<ul>
+<li><a href="BROWSER_AI_SPECIFICS.html">BROWSER_AI_SPECIFICS.md</a></li>
+</ul>
+</article>
+<p class="meta">Rendered from README.md for GitHub Pages.</p></section></main>
+</body></html>

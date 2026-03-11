@@ -34,7 +34,6 @@ It is designed for live presentations where you need to:
 - Runtime-first matrix ordering where the detected browser column is shown first
 - Active browser column reflects live in-page capability status where measurable
 - Clickable capability names with a Feature details panel and documentation links
-- Local Tab Context Probe for same-origin tab count, related-tab detection, and heuristic high-tab energy risk
 - AI prompt simulator modes:
 	- Summarize
 	- Rewrite for executive audience
@@ -53,6 +52,7 @@ It is designed for live presentations where you need to:
 	- On-device ML signals
 - Live runtime capability probe that checks API readiness state
 - One-click local API test runners for detected and ready interfaces
+- Language Detector Playground with randomized multilingual samples and custom whole-page text testing
 - Built-in assistant probe for callable capabilities and local-vs-cloud observability limits
 - On-device model identity probe (best-effort, browser-dependent)
 - Dynamic talk track for presentation flow
@@ -116,16 +116,6 @@ For guided testing and copy-ready assets, use:
 
 - [experiment-recipes.html](experiment-recipes.html)
 
-## Tab context awareness validation
-
-The demo includes a local Tab Context Probe in [index.html](index.html) that can:
-
-1. Count same-origin tabs open with the demo (via BroadcastChannel)
-2. Detect related tabs using title/path token overlap
-3. Show a heuristic high-tab energy risk hint (including 100+ tab warning)
-
-Important limitation: a normal webpage cannot enumerate all browser tabs globally. Full tab inventory requires extension-level APIs.
-
 ## Feature details and limits
 
 The Feature details panel in [index.html](index.html):
@@ -172,3 +162,17 @@ See `LICENSE` for full text.
 ## Research notes
 
 - [BROWSER_AI_SPECIFICS.md](BROWSER_AI_SPECIFICS.md)
+
+## Rendered documentation pages
+
+GitHub Pages can serve rendered HTML versions of project docs from:
+
+- [README.html](README.html)
+- [ACCESSIBILITY.html](ACCESSIBILITY.html)
+- [SUSTAINABILITY.html](SUSTAINABILITY.html)
+- [AGENTS.html](AGENTS.html)
+- [BROWSER_AI_SPECIFICS.html](BROWSER_AI_SPECIFICS.html)
+
+If you want the source map rendered in Pages, use:
+
+- `https://mgifford.github.io/ai-browser-test/BROWSER_AI_SPECIFICS.html`

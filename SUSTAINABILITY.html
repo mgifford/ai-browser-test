@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SUSTAINABILITY | AI Browser Capability Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+:root { --bg:#f3efe7; --ink:#1b2623; --muted:#4f625d; --line:rgba(26,39,35,.16); --card:rgba(255,255,255,.88); --accent:#0f5cda; }
+* { box-sizing:border-box; }
+body { margin:0; font-family:"Space Grotesk","Segoe UI",sans-serif; color:var(--ink); background:
+radial-gradient(circle at 12% 12%, rgba(236,95,63,.13), transparent 30%),
+radial-gradient(circle at 85% 18%, rgba(15,92,218,.15), transparent 28%), var(--bg); }
+.shell { width:min(980px, calc(100% - 2rem)); margin:1.2rem auto 3rem; }
+.card { border:1px solid var(--line); border-radius:16px; background:var(--card); padding:1rem 1.1rem; box-shadow:0 16px 34px rgba(20,33,29,.09); }
+.topnav { display:flex; gap:.55rem; flex-wrap:wrap; margin-bottom:.8rem; }
+.topnav a { text-decoration:none; border:1px solid var(--line); border-radius:999px; padding:.35rem .65rem; color:var(--ink); background:rgba(255,255,255,.95); font-size:.84rem; font-weight:600; }
+.topnav a:hover { text-decoration:underline; }
+.prose h1,.prose h2,.prose h3 { font-family:"Fraunces",Georgia,serif; letter-spacing:-.02em; }
+.prose h1 { margin:.2rem 0 .7rem; }
+.prose h2 { margin:1rem 0 .45rem; }
+.prose p,.prose li { line-height:1.55; }
+.prose a { color:var(--accent); }
+.prose table { width:100%; border-collapse:collapse; margin:.65rem 0; }
+.prose th,.prose td { border:1px solid var(--line); padding:.45rem .55rem; text-align:left; background:rgba(255,255,255,.92); }
+.prose code { background:rgba(20,33,29,.08); padding:.08rem .25rem; border-radius:4px; }
+.prose pre code { display:block; padding:.6rem; overflow:auto; }
+.meta { margin-top:1rem; font-size:.8rem; color:var(--muted); }
+</style>
+</head><body>
+<main class="shell"><section class="card"><nav class="topnav">
+  <a href="index.html">Main Demo</a>
+  <a href="browser-ai-configuration.html">Configuration Guide</a>
+  <a href="experiment-recipes.html">Experimentation Lab</a>
+</nav><article class="prose"><h1>Sustainability</h1>
+<p>This project favors low-complexity, static delivery to reduce operational overhead and long-term maintenance burden.</p>
+<h2>Approach</h2>
+<ul>
+<li>No build pipeline required</li>
+<li>No runtime backend required</li>
+<li>No heavy framework dependencies</li>
+<li>Static hosting through GitHub Pages</li>
+</ul>
+<h2>Sustainability goals</h2>
+<ul>
+<li>Keep page weight and external dependencies minimal</li>
+<li>Prefer plain HTML, CSS, and JavaScript where practical</li>
+<li>Keep implementation readable for community maintenance</li>
+<li>Document deployment and governance clearly</li>
+</ul>
+<h2>Operational targets</h2>
+<ul>
+<li>Keep each HTML page transfer size under 350 KB (excluding browser cache effects)</li>
+<li>Keep third-party runtime requests to the minimum needed for demonstrable features</li>
+<li>Keep dynamic sustainability disclosure lightweight and text-first</li>
+<li>Review and refresh measured CO2/page-weight values at least quarterly</li>
+</ul>
+<h2>Measurement and reporting</h2>
+<ul>
+<li>Report page-weight and estimated CO2e in the page footer</li>
+<li>Use the SWD model through CO2.js for comparable estimates</li>
+<li>Document methodology and caveats for what is estimated vs directly measured</li>
+<li>Track notable feature additions that increase network or script cost</li>
+</ul>
+<h2>Current implementation notes</h2>
+<ul>
+<li>Static hosting via GitHub Pages remains low-overhead</li>
+<li>Runtime imports currently include:<ul>
+<li>Google Fonts</li>
+<li>YAML parser from jsDelivr</li>
+<li>CO2.js from jsDelivr</li>
+</ul>
+</li>
+<li>If these external resources are unavailable, the site degrades gracefully for affected features</li>
+</ul>
+<h2>Ongoing practices</h2>
+<ul>
+<li>Review external assets for necessity</li>
+<li>Remove unused styles or scripts</li>
+<li>Keep docs updated as features evolve</li>
+<li>Encourage contributions that improve accessibility and efficiency</li>
+<li>Prefer local or bundled alternatives when external dependencies can be reduced</li>
+<li>Avoid disabling cache for static data unless there is a clear correctness requirement</li>
+</ul>
+<h2>Related policy files</h2>
+<ul>
+<li><a href="ACCESSIBILITY.html">ACCESSIBILITY.md</a></li>
+<li><a href="AGENTS.html">AGENTS.md</a></li>
+</ul>
+<h2>Public links</h2>
+<ul>
+<li><a href="https://mgifford.github.io/ai-browser-test/ACCESSIBILITY.md">ACCESSIBILITY.md</a></li>
+<li><a href="https://mgifford.github.io/ai-browser-test/SUSTAINABILITY.md">SUSTAINABILITY.md</a></li>
+<li><a href="https://agents.md/">AGENTS.md</a></li>
+</ul>
+</article>
+<p class="meta">Rendered from SUSTAINABILITY.md for GitHub Pages.</p></section></main>
+</body></html>

@@ -481,51 +481,6 @@
       gap: 0.55rem;
     }
 
-    .context-probe {
-      margin-top: 1rem;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-md);
-      background: rgba(255, 255, 255, 0.88);
-      padding: 0.85rem;
-    }
-
-    .context-probe h3 {
-      font-size: 1.08rem;
-      margin: 0;
-    }
-
-    .context-probe-grid {
-      margin-top: 0.65rem;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.55rem;
-    }
-
-    .probe-stat {
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      padding: 0.55rem;
-      background: rgba(255, 255, 255, 0.94);
-      font-size: 0.85rem;
-    }
-
-    .probe-stat strong {
-      display: block;
-      font-size: 1rem;
-      margin-top: 0.15rem;
-    }
-
-    .probe-list {
-      margin-top: 0.65rem;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      padding: 0.6rem;
-      background: rgba(255, 255, 255, 0.9);
-      font-size: 0.85rem;
-      color: #344742;
-      min-height: 70px;
-    }
-
     .cta-secondary {
       border: 1px solid var(--line);
       background: rgba(255, 255, 255, 0.92);
@@ -867,7 +822,7 @@
 </head>
 <body>
   <main class="shell">
-    <span class="badge">Interactive Demo | AI Browsers in 2026</span>
+    <span class="badge" id="demoBadge">Interactive Demo | AI Browsers</span>
     <section class="hero">
       <article class="hero-panel">
         <h1>Showcase AI-Enabled Browsing Across Chrome, Firefox, and Edge</h1>
@@ -876,7 +831,7 @@
         </p>
         <div class="hero-links">
           <a class="hero-link" href="browser-ai-configuration.html">Configure Browser AI Abilities</a>
-          <a class="hero-link" href="BROWSER_AI_SPECIFICS.md">Vendor Feature Source Map</a>
+          <a class="hero-link" href="BROWSER_AI_SPECIFICS.html">Vendor Feature Source Map</a>
         </div>
         <div class="quick-stats" id="quickStats"></div>
       </article>
@@ -945,20 +900,19 @@
       </div>
       <div class="test-table" id="liveCapabilityResults"></div>
       <div class="output" id="liveTestOutput" aria-live="polite">Run a capability scan, then launch available local API tests from this panel.</div>
-
-      <div class="context-probe" aria-label="Tab context probe">
-        <h3>Tab Context Probe (Local)</h3>
-        <p class="tests-note">Validates what this page can learn locally about tab context. This can count same-origin tabs, but not all browser tabs unless an extension API is used.</p>
+      <section class="bench" aria-label="Language detector playground" style="margin-top:0.8rem;">
+        <h3>Language Detector Playground</h3>
+        <p class="tests-note">Pick a random multilingual sample, or paste a full page excerpt. This makes whole-page language checks explicit.</p>
+        <label for="languageSampleSelect">Sample pool</label>
+        <select id="languageSampleSelect"></select>
+        <label for="languageSampleInput">Language sample text</label>
+        <textarea id="languageSampleInput" rows="5"></textarea>
+        <p class="sim-meta" id="languageSampleMeta">Expected language: unknown</p>
         <div class="tests-actions">
-          <button class="cta-secondary" id="runTabContextProbe">Run Tab Context Probe</button>
+          <button class="cta-secondary" id="shuffleLanguageSample">Load Random Language Sample</button>
+          <button class="cta-secondary" id="runLanguageSampleTest">Run Language Detector on Sample</button>
         </div>
-        <div class="context-probe-grid">
-          <div class="probe-stat">Same-origin tabs (this site)<strong id="tabCountValue">Unknown</strong></div>
-          <div class="probe-stat">Related tabs detected<strong id="relatedTabsValue">Unknown</strong></div>
-          <div class="probe-stat">High-tab energy risk (heuristic)<strong id="tabEnergyRisk">Unknown</strong></div>
-        </div>
-        <div class="probe-list" id="relatedTabsList">Run probe to inspect same-origin related tabs.</div>
-      </div>
+      </section>
     </section>
 
     <section class="grid">
@@ -1038,7 +992,7 @@
       <div class="experiment-links">
         <a class="hero-link" href="experiment-recipes.html">Open Experimentation Lab</a>
         <a class="hero-link" href="browser-ai-configuration.html">Channel Setup Guide</a>
-        <a class="hero-link" href="BROWSER_AI_SPECIFICS.md">Feature Source Map</a>
+        <a class="hero-link" href="BROWSER_AI_SPECIFICS.html">Feature Source Map</a>
       </div>
     </section>
 
@@ -1220,20 +1174,15 @@
     const featureInfoLinks = document.getElementById("featureInfoLinks");
     const featureInfoActions = document.getElementById("featureInfoActions");
     const featureRuntimeInfo = document.getElementById("featureRuntimeInfo");
-    const tabCountValue = document.getElementById("tabCountValue");
-    const relatedTabsValue = document.getElementById("relatedTabsValue");
-    const tabEnergyRisk = document.getElementById("tabEnergyRisk");
-    const relatedTabsList = document.getElementById("relatedTabsList");
+    const demoBadge = document.getElementById("demoBadge");
+    const languageSampleSelect = document.getElementById("languageSampleSelect");
+    const languageSampleInput = document.getElementById("languageSampleInput");
+    const languageSampleMeta = document.getElementById("languageSampleMeta");
     const benchLength = document.getElementById("benchLength");
     const benchParagraphs = document.getElementById("benchParagraphs");
     const benchModeFit = document.getElementById("benchModeFit");
     const benchNotes = document.getElementById("benchNotes");
     const scenarioDebug = document.getElementById("scenarioDebug");
-
-    const tabContextChannelName = "ai-browser-tab-context-v1";
-    const tabContextId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-    const tabPeers = new Map();
-    let tabContextChannel = null;
     const channelLabels = {
       unknown: "Unknown",
       stable: "Stable",
@@ -1253,6 +1202,80 @@
     let loadedScenarios = [];
     let loadedCorpusDocs = [];
     let onDeviceModelIdentity = "Not probed";
+    const languageSamples = [
+      {
+        id: "en",
+        label: "English",
+        expected: "English (en)",
+        text: "This site explores practical browser AI testing across channels, runtimes, and real user workflows."
+      },
+      {
+        id: "fr",
+        label: "French",
+        expected: "French (fr)",
+        text: "Ce site demontre des tests d'intelligence artificielle dans le navigateur avec des resultats comparables entre versions."
+      },
+      {
+        id: "es",
+        label: "Spanish",
+        expected: "Spanish (es)",
+        text: "Esta pagina permite evaluar capacidades de IA del navegador y comparar resultados de resumen, traduccion y deteccion."
+      },
+      {
+        id: "de",
+        label: "German",
+        expected: "German (de)",
+        text: "Diese Seite zeigt, wie sich Browser-KI im Alltag testen lasst und welche Funktionen zur Laufzeit verfugbar sind."
+      },
+      {
+        id: "pt",
+        label: "Portuguese",
+        expected: "Portuguese (pt)",
+        text: "Esta pagina ajuda a validar recursos de IA no navegador com testes locais e comparacao entre canais."
+      },
+      {
+        id: "it",
+        label: "Italian",
+        expected: "Italian (it)",
+        text: "Questa pagina mostra come verificare le funzioni AI del browser con test ripetibili e risultati chiari."
+      },
+      {
+        id: "nl",
+        label: "Dutch",
+        expected: "Dutch (nl)",
+        text: "Deze pagina helpt je browser-AI functies testen met duidelijke metingen en vergelijkingen tussen kanalen."
+      },
+      {
+        id: "sv",
+        label: "Swedish",
+        expected: "Swedish (sv)",
+        text: "Den har sidan visar hur webblasarens AI kan testas lokalt med tydliga och reproducerbara resultat."
+      },
+      {
+        id: "ja",
+        label: "Japanese",
+        expected: "Japanese (ja)",
+        text: "このページでは、ブラウザーAIの機能を実行時に確認し、結果を比較できます。"
+      },
+      {
+        id: "zh",
+        label: "Chinese",
+        expected: "Chinese (zh)",
+        text: "这个页面用于测试浏览器中的人工智能能力，并比较不同通道下的检测结果。"
+      },
+      {
+        id: "ar",
+        label: "Arabic",
+        expected: "Arabic (ar)",
+        text: "تساعد هذه الصفحة في اختبار قدرات الذكاء الاصطناعي في المتصفح ومقارنة النتائج بشكل واضح."
+      },
+      {
+        id: "hi",
+        label: "Hindi",
+        expected: "Hindi (hi)",
+        text: "यह पेज ब्राउज़र एआई क्षमताओं का परीक्षण करने और अलग-अलग चैनलों की तुलना करने में मदद करता है।"
+      }
+    ];
 
     const getCellClass = (value) => {
       if (value === "Strong") return "ok";
@@ -1496,117 +1519,6 @@
       featureRuntimeInfo.textContent = lines.join("\n");
     }
 
-    function tokenize(value) {
-      return (value || "")
-        .toLowerCase()
-        .replace(/[^a-z0-9\s]/g, " ")
-        .split(/\s+/)
-        .filter((token) => token.length > 2);
-    }
-
-    function sharedTokenCount(a, b) {
-      const setB = new Set(b);
-      return a.filter((token) => setB.has(token)).length;
-    }
-
-    function currentTabMeta() {
-      return {
-        id: tabContextId,
-        ts: Date.now(),
-        title: document.title,
-        path: location.pathname,
-        href: location.href
-      };
-    }
-
-    function cleanupOldPeers(maxAgeMs = 22000) {
-      const now = Date.now();
-      for (const [id, meta] of tabPeers.entries()) {
-        if (now - meta.ts > maxAgeMs) {
-          tabPeers.delete(id);
-        }
-      }
-    }
-
-    function estimateTabRisk(tabCount) {
-      if (tabCount >= 100) return "Very high (100+ tabs)";
-      if (tabCount >= 50) return "High";
-      if (tabCount >= 20) return "Moderate";
-      return "Low";
-    }
-
-    function estimateTabEnergyHint(tabCount) {
-      const baselineWhPerTabDay = 0.35;
-      const estWhDay = tabCount * baselineWhPerTabDay;
-      return `${estimateTabRisk(tabCount)} | ~${estWhDay.toFixed(1)} Wh/day (rough estimate)`;
-    }
-
-    function renderTabProbe() {
-      cleanupOldPeers();
-      const peers = [...tabPeers.values()];
-      const totalTabs = peers.length + 1;
-
-      tabCountValue.textContent = String(totalTabs);
-
-      const selfTokens = tokenize(`${document.title} ${location.pathname}`);
-      const related = peers.filter((peer) => {
-        const tokens = tokenize(`${peer.title} ${peer.path}`);
-        return sharedTokenCount(selfTokens, tokens) >= 2;
-      });
-
-      relatedTabsValue.textContent = String(related.length);
-      tabEnergyRisk.textContent = estimateTabEnergyHint(totalTabs);
-
-      if (!related.length) {
-        relatedTabsList.textContent = "No related same-origin tabs detected right now.";
-        return;
-      }
-
-      const lines = related.slice(0, 8).map((peer) => `- ${peer.title || "Untitled"} (${peer.path || ""})`);
-      relatedTabsList.textContent = lines.join("\n");
-    }
-
-    function broadcastTabMeta(kind = "ping") {
-      if (!tabContextChannel) return;
-      tabContextChannel.postMessage({ kind, ...currentTabMeta() });
-    }
-
-    function initTabContextChannel() {
-      if (!("BroadcastChannel" in window)) {
-        tabCountValue.textContent = "Unsupported";
-        relatedTabsValue.textContent = "Unsupported";
-        tabEnergyRisk.textContent = "Unsupported";
-        relatedTabsList.textContent = "BroadcastChannel is not available in this browser runtime.";
-        return;
-      }
-
-      tabContextChannel = new BroadcastChannel(tabContextChannelName);
-      tabContextChannel.onmessage = (event) => {
-        const data = event.data || {};
-        if (!data.id || data.id === tabContextId) return;
-
-        tabPeers.set(data.id, {
-          id: data.id,
-          ts: data.ts || Date.now(),
-          title: data.title || "",
-          path: data.path || "",
-          href: data.href || ""
-        });
-
-        if (data.kind === "hello") {
-          broadcastTabMeta("ack");
-        }
-
-        renderTabProbe();
-      };
-
-      broadcastTabMeta("hello");
-      setInterval(() => {
-        broadcastTabMeta("ping");
-        renderTabProbe();
-      }, 9000);
-    }
-
     function renderProfile() {
       const profile = browserData[currentBrowser];
       browserSummary.textContent = profile.summary;
@@ -1627,9 +1539,82 @@
       });
     }
 
+    function renderDemoBadgeDate() {
+      if (!demoBadge) return;
+      const now = new Date();
+      const month = new Intl.DateTimeFormat("en-US", { month: "long" }).format(now);
+      const year = now.getFullYear();
+      demoBadge.textContent = `Interactive Demo | AI Browsers in ${month} ${year}`;
+    }
+
     function pickRandom(array) {
       if (!array.length) return null;
       return array[Math.floor(Math.random() * array.length)];
+    }
+
+    function renderLanguageSample(sample) {
+      if (!sample || !languageSampleInput || !languageSampleMeta || !languageSampleSelect) return;
+      languageSampleSelect.value = sample.id;
+      languageSampleInput.value = sample.text;
+      languageSampleMeta.textContent = `Expected language: ${sample.expected}`;
+    }
+
+    function initLanguagePlayground() {
+      if (!languageSampleSelect) return;
+      languageSampleSelect.innerHTML = "";
+
+      languageSamples.forEach((sample) => {
+        const option = document.createElement("option");
+        option.value = sample.id;
+        option.textContent = `${sample.label} sample`;
+        languageSampleSelect.appendChild(option);
+      });
+
+      const starter = pickRandom(languageSamples) || languageSamples[0];
+      renderLanguageSample(starter);
+    }
+
+    function findDetectorEntry() {
+      return liveCapabilityState.find((entry) => entry.id === "language-detector");
+    }
+
+    async function runLanguageDetectorSampleTest() {
+      const detector = findDetectorEntry();
+      const sourceText = languageSampleInput ? languageSampleInput.value.trim() : "";
+
+      if (!sourceText) {
+        liveTestOutput.textContent = "Language sample is empty. Paste text from a page or load a random sample first.";
+        return;
+      }
+
+      if (!detector || !detector.canRunTest) {
+        liveTestOutput.textContent = "Language Detector API is not runnable in this browser runtime. Click Re-scan Runtime Capability and confirm readiness first.";
+        return;
+      }
+
+      try {
+        const api = resolvePath(detector.detectedPath);
+        if (!api || typeof api.create !== "function") throw new Error("create() is unavailable");
+        const session = await api.create();
+        const result = await session.detect(sourceText);
+        if (typeof session.destroy === "function") session.destroy();
+
+        const selected = languageSamples.find((sample) => sample.id === languageSampleSelect.value);
+        const expected = selected ? selected.expected : "Custom sample";
+
+        liveTestOutput.textContent = [
+          "Language Detector sample test",
+          `Expected: ${expected}`,
+          `Input length: ${sourceText.length} chars`,
+          `Result: ${JSON.stringify(result)}`
+        ].join("\n");
+      } catch (error) {
+        liveTestOutput.textContent = [
+          "Language Detector sample test",
+          `Test failed: ${error.message}`,
+          "Tip: language detection can be exposed but gated by browser version, flags, or model readiness."
+        ].join("\n");
+      }
     }
 
     function paragraphCount(text) {
@@ -2420,26 +2405,31 @@
       renderBuiltInTests();
     });
     document.getElementById("runAllLocalTests").addEventListener("click", runAllAvailableLocalTests);
+    document.getElementById("shuffleLanguageSample").addEventListener("click", () => {
+      renderLanguageSample(pickRandom(languageSamples));
+    });
+    document.getElementById("runLanguageSampleTest").addEventListener("click", runLanguageDetectorSampleTest);
+    if (languageSampleSelect) {
+      languageSampleSelect.addEventListener("change", () => {
+        const selected = languageSamples.find((sample) => sample.id === languageSampleSelect.value);
+        renderLanguageSample(selected);
+      });
+    }
     if (channelOverride) {
       channelOverride.addEventListener("change", () => {
         applyDetectedRuntimeToProfile();
       });
     }
-    document.getElementById("runTabContextProbe").addEventListener("click", () => {
-      broadcastTabMeta("hello");
-      renderTabProbe();
-    });
-
     userAgentText.textContent = navigator.userAgent;
 
     renderMatrix();
+    renderDemoBadgeDate();
     applyDetectedRuntimeToProfile();
     renderBuiltInTests();
     initSustainabilityFooter();
     initDynamicContent();
+    initLanguagePlayground();
     renderFeatureInfo("Page summarize");
-    initTabContextChannel();
-    renderTabProbe();
   </script>
 </body>
 </html>

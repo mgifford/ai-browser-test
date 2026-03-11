@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BROWSER AI SPECIFICS | AI Browser Capability Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+:root { --bg:#f3efe7; --ink:#1b2623; --muted:#4f625d; --line:rgba(26,39,35,.16); --card:rgba(255,255,255,.88); --accent:#0f5cda; }
+* { box-sizing:border-box; }
+body { margin:0; font-family:"Space Grotesk","Segoe UI",sans-serif; color:var(--ink); background:
+radial-gradient(circle at 12% 12%, rgba(236,95,63,.13), transparent 30%),
+radial-gradient(circle at 85% 18%, rgba(15,92,218,.15), transparent 28%), var(--bg); }
+.shell { width:min(980px, calc(100% - 2rem)); margin:1.2rem auto 3rem; }
+.card { border:1px solid var(--line); border-radius:16px; background:var(--card); padding:1rem 1.1rem; box-shadow:0 16px 34px rgba(20,33,29,.09); }
+.topnav { display:flex; gap:.55rem; flex-wrap:wrap; margin-bottom:.8rem; }
+.topnav a { text-decoration:none; border:1px solid var(--line); border-radius:999px; padding:.35rem .65rem; color:var(--ink); background:rgba(255,255,255,.95); font-size:.84rem; font-weight:600; }
+.topnav a:hover { text-decoration:underline; }
+.prose h1,.prose h2,.prose h3 { font-family:"Fraunces",Georgia,serif; letter-spacing:-.02em; }
+.prose h1 { margin:.2rem 0 .7rem; }
+.prose h2 { margin:1rem 0 .45rem; }
+.prose p,.prose li { line-height:1.55; }
+.prose a { color:var(--accent); }
+.prose table { width:100%; border-collapse:collapse; margin:.65rem 0; }
+.prose th,.prose td { border:1px solid var(--line); padding:.45rem .55rem; text-align:left; background:rgba(255,255,255,.92); }
+.prose code { background:rgba(20,33,29,.08); padding:.08rem .25rem; border-radius:4px; }
+.prose pre code { display:block; padding:.6rem; overflow:auto; }
+.meta { margin-top:1rem; font-size:.8rem; color:var(--muted); }
+</style>
+</head><body>
+<main class="shell"><section class="card"><nav class="topnav">
+  <a href="index.html">Main Demo</a>
+  <a href="browser-ai-configuration.html">Configuration Guide</a>
+  <a href="experiment-recipes.html">Experimentation Lab</a>
+</nav><article class="prose"><h1>Browser AI Specifics: Source Map</h1>
+<p>Last updated: 2026-03-11</p>
+<p>This document maps high-level vendor announcements to the places where concrete feature behavior and implementation details are described.</p>
+<h2>Input links (announcement and feature pages)</h2>
+<ul>
+<li>Mozilla: <a href="https://blog.mozilla.org/en/firefox/ai-window/">https://blog.mozilla.org/en/firefox/ai-window/</a></li>
+<li>Mozilla leadership post: <a href="https://blog.mozilla.org/en/mozilla/leadership/mozillas-next-chapter-anthony-enzor-demeo-new-ceo/">https://blog.mozilla.org/en/mozilla/leadership/mozillas-next-chapter-anthony-enzor-demeo-new-ceo/</a></li>
+<li>Google Chrome AI landing: <a href="https://www.google.com/chrome/ai-innovations/">https://www.google.com/chrome/ai-innovations/</a></li>
+<li>Google Gemini 3 in Chrome post: <a href="https://blog.google/products-and-platforms/products/chrome/gemini-3-auto-browse/">https://blog.google/products-and-platforms/products/chrome/gemini-3-auto-browse/</a></li>
+<li>Microsoft Edge AI landing: <a href="https://www.microsoft.com/en-us/edge/features/ai?form=MT0160">https://www.microsoft.com/en-us/edge/features/ai?form=MT0160</a></li>
+<li>Microsoft Edge Copilot landing: <a href="https://www.microsoft.com/en-us/edge/features/copilot?form=MT0160">https://www.microsoft.com/en-us/edge/features/copilot?form=MT0160</a></li>
+</ul>
+<h2>Where the actual specifics are documented</h2>
+<h3>Mozilla (Firefox)</h3>
+<p>Primary specifics:</p>
+<ul>
+<li>Firefox AI support article: <a href="https://support.mozilla.org/kb/ai-chatbot">https://support.mozilla.org/kb/ai-chatbot</a></li>
+<li>Firefox AI controls article: <a href="https://blog.mozilla.org/en/firefox/how-to-use-ai-controls/">https://blog.mozilla.org/en/firefox/how-to-use-ai-controls/</a></li>
+<li>Firefox AI product page: <a href="https://www.firefox.com/en-US/ai/">https://www.firefox.com/en-US/ai/</a></li>
+</ul>
+<p>What these pages provide:</p>
+<ul>
+<li>User-facing setup and control behavior (how to enable/disable AI features)</li>
+<li>Privacy and control framing for AI interactions</li>
+<li>Product positioning and current availability direction</li>
+</ul>
+<h3>Google (Chrome)</h3>
+<p>Primary specifics:</p>
+<ul>
+<li>Chrome AI docs index: <a href="https://developer.chrome.com/docs/ai">https://developer.chrome.com/docs/ai</a></li>
+<li>Prompt API docs: <a href="https://developer.chrome.com/docs/ai/prompt-api">https://developer.chrome.com/docs/ai/prompt-api</a></li>
+<li>Summarizer API docs: <a href="https://developer.chrome.com/docs/ai/summarizer-api">https://developer.chrome.com/docs/ai/summarizer-api</a></li>
+<li>Translator API docs: <a href="https://developer.chrome.com/docs/ai/translator-api">https://developer.chrome.com/docs/ai/translator-api</a></li>
+<li>Language detection docs: <a href="https://developer.chrome.com/docs/ai/language-detection">https://developer.chrome.com/docs/ai/language-detection</a></li>
+<li>End-user Gemini in Chrome help: <a href="https://support.google.com/chrome?p=gemini_in_chrome#topic=7439538">https://support.google.com/chrome?p=gemini_in_chrome#topic=7439538</a></li>
+</ul>
+<p>What these pages provide:</p>
+<ul>
+<li>API surface names and usage patterns for built-in AI in Chrome</li>
+<li>Capability-specific pages (prompting, summarizing, translation, language detection)</li>
+<li>Developer-focused implementation guidance and launch context</li>
+<li>End-user setup/help path for Gemini experiences in Chrome</li>
+</ul>
+<h3>Microsoft (Edge)</h3>
+<p>Primary specifics:</p>
+<ul>
+<li>Edge AI feature page: <a href="https://www.microsoft.com/en-us/edge/features/ai?form=MT0160">https://www.microsoft.com/en-us/edge/features/ai?form=MT0160</a></li>
+<li>Edge Copilot feature page: <a href="https://www.microsoft.com/en-us/edge/features/copilot?form=MT0160">https://www.microsoft.com/en-us/edge/features/copilot?form=MT0160</a></li>
+<li>Copilot Vision support article: <a href="https://support.microsoft.com/en-us/topic/using-copilot-vision-with-microsoft-copilot-3c67686f-fa97-40f6-8a3e-0e45265d425f">https://support.microsoft.com/en-us/topic/using-copilot-vision-with-microsoft-copilot-3c67686f-fa97-40f6-8a3e-0e45265d425f</a></li>
+</ul>
+<p>What these pages provide:</p>
+<ul>
+<li>User-facing feature descriptions for AI browser workflows in Edge</li>
+<li>Copilot-focused browsing and assistance capabilities</li>
+<li>Concrete support guidance for Copilot Vision usage</li>
+</ul>
+<h2>Practical takeaway for this repository</h2>
+<p>For the demo in <a href="index.html">index.html</a>, treat announcement pages as narrative context and use the documentation/support pages above as the canonical references for feature specifics.</p>
+<p>A good presentation flow is:</p>
+<ol>
+<li>Show the announcement page for direction and messaging.</li>
+<li>Show the specific docs/support page for concrete behavior.</li>
+<li>Run the built-in test panel in the demo to validate what is actually exposed in the current browser runtime.</li>
+</ol>
+<p>Current implementation tie-ins:</p>
+<ul>
+<li>Capability matrix uses runtime-first ordering and live status for the active browser column</li>
+<li>Feature details panel links each capability to supporting references</li>
+<li>Built-in assistant and on-device model probes provide local observability signals</li>
+<li>Tab Context Probe validates same-origin tab awareness limits from page scope</li>
+</ul>
+<h2>Caveats</h2>
+<ul>
+<li>Vendor pages change frequently, and some details move between docs, support, and marketing pages.</li>
+<li>Feature availability can vary by browser version, channel, geography, account, and experiment flags.</li>
+<li>This source map should be reviewed periodically for moved URLs and updated API naming.</li>
+</ul>
+<h2>Link maintenance checklist</h2>
+<ul>
+<li>Re-validate URLs every quarter or before major demos</li>
+<li>Replace moved support pages with canonical current endpoints</li>
+<li>Note when a source is marketing-only vs implementation-specific</li>
+<li>Keep <a href="README.html">README.md</a> and feature-detail links in sync with this map</li>
+</ul>
+</article>
+<p class="meta">Rendered from BROWSER_AI_SPECIFICS.md for GitHub Pages.</p></section></main>
+</body></html>
