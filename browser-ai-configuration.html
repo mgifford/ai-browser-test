@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configure Browser AI Abilities</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4f1e8;
+      --ink: #192420;
+      --muted: #4c625b;
+      --card: rgba(255, 255, 255, 0.82);
+      --line: rgba(20, 34, 30, 0.14);
+      --accent: #1662d8;
+      --accent-2: #e35c31;
+      --ok: #0f5f4f;
+      --warn: #8a5a0c;
+      --shadow: 0 16px 36px rgba(19, 34, 30, 0.1);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 15% 8%, rgba(227, 92, 49, 0.15), transparent 30%),
+        radial-gradient(circle at 85% 18%, rgba(22, 98, 216, 0.16), transparent 28%),
+        radial-gradient(circle at 74% 84%, rgba(31, 131, 107, 0.15), transparent 26%),
+        var(--bg);
+      color: var(--ink);
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    .shell {
+      width: min(1100px, calc(100% - 2rem));
+      margin: 1.4rem auto 3rem;
+    }
+
+    .banner,
+    .section,
+    .table-wrap {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .banner {
+      padding: 1.1rem 1.2rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.35rem 0.7rem;
+      background: rgba(255, 255, 255, 0.86);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-family: "Fraunces", Georgia, serif;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      margin-top: 0.6rem;
+      font-size: clamp(1.7rem, 4vw, 2.75rem);
+      line-height: 1.08;
+    }
+
+    p {
+      margin: 0.75rem 0 0;
+      color: var(--muted);
+    }
+
+    .top-links {
+      margin-top: 0.9rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+    }
+
+    .link-chip {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.38rem 0.75rem;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.86rem;
+    }
+
+    .layout {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .section {
+      padding: 1rem;
+    }
+
+    .section h2 {
+      font-size: 1.45rem;
+    }
+
+    .meta {
+      margin-top: 0.3rem;
+      font-size: 0.88rem;
+    }
+
+    ol,
+    ul {
+      margin: 0.75rem 0 0;
+      padding-left: 1.2rem;
+    }
+
+    li {
+      margin: 0.45rem 0;
+    }
+
+    .table-wrap {
+      margin-top: 1rem;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      padding: 0.65rem 0.68rem;
+      text-align: left;
+      vertical-align: top;
+      background: rgba(255, 255, 255, 0.76);
+    }
+
+    th:last-child,
+    td:last-child {
+      border-right: none;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .status-ok {
+      color: var(--ok);
+      font-weight: 700;
+    }
+
+    .status-warn {
+      color: var(--warn);
+      font-weight: 700;
+    }
+
+    .note {
+      margin-top: 0.9rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 0.75rem;
+      color: #32443f;
+      font-size: 0.9rem;
+    }
+
+    .footer-links {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+    }
+
+    .footer-links a {
+      color: var(--accent);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .footer-links a:hover,
+    .link-chip:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="banner">
+      <span class="badge">Browser Setup Guide</span>
+      <h1>Configure Browser Channels to Unlock More AI Abilities</h1>
+      <p>
+        Use this page to show people how to move from stable releases to Beta or Nightly/Canary builds where AI features usually appear first.
+      </p>
+      <div class="top-links">
+        <a class="link-chip" href="https://www.google.com/intl/en_ca/chrome/canary/" target="_blank" rel="noopener noreferrer">Chrome Canary</a>
+        <a class="link-chip" href="https://www.google.com/chrome/beta/" target="_blank" rel="noopener noreferrer">Chrome Beta</a>
+        <a class="link-chip" href="https://www.firefox.com/en-CA/channel/desktop/" target="_blank" rel="noopener noreferrer">Firefox Desktop Channels</a>
+        <a class="link-chip" href="index.html">Back to Demo</a>
+      </div>
+    </section>
+
+    <section class="layout">
+      <article class="section">
+        <h2>Chrome: Beta and Canary</h2>
+        <p class="meta">Best for seeing new built-in AI APIs early.</p>
+        <ol>
+          <li>Install Chrome Beta or Chrome Canary from the links above.</li>
+          <li>Open <strong>chrome://version</strong> and confirm you are not on stable.</li>
+          <li>Open <strong>chrome://flags</strong> and search for AI-related entries.</li>
+          <li>Enable relevant experimental features, then relaunch.</li>
+          <li>Open <a href="index.html">the demo page</a> and run <strong>Built-in AI API Tests</strong>.</li>
+        </ol>
+        <div class="note">
+          Flag names and availability can change quickly between builds. Use the built-in test panel in this repo as the source of truth for what is active in your current runtime.
+        </div>
+      </article>
+
+      <article class="section">
+        <h2>Firefox: Beta and Nightly</h2>
+        <p class="meta">Best for testing incoming Firefox AI controls and experiments.</p>
+        <ol>
+          <li>From Firefox desktop channels, install Beta or Nightly.</li>
+          <li>Open <strong>about:support</strong> to verify channel and build version.</li>
+          <li>Open Firefox settings and review experimental/Labs features where available.</li>
+          <li>Use AI controls to opt in or customize behavior for sidebar/chat surfaces.</li>
+          <li>Open <a href="index.html">the demo page</a> and run <strong>Built-in AI API Tests</strong>.</li>
+        </ol>
+        <div class="note">
+          Firefox emphasizes user control and privacy framing. Expect feature rollouts and labels to vary by region, account status, and channel maturity.
+        </div>
+      </article>
+    </section>
+
+    <section class="table-wrap">
+      <table aria-label="Channel comparison for AI testing">
+        <thead>
+          <tr>
+            <th>Browser Track</th>
+            <th>Release Speed</th>
+            <th>AI Experiment Access</th>
+            <th>Best Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Chrome Stable</td>
+            <td>Slowest</td>
+            <td class="status-warn">Limited</td>
+            <td>Baseline and production comparison</td>
+          </tr>
+          <tr>
+            <td>Chrome Beta</td>
+            <td>Fast</td>
+            <td class="status-ok">Good</td>
+            <td>Pre-release demos with moderate stability</td>
+          </tr>
+          <tr>
+            <td>Chrome Canary</td>
+            <td>Fastest</td>
+            <td class="status-ok">Highest</td>
+            <td>Earliest AI capability exploration</td>
+          </tr>
+          <tr>
+            <td>Firefox Release</td>
+            <td>Slowest</td>
+            <td class="status-warn">Limited</td>
+            <td>General audience baseline</td>
+          </tr>
+          <tr>
+            <td>Firefox Beta</td>
+            <td>Fast</td>
+            <td class="status-ok">Good</td>
+            <td>Near-release AI controls testing</td>
+          </tr>
+          <tr>
+            <td>Firefox Nightly</td>
+            <td>Fastest</td>
+            <td class="status-ok">Highest</td>
+            <td>Early feature and experiment validation</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" style="margin-top: 1rem;">
+      <h2>How to Show This to People During a Demo</h2>
+      <ol>
+        <li>Open this page first and walk through channel setup.</li>
+        <li>Open the main demo in each installed browser channel.</li>
+        <li>Run the built-in test panel and compare results side by side.</li>
+        <li>Capture screenshots of each channel so differences are visible in reports.</li>
+      </ol>
+      <div class="footer-links">
+        <a href="index.html">Main AI Browser Demo</a>
+        <a href="BROWSER_AI_SPECIFICS.md">Source Map for Claimed Features</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

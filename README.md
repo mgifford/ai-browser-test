@@ -14,6 +14,7 @@ It is designed for live presentations where you need to:
 ## Project files
 
 - `index.html`: Main UI and demo logic
+- `browser-ai-configuration.html`: Guide for enabling/testing AI abilities in browser beta/nightly channels
 - `LICENSE`: GNU Affero General Public License v3.0 (AGPL-3.0)
 - `.nojekyll`: Ensures GitHub Pages serves files as-is
 - `ACCESSIBILITY.md`: Accessibility commitments and checklist
@@ -71,6 +72,10 @@ To compare popular browsers directly:
 
 The results are rendered directly on the page so you can show them live.
 
+For setup guidance before testing, use:
+
+- [browser-ai-configuration.html](browser-ai-configuration.html)
+
 ## GitHub Pages deployment
 
 This repository is ready for GitHub Pages as a static site.
@@ -95,3 +100,7 @@ See `LICENSE` for full text.
 - [ACCESSIBILITY.md](ACCESSIBILITY.md)
 - [SUSTAINABILITY.md](SUSTAINABILITY.md)
 - [AGENTS.md](AGENTS.md)
+
+## Research notes
+
+- [BROWSER_AI_SPECIFICS.md](BROWSER_AI_SPECIFICS.md)

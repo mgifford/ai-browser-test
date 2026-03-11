@@ -125,6 +125,30 @@
       font-size: 0.88rem;
     }
 
+    .hero-links {
+      margin-top: 0.8rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+    }
+
+    .hero-link {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.4rem 0.72rem;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.84rem;
+    }
+
+    .hero-link:hover {
+      text-decoration: underline;
+    }
+
     .browser-panel {
       padding: 1rem;
       display: flex;
@@ -554,6 +578,10 @@
         <p class="subtitle">
           This page is designed for live demos. Pick a browser profile, run AI prompts, and walk through side-by-side capability differences in a way that is easy to explain to teams.
         </p>
+        <div class="hero-links">
+          <a class="hero-link" href="browser-ai-configuration.html">Configure Browser AI Abilities</a>
+          <a class="hero-link" href="BROWSER_AI_SPECIFICS.md">Vendor Feature Source Map</a>
+        </div>
         <div class="quick-stats" id="quickStats"></div>
       </article>
 
