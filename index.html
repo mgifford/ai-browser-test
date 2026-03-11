@@ -1,0 +1,955 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Browser Capability Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f2efe7;
+      --ink: #18211f;
+      --muted: #50615c;
+      --card: rgba(255, 255, 255, 0.72);
+      --line: rgba(22, 32, 30, 0.14);
+      --accent: #ec5f3f;
+      --accent-2: #2b7f6d;
+      --accent-3: #0f5cda;
+      --chrome: #4285f4;
+      --firefox: #ff7139;
+      --edge: #0aa7ad;
+      --shadow: 0 20px 40px rgba(17, 31, 28, 0.1);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 12%, rgba(236, 95, 63, 0.2), transparent 26%),
+        radial-gradient(circle at 80% 14%, rgba(15, 92, 218, 0.16), transparent 24%),
+        radial-gradient(circle at 70% 82%, rgba(43, 127, 109, 0.16), transparent 28%),
+        var(--bg);
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      line-height: 1.45;
+      overflow-x: hidden;
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 2rem));
+      margin: 2rem auto 4rem;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(24, 33, 31, 0.18);
+      backdrop-filter: blur(4px);
+      background: rgba(255, 255, 255, 0.52);
+      font-size: 0.79rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 1.2rem;
+      margin-top: 1rem;
+      animation: reveal 700ms ease both;
+    }
+
+    .hero-panel,
+    .browser-panel,
+    .tests,
+    .simulator,
+    .scenario,
+    .log {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-panel {
+      padding: 1.2rem;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "Fraunces", Georgia, serif;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      margin-top: 0.6rem;
+      font-size: clamp(1.8rem, 4.1vw, 3rem);
+      line-height: 1.05;
+    }
+
+    .subtitle {
+      margin-top: 0.8rem;
+      color: var(--muted);
+      max-width: 65ch;
+    }
+
+    .quick-stats {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+    }
+
+    .stat {
+      padding: 0.55rem 0.8rem;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid var(--line);
+      font-size: 0.88rem;
+    }
+
+    .browser-panel {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      animation: reveal 850ms ease both;
+    }
+
+    .browser-group {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.55rem;
+    }
+
+    .browser-btn {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--ink);
+      padding: 0.7rem;
+      font: inherit;
+      cursor: pointer;
+      text-align: left;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .browser-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(20, 31, 28, 0.08);
+    }
+
+    .browser-btn.active {
+      border-color: var(--focus-color);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--focus-color) 28%, transparent);
+      background: color-mix(in srgb, var(--focus-color) 12%, white);
+    }
+
+    .browser-btn small {
+      display: block;
+      color: var(--muted);
+      margin-top: 0.2rem;
+      font-size: 0.77rem;
+    }
+
+    .swatch {
+      display: inline-block;
+      width: 0.65rem;
+      height: 0.65rem;
+      border-radius: 50%;
+      margin-right: 0.4rem;
+      vertical-align: middle;
+    }
+
+    .matrix {
+      margin-top: 1.4rem;
+      display: grid;
+      grid-template-columns: 1.2fr repeat(3, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      animation: reveal 1000ms ease both;
+    }
+
+    .cell {
+      padding: 0.72rem 0.75rem;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.65);
+      font-size: 0.93rem;
+    }
+
+    .cell.head {
+      background: rgba(255, 255, 255, 0.88);
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .cell.feature {
+      font-weight: 500;
+    }
+
+    .cell:nth-child(4n) {
+      border-right: none;
+    }
+
+    .cell.ok {
+      color: #0f5f4f;
+      font-weight: 700;
+    }
+
+    .cell.warn {
+      color: #8a5a0c;
+      font-weight: 700;
+    }
+
+    .cell.no {
+      color: #7f3f3f;
+      font-weight: 700;
+    }
+
+    .cell:last-child,
+    .cell:nth-last-child(2),
+    .cell:nth-last-child(3),
+    .cell:nth-last-child(4) {
+      border-bottom: none;
+    }
+
+    .tests {
+      margin-top: 1.4rem;
+      padding: 1rem;
+      animation: reveal 1050ms ease both;
+    }
+
+    .tests-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .tests-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .ua {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.3rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.84);
+      color: var(--muted);
+      font-size: 0.78rem;
+      max-width: min(530px, 100%);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tests-note {
+      margin: 0.7rem 0 0;
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    .test-table {
+      margin-top: 0.75rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .test-row {
+      display: grid;
+      grid-template-columns: 1.2fr 0.45fr 1.35fr;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.82);
+    }
+
+    .test-row:last-child {
+      border-bottom: none;
+    }
+
+    .test-cell {
+      padding: 0.62rem 0.7rem;
+      border-right: 1px solid var(--line);
+      font-size: 0.9rem;
+    }
+
+    .test-row .test-cell:last-child {
+      border-right: none;
+    }
+
+    .test-head {
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.94);
+    }
+
+    .status {
+      font-weight: 700;
+    }
+
+    .status.ok {
+      color: #0f5f4f;
+    }
+
+    .status.no {
+      color: #7f3f3f;
+    }
+
+    .test-meta {
+      margin-top: 0.65rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .grid {
+      margin-top: 1.4rem;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1.1rem;
+    }
+
+    .simulator,
+    .scenario,
+    .log {
+      padding: 1rem;
+      animation: reveal 1.1s ease both;
+    }
+
+    .sim-header,
+    .scenario-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .sim-meta {
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    textarea,
+    select,
+    button,
+    input {
+      font: inherit;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 98px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      padding: 0.75rem;
+      resize: vertical;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--ink);
+    }
+
+    .control-row {
+      margin-top: 0.7rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.65rem;
+      align-items: end;
+    }
+
+    .pill-select {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.35rem 0.6rem;
+      background: rgba(255, 255, 255, 0.9);
+      font-size: 0.85rem;
+    }
+
+    .pill-select select {
+      border: none;
+      background: transparent;
+      color: var(--ink);
+      outline: none;
+    }
+
+    .cta {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 12px;
+      padding: 0.68rem 0.95rem;
+      cursor: pointer;
+      transition: transform 0.15s ease, filter 0.15s ease;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .cta:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.06);
+    }
+
+    .output {
+      margin-top: 0.9rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 0.8rem;
+      background: rgba(255, 255, 255, 0.88);
+      min-height: 102px;
+      white-space: pre-wrap;
+    }
+
+    .scenario-grid {
+      margin-top: 0.8rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.6rem;
+    }
+
+    .scenario-btn {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.8);
+      text-align: left;
+      padding: 0.7rem;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .scenario-btn:hover {
+      background: rgba(255, 255, 255, 0.95);
+      transform: translateX(2px);
+    }
+
+    .scenario-btn span {
+      display: block;
+      color: var(--muted);
+      margin-top: 0.22rem;
+      font-size: 0.84rem;
+    }
+
+    .log {
+      margin-top: 1rem;
+      animation: reveal 1.2s ease both;
+    }
+
+    .timeline {
+      margin: 0;
+      padding-left: 1.2rem;
+    }
+
+    .timeline li {
+      margin: 0.42rem 0;
+      color: #32413d;
+    }
+
+    .hint {
+      margin-top: 0.85rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    @keyframes reveal {
+      from {
+        opacity: 0;
+        transform: translateY(9px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 920px) {
+      .hero,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .matrix {
+        grid-template-columns: 1.2fr repeat(3, minmax(92px, 1fr));
+        font-size: 0.88rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        width: min(1120px, calc(100% - 1rem));
+        margin-top: 1rem;
+      }
+
+      .browser-group {
+        grid-template-columns: 1fr;
+      }
+
+      .control-row {
+        grid-template-columns: 1fr;
+      }
+
+      .cta {
+        width: 100%;
+      }
+
+      .matrix {
+        overflow-x: auto;
+        display: block;
+        white-space: nowrap;
+      }
+
+      .matrix .cell {
+        display: inline-block;
+        min-width: 33%;
+        white-space: normal;
+        vertical-align: top;
+      }
+
+      .test-row {
+        grid-template-columns: 1fr;
+      }
+
+      .test-cell {
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .test-row .test-cell:last-child {
+        border-bottom: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <span class="badge">Interactive Demo | AI Browsers in 2026</span>
+    <section class="hero">
+      <article class="hero-panel">
+        <h1>Showcase AI-Enabled Browsing Across Chrome, Firefox, and Edge</h1>
+        <p class="subtitle">
+          This page is designed for live demos. Pick a browser profile, run AI prompts, and walk through side-by-side capability differences in a way that is easy to explain to teams.
+        </p>
+        <div class="quick-stats" id="quickStats"></div>
+      </article>
+
+      <aside class="browser-panel" id="browserPanel">
+        <h3>Demo Profile</h3>
+        <div class="browser-group">
+          <button class="browser-btn active" data-browser="chrome" style="--focus-color: var(--chrome)">
+            <strong><span class="swatch" style="background: var(--chrome)"></span>Chrome</strong>
+            <small>Gemini/Nano-powered surface areas</small>
+          </button>
+          <button class="browser-btn" data-browser="firefox" style="--focus-color: var(--firefox)">
+            <strong><span class="swatch" style="background: var(--firefox)"></span>Firefox</strong>
+            <small>Privacy-forward AI integrations</small>
+          </button>
+          <button class="browser-btn" data-browser="edge" style="--focus-color: var(--edge)">
+            <strong><span class="swatch" style="background: var(--edge)"></span>Edge</strong>
+            <small>Copilot and sidebar workflows</small>
+          </button>
+        </div>
+        <p class="sim-meta" id="browserSummary"></p>
+      </aside>
+    </section>
+
+    <section class="matrix" id="capabilityMatrix" aria-label="Capability matrix"></section>
+
+    <section class="tests" aria-label="Built-in AI browser API tests">
+      <div class="tests-header">
+        <h2>Built-in AI API Tests</h2>
+        <div class="tests-controls">
+          <button class="cta" id="runTests">Run Built-in Tests</button>
+          <span class="ua" id="userAgentText"></span>
+        </div>
+      </div>
+      <p class="tests-note">
+        Open this same page in Chrome, Firefox, and Edge, then click "Run Built-in Tests" in each browser to see which native AI interfaces are actually exposed.
+      </p>
+      <div class="test-table" id="testResults"></div>
+      <p class="test-meta" id="testsLastRun">Not run yet.</p>
+    </section>
+
+    <section class="grid">
+      <article class="simulator">
+        <div class="sim-header">
+          <h2>AI Prompt Simulator</h2>
+          <span class="sim-meta">No backend required</span>
+        </div>
+
+        <label for="promptInput">Prompt or page excerpt</label>
+        <textarea id="promptInput">Summarize this page and list three actions I should take next.</textarea>
+
+        <div class="control-row">
+          <label class="pill-select" for="taskType">
+            Mode
+            <select id="taskType">
+              <option value="summarize">Summarize</option>
+              <option value="rewrite">Rewrite for executive audience</option>
+              <option value="compare">Compare options</option>
+            </select>
+          </label>
+          <button class="cta" id="runPrompt">Run AI Demo</button>
+        </div>
+
+        <div class="output" id="outputBox" aria-live="polite">Press "Run AI Demo" to generate a browser-specific response.</div>
+        <p class="hint">Tip: switch browser profile, then run the same prompt again to demonstrate different positioning and strengths.</p>
+      </article>
+
+      <aside class="scenario">
+        <div class="scenario-header">
+          <h2>Quick Scenarios</h2>
+        </div>
+
+        <div class="scenario-grid">
+          <button class="scenario-btn" data-seed="shopping">
+            Shopping Assistant
+            <span>Compare products, summarize reviews, highlight tradeoffs.</span>
+          </button>
+          <button class="scenario-btn" data-seed="research">
+            Research Sprint
+            <span>Extract insights from multiple tabs and create an outline.</span>
+          </button>
+          <button class="scenario-btn" data-seed="accessibility">
+            Accessibility Check
+            <span>Generate alt text and flag readability issues.</span>
+          </button>
+          <button class="scenario-btn" data-seed="security">
+            Security Posture Review
+            <span>Identify suspicious patterns and suggest safer actions.</span>
+          </button>
+        </div>
+      </aside>
+    </section>
+
+    <section class="log">
+      <h2>Suggested Talk Track</h2>
+      <ol class="timeline" id="talkTrack"></ol>
+    </section>
+  </main>
+
+  <script>
+    const browserData = {
+      chrome: {
+        label: "Chrome",
+        summary: "Balanced AI workflows with strong ecosystem integrations and frequent model updates.",
+        color: "var(--chrome)",
+        features: {
+          "Built-in AI assistant": "Strong",
+          "Page summarize": "Strong",
+          "Tab context awareness": "Strong",
+          "On-device model options": "Strong",
+          "Privacy controls": "Medium",
+          "Enterprise policy controls": "Strong"
+        },
+        stats: ["Fast release cadence", "Best for broad compatibility", "Strong extension ecosystem"],
+        talkTrack: [
+          "Open with Chrome to demonstrate broad compatibility and frequent feature delivery.",
+          "Run summarize mode to show quick digest behavior on long pages.",
+          "Switch to compare mode to highlight decision support in shopping/research scenarios.",
+          "Mention policy tooling for managed deployments in enterprise settings."
+        ],
+        voice: "Crisp and productivity-oriented"
+      },
+      firefox: {
+        label: "Firefox",
+        summary: "Privacy-first approach with AI features framed around transparency and user control.",
+        color: "var(--firefox)",
+        features: {
+          "Built-in AI assistant": "Medium",
+          "Page summarize": "Medium",
+          "Tab context awareness": "Medium",
+          "On-device model options": "Emerging",
+          "Privacy controls": "Strong",
+          "Enterprise policy controls": "Medium"
+        },
+        stats: ["Strong privacy story", "Open-web friendly narrative", "Good for governance discussions"],
+        talkTrack: [
+          "Start with Firefox when your audience prioritizes privacy and transparency.",
+          "Use rewrite mode to show safe, controlled output for communication tasks.",
+          "Call out consent and data-handling choices to reinforce trust posture.",
+          "Position Firefox as a pragmatic option for policy-sensitive environments."
+        ],
+        voice: "Transparent and control-focused"
+      },
+      edge: {
+        label: "Edge",
+        summary: "Copilot-centric workflows with strong Microsoft 365 alignment and enterprise positioning.",
+        color: "var(--edge)",
+        features: {
+          "Built-in AI assistant": "Strong",
+          "Page summarize": "Strong",
+          "Tab context awareness": "Strong",
+          "On-device model options": "Medium",
+          "Privacy controls": "Medium",
+          "Enterprise policy controls": "Strong"
+        },
+        stats: ["Tight M365 integration", "Great for enterprise demos", "Clear assistant UX"],
+        talkTrack: [
+          "Use Edge to emphasize AI assistance embedded in day-to-day work.",
+          "Demonstrate summarize and compare in business decision workflows.",
+          "Show how assistant responses connect to collaboration and docs context.",
+          "Close with enterprise management controls and deployment readiness."
+        ],
+        voice: "Workflow-oriented and enterprise-ready"
+      }
+    };
+
+    const featureOrder = [
+      "Built-in AI assistant",
+      "Page summarize",
+      "Tab context awareness",
+      "On-device model options",
+      "Privacy controls",
+      "Enterprise policy controls"
+    ];
+
+    const browserOrder = ["chrome", "firefox", "edge"];
+
+    let currentBrowser = "chrome";
+
+    const matrix = document.getElementById("capabilityMatrix");
+    const browserSummary = document.getElementById("browserSummary");
+    const quickStats = document.getElementById("quickStats");
+    const talkTrack = document.getElementById("talkTrack");
+    const outputBox = document.getElementById("outputBox");
+    const promptInput = document.getElementById("promptInput");
+    const taskType = document.getElementById("taskType");
+    const testResults = document.getElementById("testResults");
+    const userAgentText = document.getElementById("userAgentText");
+    const testsLastRun = document.getElementById("testsLastRun");
+
+    const getCellClass = (value) => {
+      if (value === "Strong") return "ok";
+      if (value === "Medium" || value === "Emerging") return "warn";
+      return "no";
+    };
+
+    function renderMatrix() {
+      matrix.innerHTML = "";
+      const headers = ["Capability", "Chrome", "Firefox", "Edge"];
+      headers.forEach((name) => {
+        const div = document.createElement("div");
+        div.className = "cell head";
+        div.textContent = name;
+        matrix.appendChild(div);
+      });
+
+      featureOrder.forEach((feature) => {
+        const featureCell = document.createElement("div");
+        featureCell.className = "cell feature";
+        featureCell.textContent = feature;
+        matrix.appendChild(featureCell);
+
+        browserOrder.forEach((browser) => {
+          const value = browserData[browser].features[feature];
+          const valueCell = document.createElement("div");
+          valueCell.className = `cell ${getCellClass(value)}`;
+          valueCell.textContent = value;
+          matrix.appendChild(valueCell);
+        });
+      });
+    }
+
+    function renderProfile() {
+      const profile = browserData[currentBrowser];
+      browserSummary.textContent = profile.summary;
+
+      quickStats.innerHTML = "";
+      profile.stats.forEach((stat) => {
+        const div = document.createElement("div");
+        div.className = "stat";
+        div.textContent = stat;
+        quickStats.appendChild(div);
+      });
+
+      talkTrack.innerHTML = "";
+      profile.talkTrack.forEach((line) => {
+        const li = document.createElement("li");
+        li.textContent = line;
+        talkTrack.appendChild(li);
+      });
+    }
+
+    function generateResponse(promptText, mode, browser) {
+      const profile = browserData[browser];
+      const clipped = promptText.replace(/\s+/g, " ").trim().slice(0, 130) || "the selected page";
+
+      if (mode === "summarize") {
+        return [
+          `${profile.label} AI (${profile.voice})`,
+          `Summary: The content emphasizes ${clipped.toLowerCase()}.`,
+          "Top actions:",
+          "1) Capture key points into a short brief.",
+          "2) Ask follow-up questions on risk, cost, and timeline.",
+          "3) Save an AI-generated checklist for next steps."
+        ].join("\n");
+      }
+
+      if (mode === "rewrite") {
+        return [
+          `${profile.label} AI (${profile.voice})`,
+          "Executive rewrite:",
+          `This topic can be summarized as: ${clipped}.`,
+          "Recommendation: prioritize low-risk pilots, define success metrics, and review governance before scaling."
+        ].join("\n");
+      }
+
+      return [
+        `${profile.label} AI (${profile.voice})`,
+        "Comparison output:",
+        "Option A: Faster rollout, lower setup effort.",
+        "Option B: Better controls, higher governance confidence.",
+        "Suggested direction: start with A, then evolve toward B for long-term resilience."
+      ].join("\n");
+    }
+
+    function resolvePath(path) {
+      return path.split(".").reduce((acc, key) => {
+        if (acc == null) return undefined;
+        return acc[key];
+      }, window);
+    }
+
+    function renderBuiltInTests() {
+      const tests = [
+        {
+          name: "Prompt API",
+          candidates: ["ai", "LanguageModel"]
+        },
+        {
+          name: "Summarizer API",
+          candidates: ["Summarizer"]
+        },
+        {
+          name: "Writer API",
+          candidates: ["Writer"]
+        },
+        {
+          name: "Rewriter API",
+          candidates: ["Rewriter"]
+        },
+        {
+          name: "Translator API",
+          candidates: ["Translator"]
+        },
+        {
+          name: "Language Detector API",
+          candidates: ["LanguageDetector"]
+        },
+        {
+          name: "On-device ML Signals",
+          candidates: ["navigator.gpu", "navigator.ml", "navigator.ai"]
+        }
+      ];
+
+      const rows = tests.map((test) => {
+        const found = test.candidates.filter((candidate) => typeof resolvePath(candidate) !== "undefined");
+        const detected = found.length > 0;
+        return {
+          name: test.name,
+          status: detected ? "Detected" : "Not detected",
+          details: detected ? found.join(", ") : "No known interface found"
+        };
+      });
+
+      testResults.innerHTML = "";
+
+      const headerRow = document.createElement("div");
+      headerRow.className = "test-row";
+      ["Interface", "Status", "Detected globals or objects"].forEach((heading) => {
+        const cell = document.createElement("div");
+        cell.className = "test-cell test-head";
+        cell.textContent = heading;
+        headerRow.appendChild(cell);
+      });
+      testResults.appendChild(headerRow);
+
+      rows.forEach((rowData) => {
+        const row = document.createElement("div");
+        row.className = "test-row";
+
+        const nameCell = document.createElement("div");
+        nameCell.className = "test-cell";
+        nameCell.textContent = rowData.name;
+
+        const statusCell = document.createElement("div");
+        statusCell.className = `test-cell status ${rowData.status === "Detected" ? "ok" : "no"}`;
+        statusCell.textContent = rowData.status;
+
+        const detailsCell = document.createElement("div");
+        detailsCell.className = "test-cell";
+        detailsCell.textContent = rowData.details;
+
+        row.appendChild(nameCell);
+        row.appendChild(statusCell);
+        row.appendChild(detailsCell);
+        testResults.appendChild(row);
+      });
+
+      const now = new Date();
+      testsLastRun.textContent = `Last run: ${now.toLocaleString()}`;
+    }
+
+    document.querySelectorAll(".browser-btn").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".browser-btn").forEach((el) => el.classList.remove("active"));
+        button.classList.add("active");
+        currentBrowser = button.dataset.browser;
+        renderProfile();
+      });
+    });
+
+    document.getElementById("runPrompt").addEventListener("click", () => {
+      outputBox.textContent = generateResponse(promptInput.value, taskType.value, currentBrowser);
+    });
+
+    document.querySelectorAll(".scenario-btn").forEach((button) => {
+      button.addEventListener("click", () => {
+        const scenario = button.dataset.seed;
+        const templates = {
+          shopping: "Compare three laptops for remote work. Prioritize battery life, screen quality, and value.",
+          research: "Summarize these article findings and produce a four-part briefing outline with risks.",
+          accessibility: "Review this page content and suggest better alt text and clearer headings.",
+          security: "Analyze this login prompt flow and flag suspicious behavior or unsafe patterns."
+        };
+
+        promptInput.value = templates[scenario] || promptInput.value;
+        outputBox.textContent = generateResponse(promptInput.value, taskType.value, currentBrowser);
+      });
+    });
+
+    document.getElementById("runTests").addEventListener("click", renderBuiltInTests);
+
+    userAgentText.textContent = navigator.userAgent;
+
+    renderMatrix();
+    renderProfile();
+    renderBuiltInTests();
+  </script>
+</body>
+</html>
