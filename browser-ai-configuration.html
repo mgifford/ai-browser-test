@@ -213,6 +213,35 @@
       text-decoration: underline;
     }
 
+    .sustainability-footer {
+      margin-top: 1rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: var(--shadow);
+      padding: 0.85rem 0.95rem;
+      font-size: 0.85rem;
+      color: #334842;
+    }
+
+    .sustainability-disclosure {
+      display: flex;
+      align-items: center;
+      gap: 0.42rem;
+      flex-wrap: wrap;
+      margin: 0;
+    }
+
+    .sustainability-disclosure a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .sustainability-disclosure a:hover {
+      text-decoration: underline;
+    }
+
     @media (max-width: 900px) {
       .layout {
         grid-template-columns: 1fr;
@@ -332,6 +361,56 @@
         <a href="BROWSER_AI_SPECIFICS.md">Source Map for Claimed Features</a>
       </div>
     </section>
+
+    <footer class="sustainability-footer" aria-label="Sustainability metrics footer">
+      <p class="sustainability-disclosure">
+        <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17 8C8 10 5.9 16.17 3.82 22c1.95-1.8 4.6-3 7.68-3C16.5 19 21 14.5 21 9c0-.38-.03-.76-.07-1.13C20.12 8.3 18.61 8 17 8z"/>
+        </svg>
+        This page transferred approximately <strong id="co2-estimate">calculating...</strong>
+        (<span id="page-weight">calculating...</span>).
+        Hosting source: <strong id="hosting-source">unknown</strong>.
+        <a href="https://mgifford.github.io/SUSTAINABILITY.md/reporting-sustainability-metrics/" target="_blank" rel="noopener noreferrer">Methodology</a>.
+      </p>
+    </footer>
   </main>
+
+  <script>
+    async function initSustainabilityFooter() {
+      const co2El = document.getElementById("co2-estimate");
+      const pageWeightEl = document.getElementById("page-weight");
+      const hostingSourceEl = document.getElementById("hosting-source");
+      if (!co2El || !pageWeightEl || !hostingSourceEl) return;
+
+      const hostIsGreen = false;
+      hostingSourceEl.textContent = hostIsGreen ? "verified renewable" : "unknown";
+
+      const navEntry = performance.getEntriesByType("navigation")[0];
+      const resourceEntries = performance.getEntriesByType("resource");
+      const navBytes = navEntry && navEntry.transferSize ? navEntry.transferSize : 0;
+      const resourceBytes = resourceEntries.reduce((sum, entry) => sum + (entry.transferSize || 0), 0);
+      const totalBytes = navBytes + resourceBytes;
+
+      if (!totalBytes) {
+        co2El.textContent = "insufficient data";
+        pageWeightEl.textContent = "transfer size unavailable";
+        return;
+      }
+
+      const kb = totalBytes / 1024;
+      pageWeightEl.textContent = kb > 1024 ? `${(kb / 1024).toFixed(2)} MB` : `${kb.toFixed(0)} KB`;
+
+      try {
+        const pkg = await import("https://cdn.jsdelivr.net/npm/@tgwf/co2/+esm");
+        const swd = new pkg.co2({ model: "swd" });
+        const grams = swd.perVisit(totalBytes, hostIsGreen);
+        co2El.textContent = `${grams.toFixed(2)} g CO2e`;
+      } catch (_error) {
+        co2El.textContent = "CO2.js unavailable";
+      }
+    }
+
+    initSustainabilityFooter();
+  </script>
 </body>
 </html>

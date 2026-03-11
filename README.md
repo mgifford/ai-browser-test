@@ -42,8 +42,11 @@ It is designed for live presentations where you need to:
 	- Translator API
 	- Language Detector API
 	- On-device ML signals
+- Live runtime capability probe that checks API readiness state
+- One-click local API test runners for detected and ready interfaces
 - Dynamic talk track for presentation flow
 - Responsive layout for desktop and mobile
+- CO2.js-powered sustainability footer on HTML pages with page-weight and estimated CO2e disclosure
 
 ## Quick start
 
@@ -71,6 +74,12 @@ To compare popular browsers directly:
 4. Repeat in Edge.
 
 The results are rendered directly on the page so you can show them live.
+
+The page now includes a local AI lab that:
+
+1. Probes runtime readiness (not just global presence)
+2. Exposes per-API test buttons only when runnable
+3. Runs in-browser test calls for available built-in APIs
 
 For setup guidance before testing, use:
 

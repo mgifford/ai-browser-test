@@ -351,6 +351,29 @@
       color: var(--muted);
     }
 
+    .tests-actions {
+      margin-top: 0.7rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+    }
+
+    .cta-secondary {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+      border-radius: 12px;
+      padding: 0.58rem 0.78rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .cta-secondary:disabled,
+    .cta:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     .grid {
       margin-top: 1.4rem;
       display: grid;
@@ -500,6 +523,35 @@
       color: var(--muted);
     }
 
+    .sustainability-footer {
+      margin-top: 1rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.84);
+      box-shadow: var(--shadow);
+      padding: 0.85rem 0.95rem;
+      font-size: 0.85rem;
+      color: #3c4f49;
+    }
+
+    .sustainability-disclosure {
+      display: flex;
+      align-items: center;
+      gap: 0.42rem;
+      flex-wrap: wrap;
+      margin: 0;
+    }
+
+    .sustainability-disclosure a {
+      color: var(--accent-3);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .sustainability-disclosure a:hover {
+      text-decoration: underline;
+    }
+
     @keyframes reveal {
       from {
         opacity: 0;
@@ -620,6 +672,12 @@
       </p>
       <div class="test-table" id="testResults"></div>
       <p class="test-meta" id="testsLastRun">Not run yet.</p>
+      <div class="tests-actions">
+        <button class="cta-secondary" id="runCapabilityProbe">Re-scan Runtime Capability</button>
+        <button class="cta-secondary" id="runAllLocalTests">Run All Available Local Tests</button>
+      </div>
+      <div class="test-table" id="liveCapabilityResults"></div>
+      <div class="output" id="liveTestOutput" aria-live="polite">Run a capability scan, then launch available local API tests from this panel.</div>
     </section>
 
     <section class="grid">
@@ -678,6 +736,18 @@
       <h2>Suggested Talk Track</h2>
       <ol class="timeline" id="talkTrack"></ol>
     </section>
+
+    <footer class="sustainability-footer" aria-label="Sustainability metrics footer">
+      <p class="sustainability-disclosure">
+        <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17 8C8 10 5.9 16.17 3.82 22c1.95-1.8 4.6-3 7.68-3C16.5 19 21 14.5 21 9c0-.38-.03-.76-.07-1.13C20.12 8.3 18.61 8 17 8z"/>
+        </svg>
+        This page transferred approximately <strong id="co2-estimate">calculating...</strong>
+        (<span id="page-weight">calculating...</span>).
+        Hosting source: <strong id="hosting-source">unknown</strong>.
+        <a href="https://mgifford.github.io/SUSTAINABILITY.md/reporting-sustainability-metrics/" target="_blank" rel="noopener noreferrer">Methodology</a>.
+      </p>
+    </footer>
   </main>
 
   <script>
@@ -770,6 +840,8 @@
     const testResults = document.getElementById("testResults");
     const userAgentText = document.getElementById("userAgentText");
     const testsLastRun = document.getElementById("testsLastRun");
+    const liveCapabilityResults = document.getElementById("liveCapabilityResults");
+    const liveTestOutput = document.getElementById("liveTestOutput");
 
     const getCellClass = (value) => {
       if (value === "Strong") return "ok";
@@ -863,7 +935,222 @@
       }, window);
     }
 
-    function renderBuiltInTests() {
+    const liveApiSpecs = [
+      {
+        id: "prompt",
+        name: "Prompt API",
+        candidates: ["LanguageModel", "ai.languageModel"],
+        availabilityOptions: {}
+      },
+      {
+        id: "summarizer",
+        name: "Summarizer API",
+        candidates: ["Summarizer"],
+        availabilityOptions: { type: "tl;dr", format: "plain-text", length: "short" }
+      },
+      {
+        id: "writer",
+        name: "Writer API",
+        candidates: ["Writer"],
+        availabilityOptions: {}
+      },
+      {
+        id: "rewriter",
+        name: "Rewriter API",
+        candidates: ["Rewriter"],
+        availabilityOptions: {}
+      },
+      {
+        id: "translator",
+        name: "Translator API",
+        candidates: ["Translator"],
+        availabilityOptions: { sourceLanguage: "en", targetLanguage: "es" }
+      },
+      {
+        id: "language-detector",
+        name: "Language Detector API",
+        candidates: ["LanguageDetector"],
+        availabilityOptions: {}
+      }
+    ];
+
+    const liveCapabilityState = [];
+
+    function normalizeAvailability(rawValue) {
+      if (typeof rawValue === "undefined") return { text: "unknown", ready: false };
+      const text = String(rawValue).toLowerCase();
+      const readyValues = ["available", "readily", "ready", "yes"];
+      return {
+        text,
+        ready: readyValues.some((token) => text.includes(token))
+      };
+    }
+
+    async function probeInterface(spec) {
+      const found = spec.candidates.find((path) => typeof resolvePath(path) !== "undefined");
+      if (!found) {
+        return {
+          ...spec,
+          detectedPath: "",
+          status: "Not detected",
+          statusClass: "no",
+          details: "No known interface found",
+          canRunTest: false
+        };
+      }
+
+      const target = resolvePath(found);
+      let availabilityText = "not provided";
+      let ready = false;
+
+      try {
+        if (target && typeof target.availability === "function") {
+          const availabilityRaw = await target.availability(spec.availabilityOptions || {});
+          const normalized = normalizeAvailability(availabilityRaw);
+          availabilityText = normalized.text;
+          ready = normalized.ready;
+        } else {
+          ready = typeof target.create === "function" || typeof target === "function";
+        }
+      } catch (error) {
+        availabilityText = `error: ${error.message}`;
+      }
+
+      const details = availabilityText === "not provided"
+        ? `Detected ${found}`
+        : `Detected ${found} | availability: ${availabilityText}`;
+
+      return {
+        ...spec,
+        detectedPath: found,
+        status: ready ? "Detected and ready" : "Detected but not ready",
+        statusClass: ready ? "ok" : "warn",
+        details,
+        canRunTest: ready
+      };
+    }
+
+    async function runLocalApiTest(spec) {
+      const start = [`${spec.name} live test`, `Path: ${spec.detectedPath || "n/a"}`];
+      const write = (lines) => {
+        liveTestOutput.textContent = [...start, ...lines].join("\n");
+      };
+
+      try {
+        if (spec.id === "prompt") {
+          const api = resolvePath(spec.detectedPath);
+          if (!api || typeof api.create !== "function") throw new Error("create() is unavailable");
+          const session = await api.create({ temperature: 0 });
+          const response = await session.prompt("Reply with: LOCAL_PROMPT_OK");
+          if (typeof session.destroy === "function") session.destroy();
+          write([`Result: ${response}`]);
+          return;
+        }
+
+        if (spec.id === "summarizer") {
+          const api = resolvePath(spec.detectedPath);
+          if (!api || typeof api.create !== "function") throw new Error("create() is unavailable");
+          const summarizer = await api.create({ type: "tl;dr", format: "plain-text", length: "short" });
+          const response = await summarizer.summarize("Local AI testing helps verify real runtime capability in this browser.");
+          if (typeof summarizer.destroy === "function") summarizer.destroy();
+          write([`Result: ${response}`]);
+          return;
+        }
+
+        if (spec.id === "writer") {
+          const api = resolvePath(spec.detectedPath);
+          if (!api || typeof api.create !== "function") throw new Error("create() is unavailable");
+          const writer = await api.create();
+          const response = await writer.write("Draft a short sentence about local browser AI testing.");
+          if (typeof writer.destroy === "function") writer.destroy();
+          write([`Result: ${response}`]);
+          return;
+        }
+
+        if (spec.id === "rewriter") {
+          const api = resolvePath(spec.detectedPath);
+          if (!api || typeof api.create !== "function") throw new Error("create() is unavailable");
+          const rewriter = await api.create();
+          const response = await rewriter.rewrite("This demo checks runtime AI capabilities.");
+          if (typeof rewriter.destroy === "function") rewriter.destroy();
+          write([`Result: ${response}`]);
+          return;
+        }
+
+        if (spec.id === "translator") {
+          const api = resolvePath(spec.detectedPath);
+          if (!api || typeof api.create !== "function") throw new Error("create() is unavailable");
+          const translator = await api.create({ sourceLanguage: "en", targetLanguage: "es" });
+          const response = await translator.translate("Local browser AI is active.");
+          if (typeof translator.destroy === "function") translator.destroy();
+          write([`Result: ${response}`]);
+          return;
+        }
+
+        if (spec.id === "language-detector") {
+          const api = resolvePath(spec.detectedPath);
+          if (!api || typeof api.create !== "function") throw new Error("create() is unavailable");
+          const detector = await api.create();
+          const response = await detector.detect("Bonjour, ceci est un test de detection de langue.");
+          if (typeof detector.destroy === "function") detector.destroy();
+          write([`Result: ${JSON.stringify(response)}`]);
+          return;
+        }
+
+        write(["No runner was defined for this interface."]);
+      } catch (error) {
+        write([`Test failed: ${error.message}`, "Tip: API may be exposed but gated by version, flags, permissions, or model availability."]);
+      }
+    }
+
+    function renderLiveCapabilityTable() {
+      liveCapabilityResults.innerHTML = "";
+      const headerRow = document.createElement("div");
+      headerRow.className = "test-row";
+      ["Local API", "Readiness", "Details"].forEach((heading) => {
+        const cell = document.createElement("div");
+        cell.className = "test-cell test-head";
+        cell.textContent = heading;
+        headerRow.appendChild(cell);
+      });
+      liveCapabilityResults.appendChild(headerRow);
+
+      liveCapabilityState.forEach((rowData) => {
+        const row = document.createElement("div");
+        row.className = "test-row";
+
+        const nameCell = document.createElement("div");
+        nameCell.className = "test-cell";
+        nameCell.textContent = rowData.name;
+
+        const statusCell = document.createElement("div");
+        statusCell.className = `test-cell status ${rowData.statusClass}`;
+        statusCell.textContent = rowData.status;
+
+        const detailsCell = document.createElement("div");
+        detailsCell.className = "test-cell";
+
+        const detailText = document.createElement("div");
+        detailText.textContent = rowData.details;
+        detailsCell.appendChild(detailText);
+
+        if (rowData.canRunTest) {
+          const button = document.createElement("button");
+          button.className = "cta-secondary";
+          button.style.marginTop = "0.45rem";
+          button.textContent = `Run ${rowData.name} test`;
+          button.addEventListener("click", () => runLocalApiTest(rowData));
+          detailsCell.appendChild(button);
+        }
+
+        row.appendChild(nameCell);
+        row.appendChild(statusCell);
+        row.appendChild(detailsCell);
+        liveCapabilityResults.appendChild(row);
+      });
+    }
+
+    async function renderBuiltInTests() {
       const tests = [
         {
           name: "Prompt API",
@@ -939,8 +1226,60 @@
         testResults.appendChild(row);
       });
 
+      const liveRows = await Promise.all(liveApiSpecs.map((spec) => probeInterface(spec)));
+      liveCapabilityState.length = 0;
+      liveRows.forEach((entry) => liveCapabilityState.push(entry));
+      renderLiveCapabilityTable();
+
       const now = new Date();
       testsLastRun.textContent = `Last run: ${now.toLocaleString()}`;
+    }
+
+    async function runAllAvailableLocalTests() {
+      const runnable = liveCapabilityState.filter((entry) => entry.canRunTest);
+      if (!runnable.length) {
+        liveTestOutput.textContent = "No local AI API is currently in a runnable state in this browser runtime.";
+        return;
+      }
+
+      liveTestOutput.textContent = `Running ${runnable.length} local tests...`;
+      for (const entry of runnable) {
+        await runLocalApiTest(entry);
+      }
+    }
+
+    async function initSustainabilityFooter() {
+      const co2El = document.getElementById("co2-estimate");
+      const pageWeightEl = document.getElementById("page-weight");
+      const hostingSourceEl = document.getElementById("hosting-source");
+      if (!co2El || !pageWeightEl || !hostingSourceEl) return;
+
+      const hostIsGreen = false;
+      hostingSourceEl.textContent = hostIsGreen ? "verified renewable" : "unknown";
+
+      const navEntry = performance.getEntriesByType("navigation")[0];
+      const resourceEntries = performance.getEntriesByType("resource");
+      const navBytes = navEntry && navEntry.transferSize ? navEntry.transferSize : 0;
+      const resourceBytes = resourceEntries.reduce((sum, entry) => sum + (entry.transferSize || 0), 0);
+      const totalBytes = navBytes + resourceBytes;
+
+      if (!totalBytes) {
+        co2El.textContent = "insufficient data";
+        pageWeightEl.textContent = "transfer size unavailable";
+        return;
+      }
+
+      const kb = totalBytes / 1024;
+      pageWeightEl.textContent = kb > 1024 ? `${(kb / 1024).toFixed(2)} MB` : `${kb.toFixed(0)} KB`;
+
+      try {
+        const pkg = await import("https://cdn.jsdelivr.net/npm/@tgwf/co2/+esm");
+        const swd = new pkg.co2({ model: "swd" });
+        const grams = swd.perVisit(totalBytes, hostIsGreen);
+        co2El.textContent = `${grams.toFixed(2)} g CO2e`;
+      } catch (_error) {
+        co2El.textContent = "CO2.js unavailable";
+      }
     }
 
     document.querySelectorAll(".browser-btn").forEach((button) => {
@@ -971,13 +1310,20 @@
       });
     });
 
-    document.getElementById("runTests").addEventListener("click", renderBuiltInTests);
+    document.getElementById("runTests").addEventListener("click", () => {
+      renderBuiltInTests();
+    });
+    document.getElementById("runCapabilityProbe").addEventListener("click", () => {
+      renderBuiltInTests();
+    });
+    document.getElementById("runAllLocalTests").addEventListener("click", runAllAvailableLocalTests);
 
     userAgentText.textContent = navigator.userAgent;
 
     renderMatrix();
     renderProfile();
     renderBuiltInTests();
+    initSustainabilityFooter();
   </script>
 </body>
 </html>
