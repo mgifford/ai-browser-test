@@ -524,6 +524,32 @@
       color: var(--muted);
     }
 
+    .sim-meta[title] {
+      cursor: help;
+      border-bottom: 1px dotted var(--muted);
+    }
+
+    .sim-desc {
+      margin: 0 0 0.9rem;
+      font-size: 0.88rem;
+      color: #3a4b47;
+      line-height: 1.5;
+    }
+
+    .sim-workflow {
+      margin: 0.6rem 0 0;
+      padding: 0.6rem 0.75rem;
+      border-left: 3px solid var(--accent-2);
+      background: rgba(43, 127, 109, 0.07);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 0.83rem;
+      color: #2b4a43;
+    }
+
+    .sim-workflow strong {
+      color: var(--ink);
+    }
+
     textarea,
     select,
     button,
@@ -907,6 +933,7 @@
       <p class="tests-note">
         Open this same page in Chrome, Firefox, and Edge, then click "Run Built-in Tests" in each browser to see which native AI interfaces are actually exposed.
       </p>
+      <p class="tests-note" style="margin-top:0.4rem;">Note: API readiness shown here only affects <em>real</em> API calls. The <strong>AI Prompt Simulator</strong> above always works — it uses local JavaScript patterns, not live APIs.</p>
       <div class="test-table" id="testResults"></div>
       <p class="test-meta" id="testsLastRun">Not run yet.</p>
       <div class="tests-actions">
@@ -933,8 +960,12 @@
       <article class="simulator">
         <div class="sim-header">
           <h2>AI Prompt Simulator</h2>
-          <span class="sim-meta">No backend required</span>
+          <span class="sim-meta" title="This demo runs entirely in your browser using simulated responses — no external AI service or backend is called. The real Prompt API tests are in the capability table below." aria-describedby="simDesc">Simulated · works in all browsers</span>
         </div>
+
+        <p class="sim-desc" id="simDesc">This simulator shows how browser AI responses vary across Chrome, Firefox, and Edge using <strong>local JavaScript patterns</strong> — it works in every browser regardless of whether the Prompt API shows "Detected and ready", "Detected but not ready", or "Not detected". To test the <em>real</em> Prompt API, use the capability table further down this page.</p>
+
+        <p class="sim-workflow"><strong>How to use:</strong> <strong>Quick Scenarios</strong> (right panel) load a prompt and run the demo immediately. <strong>Shuffle Prompt Idea</strong> and <strong>Load Benchmark Pack</strong> load content into the text box — then press <strong>Run AI Demo</strong> to generate a response. Switch the browser profile at the top of the page and rerun to compare browser-specific outputs.</p>
 
         <label for="promptInput">Prompt or page excerpt</label>
         <textarea id="promptInput">Summarize this page and list three actions I should take next.</textarea>
@@ -949,9 +980,9 @@
             </select>
           </label>
           <div style="display:flex; gap:0.55rem; flex-wrap:wrap; justify-content:flex-end;">
-            <button class="cta-secondary" id="loadBenchmark">Load Benchmark Pack</button>
-            <button class="cta-secondary" id="shufflePrompt">Shuffle Prompt Idea</button>
-            <button class="cta" id="runPrompt">Run AI Demo</button>
+            <button class="cta-secondary" id="loadBenchmark" title="Load a long-form sample document into the text box for a consistent cross-browser summarization test — then press Run AI Demo">Load Benchmark Pack</button>
+            <button class="cta-secondary" id="shufflePrompt" title="Replace the text box with a random pre-set prompt idea — then press Run AI Demo to generate a response">Shuffle Prompt Idea</button>
+            <button class="cta" id="runPrompt" title="Generate a simulated browser-specific AI response based on the current prompt and selected mode">Run AI Demo</button>
           </div>
         </div>
 
@@ -976,8 +1007,9 @@
       <aside class="scenario">
         <div class="scenario-header">
           <h2>Quick Scenarios</h2>
-          <button class="cta-secondary" id="reshuffleScenarios">Reshuffle</button>
+          <button class="cta-secondary" id="reshuffleScenarios" title="Show a different random set of 4 scenarios">Reshuffle</button>
         </div>
+        <p class="sim-desc" style="margin-bottom:0.6rem;">Each card loads a ready-made prompt <strong>and runs the demo immediately</strong>. Use <strong>Reshuffle</strong> to see more scenarios from the full library.</p>
 
         <div class="scenario-grid">
           <div class="note">Loading randomized scenarios from YAML...</div>
@@ -998,9 +1030,12 @@
     <section class="experiment-panel" aria-label="How to experiment">
       <h2>How To Experiment Today</h2>
       <ol class="timeline">
-        <li>Use <strong>Load Benchmark Pack</strong> in the simulator for a consistent long-form summarization test.</li>
-        <li>Switch browser/channel and rerun the same prompt to compare quality and behavior differences.</li>
-        <li>Run built-in API tests and local probes to verify what is actually available in this runtime.</li>
+        <li>The <strong>AI Prompt Simulator</strong> works in every browser — the output is a deterministic simulation, not a live AI call. No API access is needed to try it.</li>
+        <li>Press <strong>Run AI Demo</strong> to generate a response. Use <strong>Shuffle Prompt Idea</strong> or <strong>Load Benchmark Pack</strong> to load content first, then press the button. <strong>Quick Scenarios</strong> load and run immediately.</li>
+        <li>Switch the browser profile (Chrome / Firefox / Edge) at the top and rerun to see how simulated outputs differ across browser personalities.</li>
+        <li>The <strong>Prompt API</strong> status ("Detected and ready", "Detected but not ready / downloadable", "Not detected") only affects the <em>real</em> API tests in the capability table — not the simulator above.</li>
+        <li>Use <strong>Load Benchmark Pack</strong> for a consistent long-form summarization test you can repeat across browsers or browser channels.</li>
+        <li>Run built-in API probes and local tests to verify what is actually available in your current runtime.</li>
         <li>Use the experimentation page for copy-ready prompts, source blocks, and test workflows.</li>
       </ol>
       <div class="experiment-links">
@@ -2158,7 +2193,10 @@
         } else if (rowData.detectedPath) {
           const tip = document.createElement("div");
           tip.className = "api-tip";
-          tip.textContent = "Tip: API may be exposed but gated by version, flags, permissions, or model availability.";
+          const isDownloadable = /\bdownloadable\b/.test((rowData.details || "").toLowerCase());
+          tip.textContent = isDownloadable
+            ? "Availability: downloadable — the API is detected but the on-device model has not been downloaded yet. Visit chrome://components (Chrome) or edge://components (Edge) to trigger the download, or wait for the browser to download it automatically. The AI Prompt Simulator above works now; this status only affects real API calls."
+            : "Tip: API may be exposed but gated by browser version, flags, permissions, or model availability. The AI Prompt Simulator above works regardless of this status.";
           detailsCell.appendChild(tip);
         }
 
