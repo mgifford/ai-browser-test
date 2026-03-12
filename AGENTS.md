@@ -16,6 +16,7 @@ This file documents the intended agent behavior and collaboration conventions fo
 - Keep static-site compatibility for GitHub Pages
 - Preserve accessibility and sustainability commitments
 - Keep markdown documentation aligned with runtime feature behavior and probe outputs
+- Do not create HTML renderings of markdown documentation files (e.g. do not create ACCESSIBILITY.html or SUSTAINABILITY.html); keep docs in `.md` format only
 
 ## Repository priorities
 
