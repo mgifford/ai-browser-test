@@ -2386,6 +2386,12 @@
       renderMatrix();
       if (currentFeature) renderFeatureInfo(currentFeature);
 
+      if (userAgentText) {
+        userAgentText.textContent = runtime.prerelease
+          ? `${runtime.browserLabel} ${runtime.channelLabel}`
+          : runtime.browserLabel;
+      }
+
       if (runtimeChip) {
         runtimeChip.textContent = runtime.channel === "unknown"
           ? `Detected runtime: ${runtime.browserLabel} (channel not exposed)`
@@ -2480,8 +2486,6 @@
         applyDetectedRuntimeToProfile();
       });
     }
-    userAgentText.textContent = navigator.userAgent;
-
     renderMatrix();
     renderDemoBadgeDate();
     applyDetectedRuntimeToProfile();
