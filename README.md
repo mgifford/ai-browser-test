@@ -168,8 +168,6 @@ See `LICENSE` for full text.
 GitHub Pages can serve rendered HTML versions of project docs from:
 
 - [README.html](README.html)
-- [ACCESSIBILITY.html](ACCESSIBILITY.html)
-- [SUSTAINABILITY.html](SUSTAINABILITY.html)
 - [AGENTS.html](AGENTS.html)
 - [BROWSER_AI_SPECIFICS.html](BROWSER_AI_SPECIFICS.html)
 
