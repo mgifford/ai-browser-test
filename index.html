@@ -404,6 +404,12 @@
       color: #7f3f3f;
     }
 
+    .api-tip {
+      margin-top: 0.45rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
     .test-meta {
       margin-top: 0.65rem;
       font-size: 0.8rem;
@@ -1988,11 +1994,10 @@
     function normalizeAvailability(rawValue) {
       if (typeof rawValue === "undefined") return { text: "unknown", ready: false };
       const text = String(rawValue).toLowerCase();
-      const readyValues = ["available", "readily", "ready", "yes"];
-      return {
-        text,
-        ready: readyValues.some((token) => text.includes(token))
-      };
+      // Use word-boundary regex for all tokens to avoid false positives
+      // (e.g. "unavailable" must not match "available", "already" must not match "ready").
+      const ready = /\b(available|readily|ready|yes)\b/.test(text);
+      return { text, ready };
     }
 
     async function probeInterface(spec) {
@@ -2150,6 +2155,11 @@
           button.textContent = `Run ${rowData.name} test`;
           button.addEventListener("click", () => runLocalApiTest(rowData));
           detailsCell.appendChild(button);
+        } else if (rowData.detectedPath) {
+          const tip = document.createElement("div");
+          tip.className = "api-tip";
+          tip.textContent = "Tip: API may be exposed but gated by version, flags, permissions, or model availability.";
+          detailsCell.appendChild(tip);
         }
 
         row.appendChild(nameCell);
