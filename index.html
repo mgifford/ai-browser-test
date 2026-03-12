@@ -290,20 +290,13 @@
     }
 
     .feature-link {
-      display: inline-flex;
-      align-items: center;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 0.35rem 0.65rem;
-      background: rgba(255, 255, 255, 0.95);
-      color: var(--ink);
-      text-decoration: none;
-      font-size: 0.83rem;
-      font-weight: 600;
+      color: var(--accent, #1a6aff);
+      text-decoration: underline;
+      font-size: 0.9rem;
     }
 
     .feature-link:hover {
-      text-decoration: underline;
+      opacity: 0.8;
     }
 
     .feature-btn {
@@ -1089,51 +1082,51 @@
       "Built-in AI assistant": {
         description: "Assistance interface for drafting, answering, or transforming text in-browser.",
         links: [
-          { label: "Chrome Prompt API", url: "https://developer.chrome.com/docs/ai/prompt-api" },
-          { label: "Firefox AI chatbot", url: "https://support.mozilla.org/kb/ai-chatbot" },
-          { label: "Edge Copilot", url: "https://www.microsoft.com/en-us/edge/features/copilot" }
+          { label: "Chrome Prompt API", url: "https://developer.chrome.com/docs/ai/prompt-api", browser: "chrome" },
+          { label: "Firefox AI chatbot", url: "https://support.mozilla.org/kb/ai-chatbot", browser: "firefox" },
+          { label: "Edge Copilot", url: "https://www.microsoft.com/en-us/edge/features/copilot", browser: "edge" }
         ]
       },
       "Page summarize": {
         description: "Condenses long content into shorter key points, action items, or digest formats.",
         links: [
-          { label: "Chrome Summarizer API", url: "https://developer.chrome.com/docs/ai/summarizer-api" },
-          { label: "Gemini in Chrome Help", url: "https://support.google.com/chrome?p=gemini_in_chrome#topic=7439538" },
-          { label: "Edge Copilot feature page", url: "https://www.microsoft.com/en-us/edge/features/copilot" }
+          { label: "Chrome Summarizer API", url: "https://developer.chrome.com/docs/ai/summarizer-api", browser: "chrome" },
+          { label: "Gemini in Chrome Help", url: "https://support.google.com/chrome?p=gemini_in_chrome#topic=7439538", browser: "chrome" },
+          { label: "Edge Copilot feature page", url: "https://www.microsoft.com/en-us/edge/features/copilot", browser: "edge" }
         ]
       },
       "Tab context awareness": {
         description: "Uses page or browsing context to improve relevance of generated output.",
         links: [
-          { label: "Chrome AI docs index", url: "https://developer.chrome.com/docs/ai" },
-          { label: "Chrome extension tabs API", url: "https://developer.chrome.com/docs/extensions/reference/api/tabs" },
-          { label: "MDN tabs API", url: "https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/tabs" },
-          { label: "Firefox AI controls", url: "https://blog.mozilla.org/en/firefox/how-to-use-ai-controls/" },
-          { label: "Edge AI features", url: "https://www.microsoft.com/en-us/edge/features/ai" }
+          { label: "Chrome AI docs index", url: "https://developer.chrome.com/docs/ai", browser: "chrome" },
+          { label: "Chrome extension tabs API", url: "https://developer.chrome.com/docs/extensions/reference/api/tabs", browser: "chrome" },
+          { label: "MDN tabs API", url: "https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/tabs", browser: "firefox" },
+          { label: "Firefox AI controls", url: "https://blog.mozilla.org/en/firefox/how-to-use-ai-controls/", browser: "firefox" },
+          { label: "Edge AI features", url: "https://www.microsoft.com/en-us/edge/features/ai", browser: "edge" }
         ]
       },
       "On-device model options": {
         description: "Model execution or acceleration available locally for some capabilities.",
         links: [
-          { label: "AI on Chrome docs", url: "https://developer.chrome.com/docs/ai" },
-          { label: "Chrome Canary", url: "https://www.google.com/intl/en_ca/chrome/canary/" },
-          { label: "Firefox channel builds", url: "https://www.firefox.com/en-CA/channel/desktop/" }
+          { label: "AI on Chrome docs", url: "https://developer.chrome.com/docs/ai", browser: "chrome" },
+          { label: "Chrome Canary", url: "https://www.google.com/intl/en_ca/chrome/canary/", browser: "chrome" },
+          { label: "Firefox channel builds", url: "https://www.firefox.com/en-CA/channel/desktop/", browser: "firefox" }
         ]
       },
       "Privacy controls": {
         description: "Settings and policy boundaries that influence AI data handling and behavior.",
         links: [
-          { label: "Firefox AI controls", url: "https://blog.mozilla.org/en/firefox/how-to-use-ai-controls/" },
-          { label: "Mozilla privacy", url: "https://www.mozilla.org/privacy/" },
-          { label: "Microsoft privacy", url: "https://privacy.microsoft.com/" }
+          { label: "Firefox AI controls", url: "https://blog.mozilla.org/en/firefox/how-to-use-ai-controls/", browser: "firefox" },
+          { label: "Mozilla privacy", url: "https://www.mozilla.org/privacy/", browser: "firefox" },
+          { label: "Microsoft privacy", url: "https://privacy.microsoft.com/", browser: "edge" }
         ]
       },
       "Enterprise policy controls": {
         description: "Organization-level management for enabling and governing browser AI capabilities.",
         links: [
-          { label: "Chrome enterprise", url: "https://chromeenterprise.google/" },
-          { label: "Firefox enterprise support", url: "https://support.mozilla.org/products/firefox-enterprise" },
-          { label: "Edge for business", url: "https://www.microsoft.com/edge/business" }
+          { label: "Chrome enterprise", url: "https://chromeenterprise.google/", browser: "chrome" },
+          { label: "Firefox enterprise support", url: "https://support.mozilla.org/products/firefox-enterprise", browser: "firefox" },
+          { label: "Edge for business", url: "https://www.microsoft.com/edge/business", browser: "edge" }
         ]
       }
     };
@@ -1150,6 +1143,7 @@
     };
 
     let currentBrowser = "chrome";
+    let currentFeature = "Page summarize";
 
     const matrix = document.getElementById("capabilityMatrix");
     const browserSummary = document.getElementById("browserSummary");
@@ -1389,12 +1383,20 @@
       const info = featureReference[featureName];
       if (!info || !featureInfoTitle || !featureInfoText || !featureInfoLinks || !featureInfoActions || !featureRuntimeInfo) return;
 
+      currentFeature = featureName;
+
       featureInfoTitle.textContent = `Feature details: ${featureName}`;
       featureInfoText.textContent = info.description;
       featureInfoLinks.innerHTML = "";
       featureInfoActions.innerHTML = "";
 
-      info.links.forEach((link) => {
+      const sortedLinks = info.links.slice().sort((a, b) => {
+        const aMatch = a.browser === currentBrowser ? 0 : 1;
+        const bMatch = b.browser === currentBrowser ? 0 : 1;
+        return aMatch - bMatch;
+      });
+
+      sortedLinks.forEach((link) => {
         const a = document.createElement("a");
         a.className = "feature-link";
         a.href = link.url;
@@ -1419,6 +1421,14 @@
         button.type = "button";
         button.textContent = "Probe Built-in Assistant";
         button.addEventListener("click", probeBuiltInAssistant);
+        featureInfoActions.appendChild(button);
+      } else if (featureName === "Page summarize") {
+        featureRuntimeInfo.textContent = "Run the summarizer probe to see if the Summarizer API is available and generate a sample page summary.";
+        const button = document.createElement("button");
+        button.className = "cta-secondary";
+        button.type = "button";
+        button.textContent = "Probe Page Summarizer";
+        button.addEventListener("click", probeSummarizer);
         featureInfoActions.appendChild(button);
       } else {
         featureRuntimeInfo.textContent = "Select On-device model options to run a local model identity probe.";
@@ -1517,6 +1527,36 @@
       lines.push("3) Compare behavior across stable/beta/canary/nightly channels.");
 
       featureRuntimeInfo.textContent = lines.join("\n");
+    }
+
+    async function probeSummarizer() {
+      if (!featureRuntimeInfo) return;
+      featureRuntimeInfo.textContent = "Running summarizer probe...";
+
+      const MAX_SUMMARIZER_INPUT_LENGTH = 4000;
+
+      try {
+        const api = resolvePath("Summarizer");
+        if (!api || typeof api.create !== "function") {
+          featureRuntimeInfo.textContent = "Summarizer API not available in this runtime. Try Chrome Canary with the Summarization API flag enabled, or check Edge for Copilot summarization.";
+          return;
+        }
+
+        const pageText = document.body.innerText.slice(0, MAX_SUMMARIZER_INPUT_LENGTH).trim();
+        const summarizer = await api.create({ type: "tl;dr", format: "plain-text", length: "medium" });
+        const summary = await summarizer.summarize(pageText);
+        if (typeof summarizer.destroy === "function") summarizer.destroy();
+
+        const lines = [];
+        lines.push("Page Summarizer probe — Summarizer API");
+        lines.push(`Runtime: ${runtimeContext.browserLabel} ${runtimeContext.channelLabel}`);
+        lines.push("");
+        lines.push("Summary of this page:");
+        lines.push(summary);
+        featureRuntimeInfo.textContent = lines.join("\n");
+      } catch (error) {
+        featureRuntimeInfo.textContent = `Summarizer probe failed: ${error.message}. The Summarizer API may require a flag or specific browser channel.`;
+      }
     }
 
     function renderProfile() {
@@ -2323,6 +2363,7 @@
       currentBrowser = leadBrowser;
       renderProfile();
       renderMatrix();
+      if (currentFeature) renderFeatureInfo(currentFeature);
 
       if (runtimeChip) {
         runtimeChip.textContent = runtime.channel === "unknown"
@@ -2361,6 +2402,7 @@
         currentBrowser = button.dataset.browser;
         renderProfile();
         renderMatrix();
+        if (currentFeature) renderFeatureInfo(currentFeature);
       });
     });
 
