@@ -543,6 +543,22 @@
       color: var(--ink);
     }
 
+    .lang-sample-preview {
+      width: 100%;
+      margin-top: 0.4rem;
+      margin-bottom: 0.6rem;
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--line);
+      padding: 0.75rem;
+      background: rgba(255, 255, 255, 0.55);
+      color: var(--muted);
+      font-size: 0.92rem;
+      white-space: pre-wrap;
+      user-select: text;
+      cursor: text;
+      min-height: 2.6rem;
+    }
+
     .control-row {
       margin-top: 0.7rem;
       display: grid;
@@ -902,15 +918,14 @@
       <div class="output" id="liveTestOutput" aria-live="polite">Run a capability scan, then launch available local API tests from this panel.</div>
       <section class="bench" aria-label="Language detector playground" style="margin-top:0.8rem;">
         <h3>Language Detector Playground</h3>
-        <p class="tests-note">Pick a random multilingual sample, or paste a full page excerpt. This makes whole-page language checks explicit.</p>
-        <label for="languageSampleSelect">Sample pool</label>
+        <p class="tests-note">Choose a sample from the list below, copy its text, then paste it into the text area — or type your own excerpt. This makes whole-page language checks explicit.</p>
+        <label for="languageSampleSelect">Sample texts (select to preview, then copy)</label>
         <select id="languageSampleSelect"></select>
-        <label for="languageSampleInput">Language sample text</label>
-        <textarea id="languageSampleInput" rows="5"></textarea>
-        <p class="sim-meta" id="languageSampleMeta">Expected language: unknown</p>
+        <div id="languageSamplePreview" class="lang-sample-preview" aria-label="Sample text — select all and copy" role="region"></div>
+        <label for="languageSampleInput">Paste or type text to detect</label>
+        <textarea id="languageSampleInput" rows="5" placeholder="Paste or type text here, then click Run Language Detector."></textarea>
         <div class="tests-actions">
-          <button class="cta-secondary" id="shuffleLanguageSample">Load Random Language Sample</button>
-          <button class="cta-secondary" id="runLanguageSampleTest">Run Language Detector on Sample</button>
+          <button class="cta-secondary" id="runLanguageSampleTest">Run Language Detector</button>
         </div>
       </section>
     </section>
@@ -1177,7 +1192,7 @@
     const demoBadge = document.getElementById("demoBadge");
     const languageSampleSelect = document.getElementById("languageSampleSelect");
     const languageSampleInput = document.getElementById("languageSampleInput");
-    const languageSampleMeta = document.getElementById("languageSampleMeta");
+    const languageSamplePreview = document.getElementById("languageSamplePreview");
     const benchLength = document.getElementById("benchLength");
     const benchParagraphs = document.getElementById("benchParagraphs");
     const benchModeFit = document.getElementById("benchModeFit");
@@ -1553,10 +1568,9 @@
     }
 
     function renderLanguageSample(sample) {
-      if (!sample || !languageSampleInput || !languageSampleMeta || !languageSampleSelect) return;
+      if (!sample || !languageSamplePreview || !languageSampleSelect) return;
       languageSampleSelect.value = sample.id;
-      languageSampleInput.value = sample.text;
-      languageSampleMeta.textContent = `Expected language: ${sample.expected}`;
+      languageSamplePreview.textContent = sample.text;
     }
 
     function initLanguagePlayground() {
@@ -1583,7 +1597,7 @@
       const sourceText = languageSampleInput ? languageSampleInput.value.trim() : "";
 
       if (!sourceText) {
-        liveTestOutput.textContent = "Language sample is empty. Paste text from a page or load a random sample first.";
+        liveTestOutput.textContent = "Language sample is empty. Paste text from a page or copy a sample from above first.";
         return;
       }
 
@@ -1599,18 +1613,25 @@
         const result = await session.detect(sourceText);
         if (typeof session.destroy === "function") session.destroy();
 
-        const selected = languageSamples.find((sample) => sample.id === languageSampleSelect.value);
-        const expected = selected ? selected.expected : "Custom sample";
+        const langNames = new Intl.DisplayNames(["en"], { type: "language" });
+        const formatted = result
+          .filter((r) => r.detectedLanguage !== "und")
+          .map((r) => {
+            const percentage = Math.round(r.confidence * 100);
+            let name;
+            // Intl.DisplayNames may throw for unsupported codes; fall back to the raw code
+            try { name = langNames.of(r.detectedLanguage); } catch { name = r.detectedLanguage; }
+            return `${percentage}% Confidence — ${name}`;
+          });
 
         liveTestOutput.textContent = [
-          "Language Detector sample test",
-          `Expected: ${expected}`,
+          "Language Detector",
           `Input length: ${sourceText.length} chars`,
-          `Result: ${JSON.stringify(result)}`
+          formatted.length ? formatted.join("\n") : "No language detected with sufficient confidence."
         ].join("\n");
       } catch (error) {
         liveTestOutput.textContent = [
-          "Language Detector sample test",
+          "Language Detector",
           `Test failed: ${error.message}`,
           "Tip: language detection can be exposed but gated by browser version, flags, or model readiness."
         ].join("\n");
@@ -2405,9 +2426,6 @@
       renderBuiltInTests();
     });
     document.getElementById("runAllLocalTests").addEventListener("click", runAllAvailableLocalTests);
-    document.getElementById("shuffleLanguageSample").addEventListener("click", () => {
-      renderLanguageSample(pickRandom(languageSamples));
-    });
     document.getElementById("runLanguageSampleTest").addEventListener("click", runLanguageDetectorSampleTest);
     if (languageSampleSelect) {
       languageSampleSelect.addEventListener("change", () => {
