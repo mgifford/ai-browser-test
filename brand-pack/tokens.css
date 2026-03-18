@@ -1,0 +1,208 @@
+/*
+ * tokens.css — AI Browser Capability Demo brand tokens
+ *
+ * Usage: Import or copy this file into any project that reuses this brand.
+ * All design decisions derive from these tokens; never hard-code colors,
+ * radii, shadows, or type values in component code.
+ *
+ * Sections
+ *  1. Color tokens (light mode default)
+ *  2. Dark mode overrides
+ *  3. Browser identity tokens (non-negotiable — do not change)
+ *  4. Typography tokens
+ *  5. Spacing & radius tokens
+ *  6. Elevation tokens
+ *  7. Breakpoint custom media queries
+ *  8. Shell constraint
+ */
+
+/* ─────────────────────────────────────────────
+   1. Color tokens — light mode default
+   ───────────────────────────────────────────── */
+:root {
+  /* Surface colors */
+  --bg:     #f2efe7;   /* warm parchment page background        */
+  --text:   #18211f;   /* primary body text                     */
+  --muted:  #50615c;   /* secondary text, captions, metadata    */
+  --card:   rgba(255, 255, 255, 0.72);   /* card / panel background          */
+  --line:   rgba(22, 32, 30, 0.14);     /* borders and dividers             */
+
+  /* Accent colors */
+  --accent:   #ec5f3f;   /* coral — primary CTA, highlights       */
+  --accent-2: #2b7f6d;   /* teal  — secondary accent, positive    */
+  --accent-3: #0f5cda;   /* blue  — tertiary accent, informational */
+
+  /* Fixed utility colors */
+  --color-white: #ffffff;  /* white text on accent (primary CTA); decorative overlays */
+  --surface-chip:   rgba(255, 255, 255, 0.90);  /* chip / badge background            */
+  --surface-btn-secondary: rgba(255, 255, 255, 0.92);  /* secondary button background  */
+
+  /* Status semantic colors (supplement text labels — never use alone) */
+  --status-ok:   #0f5f4f;   /* confirmed / available state           */
+  --status-warn: #8a5a0c;   /* caution / pre-release state           */
+  --status-no:   #7f3f3f;   /* unavailable / error state             */
+
+  /* Notice background fills (low-saturation tints) */
+  --notice-info-bg:  rgba(15, 92, 218, 0.07);
+  --notice-warn-bg:  rgba(138, 90, 12, 0.09);
+  --notice-ok-bg:    rgba(43, 127, 109, 0.07);
+  --notice-error-bg: rgba(127, 63, 63, 0.08);
+}
+
+/* ─────────────────────────────────────────────
+   2. Dark mode overrides
+   ───────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:    #1a2320;
+    --text:  #ede9e0;
+    --muted: #93aaa4;
+    --card:  rgba(30, 42, 38, 0.85);
+    --line:  rgba(237, 233, 224, 0.12);
+
+    --accent:   #f07a5e;
+    --accent-2: #4db39e;
+    --accent-3: #5590f0;
+
+    --status-ok:   #3fcfb0;
+    --status-warn: #d49840;
+    --status-no:   #d97070;
+
+    --notice-info-bg:  rgba(85, 144, 240, 0.1);
+    --notice-warn-bg:  rgba(212, 152, 64, 0.1);
+    --notice-ok-bg:    rgba(77, 179, 158, 0.1);
+    --notice-error-bg: rgba(217, 112, 112, 0.1);
+  }
+}
+
+/* ─────────────────────────────────────────────
+   3. Browser identity tokens
+   NON-NEGOTIABLE — these are official brand colors.
+   Do not modify these values under any circumstances.
+   ───────────────────────────────────────────── */
+:root {
+  --chrome:  #4285f4;   /* Google Chrome brand blue              */
+  --firefox: #ff7139;   /* Mozilla Firefox brand orange          */
+  --edge:    #0aa7ad;   /* Microsoft Edge brand teal             */
+}
+
+/* Browser identity tokens are the same in both color schemes.
+   The @media block below is intentionally empty — it exists only
+   to document that these tokens do NOT change in dark mode. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* --chrome, --firefox, --edge: unchanged in dark mode */
+  }
+}
+
+/* ─────────────────────────────────────────────
+   4. Typography tokens
+   ───────────────────────────────────────────── */
+:root {
+  --font-body:    "Space Grotesk", "Segoe UI", sans-serif;
+  --font-display: "Fraunces", Georgia, serif;
+
+  --lh-body:    1.45;
+  --lh-display: 1.05;
+
+  /* Fluid display scale — use for h1 / hero headings */
+  --text-display: clamp(1.8rem, 4.1vw, 3rem);
+
+  /* Component-level sizes (rem only — never px for text) */
+  --text-xs:  0.78rem;
+  --text-sm:  0.84rem;
+  --text-md:  0.93rem;
+  --text-base: 1rem;
+  --text-lg:  1.2rem;
+
+  /* Prose line length */
+  --prose-max: 65ch;
+}
+
+/* ─────────────────────────────────────────────
+   5. Spacing & radius tokens
+   ───────────────────────────────────────────── */
+:root {
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --radius-pill: 999px;
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.4rem;
+  --space-6: 2rem;
+  --space-8: 4rem;
+}
+
+/* ─────────────────────────────────────────────
+   6. Elevation tokens
+   ───────────────────────────────────────────── */
+:root {
+  --shadow: 0 20px 40px rgba(17, 31, 28, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+  }
+}
+
+/* ─────────────────────────────────────────────
+   7. Breakpoint custom media queries
+   Mobile-first: base styles target < 640px.
+   Override with min-width queries in order.
+   ───────────────────────────────────────────── */
+
+/*
+ * Breakpoint reference — use as @media (min-width: ...) in component CSS:
+ *
+ *   < 640px     mobile base      single-column; full-width controls; matrix scrolls
+ *   ≥ 640px     small            (reserved for minor adjustments)
+ *   ≥ 920px     medium/desktop   multi-column grids; matrix displays all columns inline
+ *
+ * Encode as CSS custom media when PostCSS/draft support is available:
+ *   @custom-media --bp-md (min-width: 920px);
+ *
+ * Until then, use literal values in component files:
+ *   @media (min-width: 920px) { ... }
+ */
+
+:root {
+  --bp-sm: 640px;
+  --bp-md: 920px;
+}
+
+/* ─────────────────────────────────────────────
+   8. Shell width constraint
+   ───────────────────────────────────────────── */
+
+/*
+ * Apply .shell (or equivalent) to the top-level page container:
+ *
+ *   .shell {
+ *     width: min(1120px, calc(100% - 2rem));
+ *     margin: 2rem auto 4rem;
+ *   }
+ */
+
+:root {
+  --shell-max: 1120px;
+  --shell-gutter: 2rem;
+}
+
+/* ─────────────────────────────────────────────
+   Reduced-motion safety net
+   ───────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration:   0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration:  0.01ms !important;
+  }
+}
