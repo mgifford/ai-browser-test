@@ -78,7 +78,7 @@ All tokens are defined as CSS custom properties on `:root`. A single `@media (pr
 | Token | Light value | Dark value | Requirement |
 |---|---|---|---|
 | `--bg` | `#f2efe7` | `#1a2320` | Page and outer background |
-| `--ink` | `#18211f` | `#ede9e0` | Primary text color |
+| `--text` | `#18211f` | `#ede9e0` | Primary text color |
 | `--muted` | `#50615c` | `#93aaa4` | Secondary text; captions; metadata |
 | `--card` | `rgba(255,255,255,0.72)` | `rgba(30,42,38,0.85)` | Card and panel background |
 | `--line` | `rgba(22,32,30,0.14)` | `rgba(237,233,224,0.12)` | Borders and dividers |
@@ -155,7 +155,7 @@ Agents working in this repository must follow these rules in addition to [AGENTS
 
 1. **Read first.** Before making any change, read `AGENTS.md`, this file (`STYLES.md`), and the file you intend to edit.
 2. **Identify the surface.** Determine whether you are editing the site surface (`.html` files) or repository documentation (`.md` files) before applying style rules.
-3. **Never override design tokens.** Do not change the values of `--bg`, `--ink`, `--accent`, `--chrome`, `--firefox`, or `--edge` without an explicit instruction from the repository owner.
+3. **Never override design tokens.** Do not change the values of `--bg`, `--text`, `--accent`, `--chrome`, `--firefox`, or `--edge` without an explicit instruction from the repository owner.
 4. **Never remove accessibility attributes.** Do not remove `aria-live`, `aria-label`, `role`, `scope`, or visible focus styles, even if they appear redundant.
 5. **Language and spelling.** All generated text must use American English spelling (see section 2.4). Do not switch to British or Canadian spelling.
 6. **Scope discipline.** Make the smallest change that fully addresses the task. Do not reformat unrelated code, reorder CSS declarations, or rename variables outside the scope of the task.
