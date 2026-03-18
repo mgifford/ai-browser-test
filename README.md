@@ -158,6 +158,7 @@ See `LICENSE` for full text.
 - [ACCESSIBILITY.md](ACCESSIBILITY.md)
 - [SUSTAINABILITY.md](SUSTAINABILITY.md)
 - [AGENTS.md](AGENTS.md)
+- [STYLES.md](STYLES.md)
 
 ## Research notes
 
