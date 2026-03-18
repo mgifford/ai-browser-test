@@ -29,6 +29,7 @@ This file documents the intended agent behavior and collaboration conventions fo
 
 - [ACCESSIBILITY.md](ACCESSIBILITY.md)
 - [SUSTAINABILITY.md](SUSTAINABILITY.md)
+- [STYLES.md](STYLES.md)
 
 ## Public links
 
