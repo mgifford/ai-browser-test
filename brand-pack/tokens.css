@@ -1,0 +1,47 @@
+/**
+ * AI Browser Test: Core Design Tokens
+ * Preservation of visual fingerprint: warm parchment/deep forest.
+ */
+
+:root {
+  /* Surface & Backgrounds (Parchment/Forest) */
+  --color-bg-light: #fdfaf3;      /* Warm Parchment */
+  --color-bg-dark: #0a1a12;       /* Deep Forest */
+  --color-surface-light: #ffffff;
+  --color-surface-dark: #12261d;
+  
+  /* Primary Accents */
+  --color-accent-coral: #ff6b6b;  /* Primary Action */
+  --color-accent-teal: #2d9a9a;   /* Secondary/Success */
+  --color-accent-blue: #3498db;   /* Informational */
+  
+  /* Browser Identity (Non-negotiable) */
+  --color-browser-chrome: #4285f4;
+  --color-browser-firefox: #ff7139;
+  --color-browser-edge: #0078d7;
+
+  /* Elevation & Radius */
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-card-dark: 0 4px 24px rgba(0, 0, 0, 0.4);
+
+  /* Typography */
+  --font-display: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: var(--color-bg-dark);
+    --color-surface: var(--color-surface-dark);
+    --shadow-active: var(--shadow-card-dark);
+  }
+}
+
+/* Shell constraints */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
