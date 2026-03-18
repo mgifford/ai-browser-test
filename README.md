@@ -13,14 +13,14 @@ It is designed for live presentations where you need to:
 
 ## Project files
 
-- `index.html`: Main UI and demo logic
-- `browser-ai-configuration.html`: Guide for enabling/testing AI abilities in browser beta/nightly channels
-- `experiment-recipes.html`: Hands-on experimentation lab with copy-ready prompts and source blocks
-- `data/prompt-simulator.yml`: Randomized starter prompts and calls to action for AI Prompt Simulator
-- `data/quick-scenarios.yml`: Randomized Quick Scenarios shown on load
-- `data/sample-corpus.yml`: Local long-form source documents (5+ paragraphs) used for summarize testing
+- `docs/index.html`: Main UI and demo logic (served by GitHub Pages)
+- `docs/browser-ai-configuration.html`: Guide for enabling/testing AI abilities in browser beta/nightly channels
+- `docs/experiment-recipes.html`: Hands-on experimentation lab with copy-ready prompts and source blocks
+- `docs/data/prompt-simulator.yml`: Randomized starter prompts and calls to action for AI Prompt Simulator
+- `docs/data/quick-scenarios.yml`: Randomized Quick Scenarios shown on load
+- `docs/data/sample-corpus.yml`: Local long-form source documents (5+ paragraphs) used for summarize testing
+- `docs/.nojekyll`: Ensures GitHub Pages serves files as-is
 - `LICENSE`: GNU Affero General Public License v3.0 (AGPL-3.0)
-- `.nojekyll`: Ensures GitHub Pages serves files as-is
 - `ACCESSIBILITY.md`: Accessibility commitments and checklist
 - `SUSTAINABILITY.md`: Sustainability goals and practices
 - `AGENTS.md`: Agent workflow and repository conventions
@@ -72,7 +72,7 @@ Runtime dependencies:
 If external CDNs are blocked/offline, the app remains usable with reduced functionality for those features.
 
 1. Clone this repository.
-2. Open `index.html` in a browser.
+2. Open `docs/index.html` in a browser.
 
 Optional local server:
 
@@ -81,7 +81,7 @@ cd /workspaces/ai-browser-test
 python3 -m http.server 8000
 ```
 
-Then visit `http://localhost:8000`.
+Then visit `http://localhost:8000/docs/`.
 
 ## Built-in browser AI tests
 
@@ -105,20 +105,20 @@ The page now includes a local AI lab that:
 
 You can edit sample content without touching JavaScript:
 
-1. Update [data/prompt-simulator.yml](data/prompt-simulator.yml) to add or revise starter prompts and calls to action.
-2. Update [data/quick-scenarios.yml](data/quick-scenarios.yml) to add or revise scenario cards.
-3. Update [data/sample-corpus.yml](data/sample-corpus.yml) with richer source text for deeper summary tests.
+1. Update [docs/data/prompt-simulator.yml](docs/data/prompt-simulator.yml) to add or revise starter prompts and calls to action.
+2. Update [docs/data/quick-scenarios.yml](docs/data/quick-scenarios.yml) to add or revise scenario cards.
+3. Update [docs/data/sample-corpus.yml](docs/data/sample-corpus.yml) with richer source text for deeper summary tests.
 4. Reload the page to see different randomized selections.
 
 For summarize mode, the app now auto-injects a random local 5+ paragraph source document when a prompt is too short.
 
 For guided testing and copy-ready assets, use:
 
-- [experiment-recipes.html](experiment-recipes.html)
+- [docs/experiment-recipes.html](docs/experiment-recipes.html)
 
 ## Feature details and limits
 
-The Feature details panel in [index.html](index.html):
+The Feature details panel in [docs/index.html](docs/index.html):
 
 1. Explains what each capability means in practice
 2. Links to vendor docs/support pages for feature specifics
@@ -132,17 +132,17 @@ Important scope limits for browser-page probing:
 
 For setup guidance before testing, use:
 
-- [browser-ai-configuration.html](browser-ai-configuration.html)
+- [docs/browser-ai-configuration.html](docs/browser-ai-configuration.html)
 
 ## GitHub Pages deployment
 
-This repository is ready for GitHub Pages as a static site.
+This repository is ready for GitHub Pages as a static site served from the `docs/` folder.
 
 1. Push `main` to GitHub.
 2. In GitHub, go to **Settings > Pages**.
 3. Under **Build and deployment**, choose:
 	 - **Source**: Deploy from a branch
-	 - **Branch**: `main` / `/ (root)`
+	 - **Branch**: `main`, folder `/docs`
 4. Save and wait for publishing.
 5. Open your Pages URL and run the demo in each browser.
 
@@ -163,15 +163,3 @@ See `LICENSE` for full text.
 ## Research notes
 
 - [BROWSER_AI_SPECIFICS.md](BROWSER_AI_SPECIFICS.md)
-
-## Rendered documentation pages
-
-GitHub Pages can serve rendered HTML versions of project docs from:
-
-- [README.html](README.html)
-- [AGENTS.html](AGENTS.html)
-- [BROWSER_AI_SPECIFICS.html](BROWSER_AI_SPECIFICS.html)
-
-If you want the source map rendered in Pages, use:
-
-- `https://mgifford.github.io/ai-browser-test/BROWSER_AI_SPECIFICS.html`
