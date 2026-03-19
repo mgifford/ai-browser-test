@@ -160,6 +160,32 @@ See `LICENSE` for full text.
 - [AGENTS.md](AGENTS.md)
 - [STYLES.md](STYLES.md)
 
+## AI disclosure
+
+This section discloses every AI tool used in this project — how it was used to build the project, whether AI runs during normal use, and which browser-based AI is invoked by the demo itself.
+
+### AI used to build this project
+
+| AI tool | Role |
+|---|---|
+| **GitHub Copilot** | Used as a coding assistant throughout development — generating code, writing and editing documentation, and implementing new features via Copilot-driven pull requests. |
+
+### AI invoked when running the demo
+
+The demo application itself probes and optionally invokes browser-built-in AI APIs when a user clicks test or run buttons. No AI runs automatically in the background; all invocations require an explicit user action.
+
+| Browser / AI | When invoked |
+|---|---|
+| **Chrome Gemini Nano** (Prompt API, Summarizer API, Writer API, Rewriter API, Translator API, Language Detector API) | When a user clicks **Run Built-in Tests** or an individual API test button in Chrome with the relevant origin trial or flag enabled. |
+| **Firefox AI** | When a user runs the built-in test panel in Firefox with AI features enabled in browser settings. |
+| **Microsoft Edge Copilot** | When a user runs the built-in test panel in Edge; Copilot surface introspection is limited to what the browser exposes to page-scope JavaScript. |
+
+### Browser-based AI: scope and limits
+
+- All browser AI calls are made from page-scope JavaScript; cloud routing and model identity are not always exposed.
+- The demo cannot access browser AI surfaces that are restricted to browser-internal or extension scope.
+- Model identity probes are best-effort and browser-dependent; results may vary by version, channel, geography, account, and experiment flags.
+
 ## Research notes
 
 - [BROWSER_AI_SPECIFICS.md](BROWSER_AI_SPECIFICS.md)

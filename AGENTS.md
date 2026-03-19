@@ -17,6 +17,7 @@ This file documents the intended agent behavior and collaboration conventions fo
 - Preserve accessibility and sustainability commitments
 - Keep markdown documentation aligned with runtime feature behavior and probe outputs
 - Do not create HTML renderings of markdown documentation files (e.g. do not create ACCESSIBILITY.html or SUSTAINABILITY.html); keep docs in `.md` format only
+- Disclose any AI tools used to make changes in the AI disclosure section of README.md; only list tools that were actually used, and describe what each was used for
 
 ## Repository priorities
 
