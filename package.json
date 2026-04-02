@@ -1,0 +1,12 @@
+{
+  "name": "ai-browser-test",
+  "version": "1.0.0",
+  "description": "AI Browser Capability Demo — utility tests",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

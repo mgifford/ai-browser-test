@@ -1096,6 +1096,7 @@
     </footer>
   </main>
 
+  <script src="lib/utils.js"></script>
   <script>
     const browserData = {
       chrome: {
@@ -1365,11 +1366,7 @@
       }
     ];
 
-    const getCellClass = (value) => {
-      if (value === "Strong") return "ok";
-      if (value === "Medium" || value === "Emerging") return "warn";
-      return "no";
-    };
+    // getCellClass is provided by lib/utils.js
 
     function getLiveEntryById(id) {
       return liveCapabilityState.find((entry) => entry.id === id);
@@ -1681,10 +1678,7 @@
       demoBadge.textContent = `Interactive Demo | AI Browsers in ${month} ${year}`;
     }
 
-    function pickRandom(array) {
-      if (!array.length) return null;
-      return array[Math.floor(Math.random() * array.length)];
-    }
+    // pickRandom is provided by lib/utils.js
 
     function renderLanguageSample(sample) {
       if (!sample || !languageSamplePreview || !languageSampleSelect) return;
@@ -1757,36 +1751,7 @@
       }
     }
 
-    function paragraphCount(text) {
-      if (!text) return 0;
-      return text
-        .split(/\n\s*\n/g)
-        .map((part) => part.trim())
-        .filter(Boolean)
-        .length;
-    }
-
-    function wordCount(text) {
-      return (text || "").trim().split(/\s+/).filter(Boolean).length;
-    }
-
-    function sentenceCount(text) {
-      return (text || "").split(/[.!?]+/).map((s) => s.trim()).filter(Boolean).length;
-    }
-
-    function extractLeadSentences(text, maxSentences = 4) {
-      const paragraphs = (text || "")
-        .split(/\n\s*\n/g)
-        .map((p) => p.trim())
-        .filter(Boolean);
-      const leads = [];
-      for (const para of paragraphs) {
-        const first = para.split(/(?<=[.!?])\s+/)[0] || para;
-        if (first.trim()) leads.push(first.trim());
-        if (leads.length >= maxSentences) break;
-      }
-      return leads;
-    }
+    // paragraphCount, wordCount, sentenceCount, extractLeadSentences are provided by lib/utils.js
 
     function evaluatePromptQuality() {
       const text = promptInput.value;
@@ -1866,14 +1831,7 @@
       ].join("\n");
     }
 
-    function pickRandomSubset(array, size) {
-      const copy = [...array];
-      for (let i = copy.length - 1; i > 0; i -= 1) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      }
-      return copy.slice(0, size);
-    }
+    // pickRandomSubset is provided by lib/utils.js
 
     async function parseYamlString(yamlText) {
       try {
@@ -2064,14 +2022,7 @@
 
     const liveCapabilityState = [];
 
-    function normalizeAvailability(rawValue) {
-      if (typeof rawValue === "undefined") return { text: "unknown", ready: false };
-      const text = String(rawValue).toLowerCase();
-      // Use word-boundary regex for all tokens to avoid false positives
-      // (e.g. "unavailable" must not match "available", "already" must not match "ready").
-      const ready = /\b(available|readily|ready|yes)\b/.test(text);
-      return { text, ready };
-    }
+    // normalizeAvailability is provided by lib/utils.js
 
     async function probeInterface(spec) {
       const found = spec.candidates.find((path) => typeof resolvePath(path) !== "undefined");
