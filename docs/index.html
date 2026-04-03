@@ -1885,7 +1885,7 @@
           promptInput.value = taskType.value === "summarize"
             ? buildSummarizationInput(rawPrompt)
             : rawPrompt;
-          outputBox.textContent = generateResponse(promptInput.value, taskType.value, currentBrowser);
+          outputBox.textContent = generateResponse(promptInput.value, taskType.value, browserData[currentBrowser]);
         });
 
         scenarioGrid.appendChild(button);
@@ -1933,52 +1933,10 @@
       evaluatePromptQuality();
     }
 
-    function generateResponse(promptText, mode, browser) {
-      const profile = browserData[browser];
-      const clean = promptText.replace(/\s+/g, " ").trim();
-      const clipped = clean.slice(0, 140) || "the selected page";
-      const leads = extractLeadSentences(promptText, 4);
-      const words = wordCount(promptText);
-      const paras = paragraphCount(promptText);
-
-      if (mode === "summarize") {
-        return [
-          `${profile.label} AI (${profile.voice})`,
-          `Summary signal: analyzed ${words} words across ${paras} paragraphs.`,
-          `Scope: ${clipped.toLowerCase()}.`,
-          "Lead points:",
-          ...leads.map((line, idx) => `${idx + 1}) ${line}`),
-          "Top actions:",
-          "1) Capture key points into a short brief.",
-          "2) Ask follow-up questions on risk, cost, and timeline.",
-          "3) Save an AI-generated checklist for next steps."
-        ].join("\n");
-      }
-
-      if (mode === "rewrite") {
-        return [
-          `${profile.label} AI (${profile.voice})`,
-          "Executive rewrite:",
-          `This topic can be summarized as: ${clipped}.`,
-          "Recommendation: prioritize low-risk pilots, define success metrics, and review governance before scaling.",
-          `Readability target: concise language for ${words > 700 ? "long-form" : "short-form"} input.`
-        ].join("\n");
-      }
-
-      return [
-        `${profile.label} AI (${profile.voice})`,
-        "Comparison output:",
-        "Option A: Faster rollout, lower setup effort.",
-        "Option B: Better controls, higher governance confidence.",
-        "Suggested direction: start with A, then evolve toward B for long-term resilience."
-      ].join("\n");
-    }
+    // generateResponse is provided by lib/utils.js; call with browserData[browser] as profile
 
     function resolvePath(path) {
-      return path.split(".").reduce((acc, key) => {
-        if (acc == null) return undefined;
-        return acc[key];
-      }, window);
+      return resolveObjectPath(window, path);
     }
 
     const liveApiSpecs = [
@@ -2471,7 +2429,7 @@
     });
 
     document.getElementById("runPrompt").addEventListener("click", () => {
-      outputBox.textContent = generateResponse(promptInput.value, taskType.value, currentBrowser);
+      outputBox.textContent = generateResponse(promptInput.value, taskType.value, browserData[currentBrowser]);
       evaluatePromptQuality();
     });
 
@@ -2483,8 +2441,8 @@
     document.getElementById("evaluatePrompt").addEventListener("click", evaluatePromptQuality);
     document.getElementById("loadBenchmark").addEventListener("click", loadBenchmarkPack);
     document.getElementById("rerunSamePrompt").addEventListener("click", () => {
-      const once = generateResponse(promptInput.value, taskType.value, currentBrowser);
-      const twice = generateResponse(promptInput.value, taskType.value, currentBrowser);
+      const once = generateResponse(promptInput.value, taskType.value, browserData[currentBrowser]);
+      const twice = generateResponse(promptInput.value, taskType.value, browserData[currentBrowser]);
       const consistent = once === twice;
       benchNotes.textContent = [
         `Consistency check: ${consistent ? "pass" : "fail"}`,

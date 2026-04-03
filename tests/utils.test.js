@@ -11,7 +11,9 @@ const {
   pickRandom,
   pickRandomSubset,
   normalizeAvailability,
-  getCellClass
+  getCellClass,
+  resolveObjectPath,
+  generateResponse
 } = require("../docs/lib/utils");
 
 // ---------------------------------------------------------------------------
@@ -390,5 +392,199 @@ describe("getCellClass", () => {
 
   it("is case-sensitive (lowercase 'strong' returns 'no')", () => {
     assert.equal(getCellClass("strong"), "no");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// resolveObjectPath
+// ---------------------------------------------------------------------------
+
+describe("resolveObjectPath", () => {
+  it("returns the value at a shallow path", () => {
+    assert.equal(resolveObjectPath({ a: 1 }, "a"), 1);
+  });
+
+  it("returns the value at a nested path", () => {
+    assert.equal(resolveObjectPath({ a: { b: { c: 42 } } }, "a.b.c"), 42);
+  });
+
+  it("returns undefined for a missing top-level key", () => {
+    assert.equal(resolveObjectPath({}, "missing"), undefined);
+  });
+
+  it("returns undefined for a missing nested key", () => {
+    assert.equal(resolveObjectPath({ a: {} }, "a.b.c"), undefined);
+  });
+
+  it("returns undefined when an intermediate segment is null", () => {
+    assert.equal(resolveObjectPath({ a: null }, "a.b"), undefined);
+  });
+
+  it("returns root object for an empty path string", () => {
+    const obj = { ai: { languageModel: "lm" } };
+    assert.equal(resolveObjectPath(obj, ""), obj);
+  });
+
+  it("resolves a normal two-segment path", () => {
+    const obj = { ai: { languageModel: "lm" } };
+    assert.equal(resolveObjectPath(obj, "ai.languageModel"), "lm");
+  });
+
+  it("does not throw on null root", () => {
+    assert.equal(resolveObjectPath(null, "a"), undefined);
+  });
+
+  it("handles a single-segment path", () => {
+    assert.equal(resolveObjectPath({ x: "hello" }, "x"), "hello");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// generateResponse
+// ---------------------------------------------------------------------------
+
+describe("generateResponse", () => {
+  const chromeProfile = { label: "Chrome", voice: "Crisp and productivity-oriented" };
+  const firefoxProfile = { label: "Firefox", voice: "Transparent and control-focused" };
+
+  const shortPrompt = "Analyze this topic for risks.";
+  const longPrompt = [
+    "Paragraph one about risk assessment.",
+    "",
+    "Paragraph two about governance.",
+    "",
+    "Paragraph three about stakeholder impact.",
+    "",
+    "Paragraph four about timeline.",
+    "",
+    "Paragraph five about mitigation strategies.",
+    "",
+    "Paragraph six about success metrics."
+  ].join("\n");
+
+  // --- summarize mode ---
+
+  it("summarize: includes browser label and voice", () => {
+    const result = generateResponse(shortPrompt, "summarize", chromeProfile);
+    assert.ok(result.startsWith("Chrome AI (Crisp and productivity-oriented)"));
+  });
+
+  it("summarize: contains word/paragraph count signal line", () => {
+    const result = generateResponse(shortPrompt, "summarize", chromeProfile);
+    assert.ok(result.includes("Summary signal: analyzed"));
+    assert.ok(result.includes("words across"));
+    assert.ok(result.includes("paragraphs"));
+  });
+
+  it("summarize: contains scope line derived from prompt text", () => {
+    const result = generateResponse("Analyze climate risks.", "summarize", chromeProfile);
+    assert.ok(result.includes("Scope:"));
+    assert.ok(result.includes("analyze climate risks."));
+  });
+
+  it("summarize: contains lead points section", () => {
+    const result = generateResponse(longPrompt, "summarize", chromeProfile);
+    assert.ok(result.includes("Lead points:"));
+    assert.ok(result.includes("1)"));
+  });
+
+  it("summarize: contains top actions section", () => {
+    const result = generateResponse(shortPrompt, "summarize", chromeProfile);
+    assert.ok(result.includes("Top actions:"));
+    assert.ok(result.includes("1) Capture key points"));
+  });
+
+  it("summarize: works with Firefox profile", () => {
+    const result = generateResponse(shortPrompt, "summarize", firefoxProfile);
+    assert.ok(result.startsWith("Firefox AI (Transparent and control-focused)"));
+  });
+
+  it("summarize: falls back to 'the selected page' scope for empty prompt", () => {
+    const result = generateResponse("", "summarize", chromeProfile);
+    assert.ok(result.includes("the selected page"));
+  });
+
+  it("summarize: clips scope to 140 characters", () => {
+    const longText = "A".repeat(200);
+    const result = generateResponse(longText, "summarize", chromeProfile);
+    const scopeLine = result.split("\n").find((l) => l.startsWith("Scope:"));
+    assert.ok(scopeLine);
+    // scope is clipped at 140 chars then lowercased
+    assert.ok(scopeLine.length <= "Scope: ".length + 140 + 1);
+  });
+
+  // --- rewrite mode ---
+
+  it("rewrite: includes browser label and voice", () => {
+    const result = generateResponse(shortPrompt, "rewrite", chromeProfile);
+    assert.ok(result.startsWith("Chrome AI (Crisp and productivity-oriented)"));
+  });
+
+  it("rewrite: contains 'Executive rewrite:' header", () => {
+    const result = generateResponse(shortPrompt, "rewrite", chromeProfile);
+    assert.ok(result.includes("Executive rewrite:"));
+  });
+
+  it("rewrite: contains recommendation line", () => {
+    const result = generateResponse(shortPrompt, "rewrite", chromeProfile);
+    assert.ok(result.includes("Recommendation:"));
+  });
+
+  it("rewrite: labels short-form for prompts under 700 words", () => {
+    const result = generateResponse(shortPrompt, "rewrite", chromeProfile);
+    assert.ok(result.includes("short-form"));
+  });
+
+  it("rewrite: labels long-form for prompts over 700 words", () => {
+    const manyWords = new Array(750).fill("word").join(" ");
+    const result = generateResponse(manyWords, "rewrite", chromeProfile);
+    assert.ok(result.includes("long-form"));
+  });
+
+  it("rewrite: scope clipped to 140 chars in topic summary line", () => {
+    const longText = new Array(200).fill("x").join(" ");
+    const result = generateResponse(longText, "rewrite", chromeProfile);
+    const topicLine = result.split("\n").find((l) => l.includes("This topic can be summarized as:"));
+    assert.ok(topicLine);
+    // "This topic can be summarized as: " prefix + clipped content (≤140 chars) + "."
+    const prefix = "This topic can be summarized as: ";
+    const suffix = ".";
+    const clippedContent = topicLine.slice(prefix.length, topicLine.length - suffix.length);
+    assert.ok(clippedContent.length <= 140);
+  });
+
+  // --- compare mode ---
+
+  it("compare: includes browser label and voice", () => {
+    const result = generateResponse(shortPrompt, "compare", chromeProfile);
+    assert.ok(result.startsWith("Chrome AI (Crisp and productivity-oriented)"));
+  });
+
+  it("compare: contains 'Comparison output:' header", () => {
+    const result = generateResponse(shortPrompt, "compare", chromeProfile);
+    assert.ok(result.includes("Comparison output:"));
+  });
+
+  it("compare: contains Option A and Option B", () => {
+    const result = generateResponse(shortPrompt, "compare", chromeProfile);
+    assert.ok(result.includes("Option A:"));
+    assert.ok(result.includes("Option B:"));
+  });
+
+  it("compare: contains suggested direction", () => {
+    const result = generateResponse(shortPrompt, "compare", chromeProfile);
+    assert.ok(result.includes("Suggested direction:"));
+  });
+
+  it("compare: unknown mode falls through to comparison output", () => {
+    const result = generateResponse(shortPrompt, "unknown-mode", chromeProfile);
+    assert.ok(result.includes("Comparison output:"));
+  });
+
+  it("each mode returns a non-empty string", () => {
+    for (const mode of ["summarize", "rewrite", "compare"]) {
+      const result = generateResponse(shortPrompt, mode, chromeProfile);
+      assert.ok(typeof result === "string" && result.length > 0);
+    }
   });
 });
