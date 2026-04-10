@@ -300,7 +300,7 @@ describe("pickRandomSubset", () => {
 
 describe("normalizeAvailability", () => {
   it("returns { text: 'unknown', ready: false } for undefined", () => {
-    assert.deepEqual(normalizeAvailability(undefined), { text: "unknown", ready: false });
+    assert.deepEqual(normalizeAvailability(undefined), { text: "unknown", ready: false, downloadable: false });
   });
 
   it("marks 'available' as ready", () => {
@@ -363,6 +363,35 @@ describe("normalizeAvailability", () => {
     const r = normalizeAvailability(null);
     assert.equal(r.text, "null");
     assert.equal(r.ready, false);
+  });
+
+  it("marks 'downloadable' as not ready but downloadable", () => {
+    const r = normalizeAvailability("downloadable");
+    assert.equal(r.ready, false);
+    assert.equal(r.downloadable, true);
+  });
+
+  it("marks 'downloading' as not ready but downloadable", () => {
+    const r = normalizeAvailability("downloading");
+    assert.equal(r.ready, false);
+    assert.equal(r.downloadable, true);
+  });
+
+  it("marks 'available' as not downloadable", () => {
+    const r = normalizeAvailability("available");
+    assert.equal(r.ready, true);
+    assert.equal(r.downloadable, false);
+  });
+
+  it("marks 'no' as not downloadable", () => {
+    const r = normalizeAvailability("no");
+    assert.equal(r.ready, false);
+    assert.equal(r.downloadable, false);
+  });
+
+  it("returns downloadable: false for undefined", () => {
+    const r = normalizeAvailability(undefined);
+    assert.equal(r.downloadable, false);
   });
 });
 
