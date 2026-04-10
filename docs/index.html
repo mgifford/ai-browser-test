@@ -1998,6 +1998,7 @@
       const target = resolvePath(found);
       let availabilityText = "not provided";
       let ready = false;
+      let downloadable = false;
 
       try {
         if (target && typeof target.availability === "function") {
@@ -2005,6 +2006,7 @@
           const normalized = normalizeAvailability(availabilityRaw);
           availabilityText = normalized.text;
           ready = normalized.ready;
+          downloadable = normalized.downloadable;
         } else {
           ready = typeof target.create === "function" || typeof target === "function";
         }
@@ -2016,12 +2018,20 @@
         ? `Detected ${found}`
         : `Detected ${found} | availability: ${availabilityText}`;
 
+      let status = "Detected but not ready";
+      if (ready) {
+        status = "Detected and ready";
+      } else if (downloadable) {
+        status = "Detected but not ready (downloadable)";
+      }
+
       return {
         ...spec,
         detectedPath: found,
-        status: ready ? "Detected and ready" : "Detected but not ready",
+        status,
         statusClass: ready ? "ok" : "warn",
         details,
+        downloadable,
         canRunTest: ready
       };
     }
@@ -2140,10 +2150,15 @@
         } else if (rowData.detectedPath) {
           const tip = document.createElement("div");
           tip.className = "api-tip";
-          const isDownloadable = /\bdownloadable\b/.test((rowData.details || "").toLowerCase());
-          tip.textContent = isDownloadable
-            ? "Availability: downloadable — the API is detected but the on-device model has not been downloaded yet. Visit chrome://components (Chrome) or edge://components (Edge) to trigger the download, or wait for the browser to download it automatically. The AI Prompt Simulator above works now; this status only affects real API calls."
-            : "Tip: API may be exposed but gated by browser version, flags, permissions, or model availability. The AI Prompt Simulator above works regardless of this status.";
+          const isDownloading = /\bdownloading\b/.test((rowData.details || "").toLowerCase());
+          const isDownloadable = rowData.downloadable && !isDownloading;
+          if (isDownloading) {
+            tip.textContent = "Availability: downloading — the on-device model is currently being downloaded. The AI Prompt Simulator above works now; real API calls will become available once the download completes.";
+          } else if (isDownloadable) {
+            tip.textContent = "Availability: downloadable — the API is detected but the on-device model has not been downloaded yet. Visit chrome://components (Chrome) or edge://components (Edge) to trigger the download, or wait for the browser to download it automatically. The AI Prompt Simulator above works now; this status only affects real API calls.";
+          } else {
+            tip.textContent = "Tip: API may be exposed but gated by browser version, flags, permissions, or model availability. The AI Prompt Simulator above works regardless of this status.";
+          }
           detailsCell.appendChild(tip);
         }
 
@@ -2158,7 +2173,7 @@
       const tests = [
         {
           name: "Prompt API",
-          candidates: ["ai", "LanguageModel"]
+          candidates: ["LanguageModel", "ai.languageModel"]
         },
         {
           name: "Summarizer API",

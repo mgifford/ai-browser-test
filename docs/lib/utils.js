@@ -91,10 +91,10 @@ function pickRandomSubset(array, size) {
 /**
  * Normalize an availability value returned by a browser AI API.
  * @param {*} rawValue
- * @returns {{ text: string, ready: boolean }}
+ * @returns {{ text: string, ready: boolean, downloadable: boolean }}
  */
 function normalizeAvailability(rawValue) {
-  if (typeof rawValue === "undefined") return { text: "unknown", ready: false };
+  if (typeof rawValue === "undefined") return { text: "unknown", ready: false, downloadable: false };
   var text = String(rawValue).toLowerCase();
   // Explicit "not available" patterns take precedence so that hyphenated forms
   // like "not-available" are not accidentally matched by the ready pattern below.
@@ -102,7 +102,9 @@ function normalizeAvailability(rawValue) {
   // Use word-boundary regex to avoid false positives
   // (e.g. "unavailable" must not match "available", "already" must not match "ready").
   var ready = !notReady && /\b(available|readily|ready|yes)\b/.test(text);
-  return { text: text, ready: ready };
+  // "downloadable" = model exists but needs download; "downloading" = download in progress.
+  var downloadable = !ready && /\b(downloadable|downloading)\b/.test(text);
+  return { text: text, ready: ready, downloadable: downloadable };
 }
 
 /**
