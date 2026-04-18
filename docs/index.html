@@ -2152,10 +2152,23 @@
           tip.className = "api-tip";
           const isDownloading = /\bdownloading\b/.test((rowData.details || "").toLowerCase());
           const isDownloadable = rowData.downloadable && !isDownloading;
+          const detectedBrowser = (runtimeContext && runtimeContext.browser) || "unknown";
           if (isDownloading) {
             tip.textContent = "Availability: downloading — the on-device model is currently being downloaded. The AI Prompt Simulator above works now; real API calls will become available once the download completes.";
           } else if (isDownloadable) {
-            tip.textContent = "Availability: downloadable — the API is detected but the on-device model has not been downloaded yet. Visit chrome://components (Chrome) or edge://components (Edge) to trigger the download, or wait for the browser to download it automatically. The AI Prompt Simulator above works now; this status only affects real API calls.";
+            let downloadInstruction;
+            if (detectedBrowser === "chrome") {
+              downloadInstruction = "Visit chrome://components in this Chrome window to trigger the download, or wait for Chrome to download it automatically.";
+            } else if (detectedBrowser === "edge") {
+              downloadInstruction = "Visit edge://components in this Edge window to trigger the download, or wait for Edge to download it automatically.";
+            } else if (detectedBrowser === "firefox") {
+              downloadInstruction = "Firefox does not yet expose a manual model download page. The model will be downloaded automatically when available.";
+            } else if (detectedBrowser === "safari") {
+              downloadInstruction = "Safari does not yet expose a manual model download page. The model will be downloaded automatically when available.";
+            } else {
+              downloadInstruction = "Visit the browser's internal components page (e.g. chrome://components or edge://components) to trigger the download, or wait for the browser to do it automatically.";
+            }
+            tip.textContent = `Availability: downloadable — the API is detected but the on-device model has not been downloaded yet. ${downloadInstruction} The AI Prompt Simulator above works now; this status only affects real API calls.`;
           } else {
             tip.textContent = "Tip: API may be exposed but gated by browser version, flags, permissions, or model availability. The AI Prompt Simulator above works regardless of this status.";
           }

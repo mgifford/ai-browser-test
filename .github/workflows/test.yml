@@ -20,5 +20,15 @@ jobs:
         with:
           node-version: "lts/*"
 
+      - name: Install dependencies
+        run: npm install
+
       - name: Run utility tests
         run: npm test
+
+      - name: Install Playwright environments
+        run: npx playwright install --with-deps
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+

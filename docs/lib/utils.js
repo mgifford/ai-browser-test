@@ -6,8 +6,6 @@
  * Node.js usage: const { … } = require('./docs/lib/utils');
  */
 
-/* eslint-disable no-var */
-
 /**
  * Count non-empty paragraphs (sections separated by blank lines) in text.
  * @param {string} text
@@ -17,7 +15,7 @@ function paragraphCount(text) {
   if (!text) return 0;
   return text
     .split(/\n\s*\n/g)
-    .map(function (part) { return part.trim(); })
+    .map(part => part.trim())
     .filter(Boolean)
     .length;
 }
@@ -37,7 +35,7 @@ function wordCount(text) {
  * @returns {number}
  */
 function sentenceCount(text) {
-  return (text || "").split(/[.!?]+/).map(function (s) { return s.trim(); }).filter(Boolean).length;
+  return (text || "").split(/[.!?]+/).map(s => s.trim()).filter(Boolean).length;
 }
 
 /**
@@ -46,16 +44,15 @@ function sentenceCount(text) {
  * @param {number} [maxSentences=4]
  * @returns {string[]}
  */
-function extractLeadSentences(text, maxSentences) {
-  if (maxSentences === undefined) maxSentences = 4;
-  var paragraphs = (text || "")
+function extractLeadSentences(text, maxSentences = 4) {
+  const paragraphs = (text || "")
     .split(/\n\s*\n/g)
-    .map(function (p) { return p.trim(); })
+    .map(p => p.trim())
     .filter(Boolean);
-  var leads = [];
-  for (var i = 0; i < paragraphs.length; i++) {
-    var para = paragraphs[i];
-    var first = para.split(/(?<=[.!?])\s+/)[0] || para;
+  const leads = [];
+  for (let i = 0; i < paragraphs.length; i++) {
+    const para = paragraphs[i];
+    const first = para.split(/(?<=[.!?])\s+/)[0] || para;
     if (first.trim()) leads.push(first.trim());
     if (leads.length >= maxSentences) break;
   }
@@ -80,10 +77,10 @@ function pickRandom(array) {
  * @returns {Array}
  */
 function pickRandomSubset(array, size) {
-  var copy = array.slice();
-  for (var i = copy.length - 1; i > 0; i -= 1) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var tmp = copy[i]; copy[i] = copy[j]; copy[j] = tmp;
+  const copy = array.slice();
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = copy[i]; copy[i] = copy[j]; copy[j] = tmp;
   }
   return copy.slice(0, size);
 }
@@ -95,16 +92,16 @@ function pickRandomSubset(array, size) {
  */
 function normalizeAvailability(rawValue) {
   if (typeof rawValue === "undefined") return { text: "unknown", ready: false, downloadable: false };
-  var text = String(rawValue).toLowerCase();
+  const text = String(rawValue).toLowerCase();
   // Explicit "not available" patterns take precedence so that hyphenated forms
   // like "not-available" are not accidentally matched by the ready pattern below.
-  var notReady = /\bnot[- ]available\b/.test(text);
+  const notReady = /\bnot[- ]available\b/.test(text);
   // Use word-boundary regex to avoid false positives
   // (e.g. "unavailable" must not match "available", "already" must not match "ready").
-  var ready = !notReady && /\b(available|readily|ready|yes)\b/.test(text);
+  const ready = !notReady && /\b(available|readily|ready|yes)\b/.test(text);
   // "downloadable" = model exists but needs download; "downloading" = download in progress.
-  var downloadable = !ready && /\b(downloadable|downloading)\b/.test(text);
-  return { text: text, ready: ready, downloadable: downloadable };
+  const downloadable = !ready && /\b(downloadable|downloading)\b/.test(text);
+  return { text, ready, downloadable };
 }
 
 /**
@@ -127,7 +124,7 @@ function getCellClass(value) {
  */
 function resolveObjectPath(root, path) {
   if (!path) return root;
-  return path.split(".").reduce(function (acc, key) {
+  return path.split(".").reduce((acc, key) => {
     if (acc == null) return undefined;
     return acc[key];
   }, root);
@@ -143,19 +140,19 @@ function resolveObjectPath(root, path) {
  * @returns {string}
  */
 function generateResponse(promptText, mode, profile) {
-  var clean = promptText.replace(/\s+/g, " ").trim();
-  var clipped = clean.slice(0, 140) || "the selected page";
-  var leads = extractLeadSentences(promptText, 4);
-  var words = wordCount(promptText);
-  var paras = paragraphCount(promptText);
+  const clean = promptText.replace(/\s+/g, " ").trim();
+  const clipped = clean.slice(0, 140) || "the selected page";
+  const leads = extractLeadSentences(promptText, 4);
+  const words = wordCount(promptText);
+  const paras = paragraphCount(promptText);
 
   if (mode === "summarize") {
     return [
-      profile.label + " AI (" + profile.voice + ")",
-      "Summary signal: analyzed " + words + " words across " + paras + " paragraphs.",
-      "Scope: " + clipped.toLowerCase() + ".",
+      `${profile.label} AI (${profile.voice})`,
+      `Summary signal: analyzed ${words} words across ${paras} paragraphs.`,
+      `Scope: ${clipped.toLowerCase()}.`,
       "Lead points:",
-      leads.map(function (line, idx) { return (idx + 1) + ") " + line; }).join("\n"),
+      leads.map((line, idx) => `${idx + 1}) ${line}`).join("\n"),
       "Top actions:",
       "1) Capture key points into a short brief.",
       "2) Ask follow-up questions on risk, cost, and timeline.",
@@ -165,16 +162,16 @@ function generateResponse(promptText, mode, profile) {
 
   if (mode === "rewrite") {
     return [
-      profile.label + " AI (" + profile.voice + ")",
+      `${profile.label} AI (${profile.voice})`,
       "Executive rewrite:",
-      "This topic can be summarized as: " + clipped + ".",
+      `This topic can be summarized as: ${clipped}.`,
       "Recommendation: prioritize low-risk pilots, define success metrics, and review governance before scaling.",
-      "Readability target: concise language for " + (words > 700 ? "long-form" : "short-form") + " input."
+      `Readability target: concise language for ${words > 700 ? "long-form" : "short-form"} input.`
     ].join("\n");
   }
 
   return [
-    profile.label + " AI (" + profile.voice + ")",
+    `${profile.label} AI (${profile.voice})`,
     "Comparison output:",
     "Option A: Faster rollout, lower setup effort.",
     "Option B: Better controls, higher governance confidence.",
