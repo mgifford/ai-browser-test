@@ -85,6 +85,18 @@
 
     .actions { margin-top: 0.55rem; display: flex; flex-wrap: wrap; gap: 0.45rem; }
 
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
     button {
       border: 1px solid var(--line);
       background: white;
@@ -158,6 +170,7 @@
     <section class="panel grid">
       <article>
         <h3>Prompt Pack A (Summarize)</h3>
+        <label for="packA" class="visually-hidden">Prompt Pack A – Summarize</label>
         <textarea id="packA">Summarize this source into:
 1) Three key findings
 2) Two risks
@@ -172,6 +185,7 @@ Return output with explicit headings and concise bullets.</textarea>
 
       <article>
         <h3>Prompt Pack B (Compare)</h3>
+        <label for="packB" class="visually-hidden">Prompt Pack B – Compare</label>
         <textarea id="packB">Compare two browser AI rollout options:
 Option A: fast pilot with limited controls.
 Option B: slower rollout with strict governance.
@@ -187,6 +201,7 @@ End with a recommended path and why.</textarea>
 
     <section class="panel">
       <h2>Paste-in Source Block (5+ Paragraphs)</h2>
+      <label for="sourceBlock" class="visually-hidden">Paste-in Source Block</label>
       <textarea id="sourceBlock">A regional civic services team evaluated AI-assisted browser workflows across support and policy units. The trial focused on summarization quality, writing clarity, and response consistency under repeated runs. Teams tracked whether generated outputs preserved source qualifiers and whether recommendations remained actionable without oversimplifying risk.
 
 During testing, teams noticed that short prompts produced generic summaries, while structured prompts with explicit output requirements delivered better results. Requests specifying sections such as findings, risks, and next steps were easier to compare across browsers. Teams also observed that adding audience context improved readability and reduced ambiguous wording.
