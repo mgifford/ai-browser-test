@@ -315,7 +315,7 @@
         <h2>Chrome: enable built-in AI</h2>
         <p class="meta">Step-by-step for Chrome Stable, Beta, or Canary.</p>
         <ol>
-          <li>Update Chrome to the latest version (138+ recommended). For earliest access, install <a href="https://www.google.com/intl/en_ca/chrome/canary/" target="_blank" rel="noopener noreferrer">Chrome Canary</a>.</li>
+          <li id="chrome-version-step">Update Chrome to the latest version (138+ recommended). For earliest access, install <a href="https://www.google.com/intl/en_ca/chrome/canary/" target="_blank" rel="noopener noreferrer">Chrome Canary</a>.</li>
           <li>Navigate to <strong>chrome://flags/#optimization-guide-on-device-model</strong> and set it to <strong>Enabled</strong>.</li>
           <li>Navigate to <strong>chrome://flags/#prompt-api-for-gemini-nano</strong> and set it to <strong>Enabled</strong> (or <strong>Enabled multilingual</strong> for non-English support).</li>
           <li>Click <strong>Relaunch</strong> at the bottom of the flags page.</li>
@@ -331,7 +331,7 @@
         <h2>Edge: enable built-in AI</h2>
         <p class="meta">Edge shares Chromium's built-in AI APIs alongside its own Copilot features.</p>
         <ol>
-          <li>Update Edge to the latest version (138+ recommended). For early access, install <a href="https://www.microsoftedgeinsider.com/en-us/download" target="_blank" rel="noopener noreferrer">Edge Dev or Canary</a>.</li>
+          <li id="edge-version-step">Update Edge to the latest version (138+ recommended). For early access, install <a href="https://www.microsoftedgeinsider.com/en-us/download" target="_blank" rel="noopener noreferrer">Edge Dev or Canary</a>.</li>
           <li>Navigate to <strong>edge://flags/#optimization-guide-on-device-model</strong> and set it to <strong>Enabled</strong>.</li>
           <li>Navigate to <strong>edge://flags/#prompt-api-for-gemini-nano</strong> and set it to <strong>Enabled</strong>.</li>
           <li>Click <strong>Restart</strong> at the bottom of the flags page.</li>
@@ -347,7 +347,7 @@
         <h2>Firefox: AI controls</h2>
         <p class="meta">Firefox takes a different approach — AI features emphasize user control and privacy.</p>
         <ol>
-          <li>Install <a href="https://www.firefox.com/en-CA/channel/desktop/" target="_blank" rel="noopener noreferrer">Firefox Beta or Nightly</a> for newest features.</li>
+          <li id="firefox-version-step">Install <a href="https://www.firefox.com/en-CA/channel/desktop/" target="_blank" rel="noopener noreferrer">Firefox Beta or Nightly</a> for newest features.</li>
           <li>Open <strong>about:support</strong> to verify your channel and build version.</li>
           <li>Open Firefox <strong>Settings → Firefox Labs</strong> and review available AI experiments.</li>
           <li>Enable any available AI chatbot integrations or sidebar features.</li>
@@ -498,38 +498,69 @@
 
     initSustainabilityFooter();
 
-    // Detect browser and highlight the relevant setup section
+    // Detect browser, extract version, highlight the relevant setup section
     (function () {
-      const ua = navigator.userAgent.toLowerCase();
-      let sectionId = "setup-chrome"; // default
+      const ua = navigator.userAgent;
+      const uaLower = ua.toLowerCase();
+      let sectionId = "setup-chrome";
       let browserName = "Chrome";
+      let version = "";
+      let versionStepId = "chrome-version-step";
+      const MIN_VERSION = 138;
 
-      if (ua.includes("firefox/")) {
+      if (uaLower.includes("firefox/")) {
         sectionId = "setup-firefox";
         browserName = "Firefox";
-      } else if (ua.includes("edg/")) {
+        versionStepId = "firefox-version-step";
+        const match = ua.match(/Firefox\/(\d+)/i);
+        if (match) version = match[1];
+      } else if (uaLower.includes("edg/")) {
         sectionId = "setup-edge";
         browserName = "Edge";
-      } else if (ua.includes("safari/") && !ua.includes("chrome/") && !ua.includes("crios/")) {
+        versionStepId = "edge-version-step";
+        const match = ua.match(/Edg\/(\d+)/i);
+        if (match) version = match[1];
+      } else if (uaLower.includes("safari/") && !uaLower.includes("chrome/") && !uaLower.includes("crios/")) {
         sectionId = "setup-safari";
         browserName = "Safari";
+        versionStepId = "";
+        const match = ua.match(/Version\/(\d+)/i);
+        if (match) version = match[1];
+      } else {
+        // Chrome or Chromium-based
+        const match = ua.match(/Chrome\/(\d+)/i);
+        if (match) version = match[1];
       }
 
       const target = document.getElementById(sectionId);
       const layout = document.getElementById("browser-setup-sections");
       if (target && layout) {
-        // Move the detected browser's section to the front
         layout.prepend(target);
-        // Add a visual highlight
         target.style.borderColor = "var(--accent)";
         target.style.borderWidth = "2px";
 
-        // Add a detected badge
         const badge = document.createElement("span");
         badge.className = "badge";
         badge.style.marginBottom = "0.5rem";
-        badge.textContent = `Detected: You are using ${browserName}`;
+        badge.textContent = version
+          ? `Detected: ${browserName} ${version}`
+          : `Detected: ${browserName}`;
         target.prepend(badge);
+      }
+
+      // Annotate the version step for the detected browser
+      const stepEl = versionStepId ? document.getElementById(versionStepId) : null;
+      if (stepEl && version) {
+        const majorVersion = parseInt(version, 10);
+        if (sectionId === "setup-chrome" || sectionId === "setup-edge") {
+          if (majorVersion >= MIN_VERSION) {
+            stepEl.innerHTML = `<strong style="color: var(--ok)">✓ ${browserName} ${version} detected</strong> — meets the minimum version (${MIN_VERSION}+). No update needed.`;
+          } else {
+            stepEl.innerHTML = `<strong style="color: var(--warn)">⚠ ${browserName} ${version} detected</strong> — version ${MIN_VERSION}+ is recommended for built-in AI APIs. ` + stepEl.innerHTML;
+          }
+        } else if (sectionId === "setup-firefox") {
+          stepEl.innerHTML = `<strong>${browserName} ${version} detected.</strong> ` + stepEl.innerHTML;
+        }
       }
     })();
   </script>
