@@ -289,39 +289,81 @@
       <div class="top-links">
         <a class="link-chip" href="https://www.google.com/intl/en_ca/chrome/canary/" target="_blank" rel="noopener noreferrer">Chrome Canary</a>
         <a class="link-chip" href="https://www.google.com/chrome/beta/" target="_blank" rel="noopener noreferrer">Chrome Beta</a>
+        <a class="link-chip" href="https://www.microsoftedgeinsider.com/en-us/download" target="_blank" rel="noopener noreferrer">Edge Insider</a>
         <a class="link-chip" href="https://www.firefox.com/en-CA/channel/desktop/" target="_blank" rel="noopener noreferrer">Firefox Desktop Channels</a>
         <a class="link-chip" href="index.html">Back to Demo</a>
       </div>
     </section>
 
-    <section class="layout">
-      <article class="section">
-        <h2>Chrome: Beta and Canary</h2>
-        <p class="meta">Best for seeing new built-in AI APIs early.</p>
+    <section class="section" style="margin-top: 1rem;" id="hardware-requirements">
+      <h2>Hardware and system requirements</h2>
+      <p class="meta">Chrome's built-in AI APIs (Prompt, Summarizer, Writer, Rewriter) require Gemini Nano, which has minimum hardware thresholds. Edge shares these requirements for Chromium-based APIs. Firefox AI features do not currently use on-device models.</p>
+      <ul>
+        <li><strong>OS:</strong> Windows 10 or 11, macOS 13+ (Ventura), Linux, or ChromeOS on Chromebook Plus devices. Mobile is not yet supported.</li>
+        <li><strong>Storage:</strong> At least 22 GB of free space on the volume containing your browser profile.</li>
+        <li><strong>GPU:</strong> More than 4 GB of VRAM, <em>or</em></li>
+        <li><strong>CPU fallback:</strong> 16 GB of RAM and 4+ CPU cores (the Prompt API with audio input requires a GPU).</li>
+        <li><strong>Network:</strong> Un-metered connection for the initial model download only. After download, all inference runs offline with no data sent to Google.</li>
+      </ul>
+      <div class="note">
+        Source: <a href="https://developer.chrome.com/docs/ai/get-started" target="_blank" rel="noopener noreferrer">Chrome built-in AI — Get started</a> (May 2025). Edge inherits these Chromium requirements.
+      </div>
+    </section>
+
+    <section class="layout" id="browser-setup-sections">
+      <article class="section" id="setup-chrome">
+        <h2>Chrome: enable built-in AI</h2>
+        <p class="meta">Step-by-step for Chrome Stable, Beta, or Canary.</p>
         <ol>
-          <li>Install Chrome Beta or Chrome Canary from the links above.</li>
-          <li>Open <strong>chrome://version</strong> and confirm you are not on stable.</li>
-          <li>Open <strong>chrome://flags</strong> and search for AI-related entries.</li>
-          <li>Enable relevant experimental features, then relaunch.</li>
-          <li>Open <a href="index.html">the demo page</a> and run <strong>Built-in AI API Tests</strong>.</li>
+          <li>Update Chrome to the latest version (138+ recommended). For earliest access, install <a href="https://www.google.com/intl/en_ca/chrome/canary/" target="_blank" rel="noopener noreferrer">Chrome Canary</a>.</li>
+          <li>Navigate to <strong>chrome://flags/#optimization-guide-on-device-model</strong> and set it to <strong>Enabled</strong>.</li>
+          <li>Navigate to <strong>chrome://flags/#prompt-api-for-gemini-nano</strong> and set it to <strong>Enabled</strong> (or <strong>Enabled multilingual</strong> for non-English support).</li>
+          <li>Click <strong>Relaunch</strong> at the bottom of the flags page.</li>
+          <li>After relaunch, open <strong>chrome://on-device-internals</strong> and check the <strong>Model Status</strong> tab. Wait for the model download to complete (this can take several minutes on first run).</li>
+          <li>Open the <a href="index.html">demo page</a>, click <strong>Run Built-in Tests</strong>, and confirm the Prompt API shows "Detected and ready".</li>
         </ol>
         <div class="note">
-          Flag names and availability can change quickly between builds. Use the built-in test panel in this repo as the source of truth for what is active in your current runtime.
+          <strong>Troubleshooting:</strong> If the model shows "downloadable" but never downloads, confirm your device meets the hardware requirements above, restart Chrome, then revisit <strong>chrome://on-device-internals</strong>. You can also run <code>await LanguageModel.availability()</code> in the DevTools console — it should return <code>"available"</code>. See <a href="https://developer.chrome.com/docs/ai/get-started" target="_blank" rel="noopener noreferrer">full docs</a>.
         </div>
       </article>
 
-      <article class="section">
-        <h2>Firefox: Beta and Nightly</h2>
-        <p class="meta">Best for testing incoming Firefox AI controls and experiments.</p>
+      <article class="section" id="setup-edge">
+        <h2>Edge: enable built-in AI</h2>
+        <p class="meta">Edge shares Chromium's built-in AI APIs alongside its own Copilot features.</p>
         <ol>
-          <li>From Firefox desktop channels, install Beta or Nightly.</li>
-          <li>Open <strong>about:support</strong> to verify channel and build version.</li>
-          <li>Open Firefox settings and review experimental/Labs features where available.</li>
-          <li>Use AI controls to opt in or customize behavior for sidebar/chat surfaces.</li>
-          <li>Open <a href="index.html">the demo page</a> and run <strong>Built-in AI API Tests</strong>.</li>
+          <li>Update Edge to the latest version (138+ recommended). For early access, install <a href="https://www.microsoftedgeinsider.com/en-us/download" target="_blank" rel="noopener noreferrer">Edge Dev or Canary</a>.</li>
+          <li>Navigate to <strong>edge://flags/#optimization-guide-on-device-model</strong> and set it to <strong>Enabled</strong>.</li>
+          <li>Navigate to <strong>edge://flags/#prompt-api-for-gemini-nano</strong> and set it to <strong>Enabled</strong>.</li>
+          <li>Click <strong>Restart</strong> at the bottom of the flags page.</li>
+          <li>After restart, open <strong>edge://on-device-internals</strong> and check the <strong>Model Status</strong> tab. Wait for the model download to complete.</li>
+          <li>Open the <a href="index.html">demo page</a>, click <strong>Run Built-in Tests</strong>, and confirm the Prompt API shows "Detected and ready".</li>
         </ol>
         <div class="note">
-          Firefox emphasizes user control and privacy framing. Expect feature rollouts and labels to vary by region, account status, and channel maturity.
+          <strong>Note:</strong> Edge also includes Copilot, which is a cloud-based AI assistant. Copilot features work independently of the on-device model flags above. The built-in AI APIs tested by this demo are the on-device Chromium APIs, not Copilot.
+        </div>
+      </article>
+
+      <article class="section" id="setup-firefox">
+        <h2>Firefox: AI controls</h2>
+        <p class="meta">Firefox takes a different approach — AI features emphasize user control and privacy.</p>
+        <ol>
+          <li>Install <a href="https://www.firefox.com/en-CA/channel/desktop/" target="_blank" rel="noopener noreferrer">Firefox Beta or Nightly</a> for newest features.</li>
+          <li>Open <strong>about:support</strong> to verify your channel and build version.</li>
+          <li>Open Firefox <strong>Settings → Firefox Labs</strong> and review available AI experiments.</li>
+          <li>Enable any available AI chatbot integrations or sidebar features.</li>
+          <li>Open the <a href="index.html">demo page</a>, click <strong>Run Built-in Tests</strong> to see which APIs are detected.</li>
+        </ol>
+        <div class="note">
+          Firefox does not currently expose the same on-device AI APIs as Chrome/Edge (Prompt API, Summarizer, etc.). The built-in test panel will show "Not detected" for most APIs. Firefox AI features are currently focused on sidebar/chatbot integrations rather than on-device inference APIs.
+        </div>
+      </article>
+
+      <article class="section" id="setup-safari">
+        <h2>Safari: current status</h2>
+        <p class="meta">Safari and WebKit do not yet expose built-in AI APIs.</p>
+        <p>Apple has not announced plans for on-device AI APIs in Safari comparable to Chrome's Prompt API. Apple Intelligence features are integrated at the OS level rather than through browser JavaScript APIs.</p>
+        <div class="note">
+          The built-in test panel will show "Not detected" for all AI APIs in Safari. This is expected. Apple may introduce Safari-specific AI APIs in the future.
         </div>
       </article>
     </section>
@@ -330,10 +372,10 @@
       <table aria-label="Channel comparison for AI testing">
         <thead>
           <tr>
-            <th>Browser Track</th>
-            <th>Release Speed</th>
-            <th>AI Experiment Access</th>
-            <th>Best Use</th>
+            <th scope="col">Browser Track</th>
+            <th scope="col">Release Speed</th>
+            <th scope="col">AI Experiment Access</th>
+            <th scope="col">Best Use</th>
           </tr>
         </thead>
         <tbody>
@@ -356,16 +398,22 @@
             <td>Earliest AI capability exploration</td>
           </tr>
           <tr>
+            <td>Edge Stable</td>
+            <td>Slowest</td>
+            <td class="status-warn">Limited</td>
+            <td>Baseline with Copilot integration</td>
+          </tr>
+          <tr>
+            <td>Edge Dev / Canary</td>
+            <td>Fastest</td>
+            <td class="status-ok">Good</td>
+            <td>On-device API testing alongside Copilot</td>
+          </tr>
+          <tr>
             <td>Firefox Release</td>
             <td>Slowest</td>
             <td class="status-warn">Limited</td>
             <td>General audience baseline</td>
-          </tr>
-          <tr>
-            <td>Firefox Beta</td>
-            <td>Fast</td>
-            <td class="status-ok">Good</td>
-            <td>Near-release AI controls testing</td>
           </tr>
           <tr>
             <td>Firefox Nightly</td>
@@ -378,7 +426,7 @@
     </section>
 
     <section class="section" style="margin-top: 1rem;">
-      <h2>How to Show This to People During a Demo</h2>
+      <h2>How to show this to people during a demo</h2>
       <ol>
         <li>Open this page first and walk through channel setup.</li>
         <li>Open the main demo in each installed browser channel.</li>
@@ -449,6 +497,41 @@
     }
 
     initSustainabilityFooter();
+
+    // Detect browser and highlight the relevant setup section
+    (function () {
+      const ua = navigator.userAgent.toLowerCase();
+      let sectionId = "setup-chrome"; // default
+      let browserName = "Chrome";
+
+      if (ua.includes("firefox/")) {
+        sectionId = "setup-firefox";
+        browserName = "Firefox";
+      } else if (ua.includes("edg/")) {
+        sectionId = "setup-edge";
+        browserName = "Edge";
+      } else if (ua.includes("safari/") && !ua.includes("chrome/") && !ua.includes("crios/")) {
+        sectionId = "setup-safari";
+        browserName = "Safari";
+      }
+
+      const target = document.getElementById(sectionId);
+      const layout = document.getElementById("browser-setup-sections");
+      if (target && layout) {
+        // Move the detected browser's section to the front
+        layout.prepend(target);
+        // Add a visual highlight
+        target.style.borderColor = "var(--accent)";
+        target.style.borderWidth = "2px";
+
+        // Add a detected badge
+        const badge = document.createElement("span");
+        badge.className = "badge";
+        badge.style.marginBottom = "0.5rem";
+        badge.textContent = `Detected: You are using ${browserName}`;
+        target.prepend(badge);
+      }
+    })();
   </script>
 </body>
 </html>

@@ -2158,17 +2158,23 @@
           } else if (isDownloadable) {
             let downloadInstruction;
             if (detectedBrowser === "chrome") {
-              downloadInstruction = "Visit chrome://components in this Chrome window to trigger the download, or wait for Chrome to download it automatically.";
+              downloadInstruction = "To enable: 1) Open chrome://flags/#optimization-guide-on-device-model and set to Enabled. 2) Open chrome://flags/#prompt-api-for-gemini-nano and set to Enabled. 3) Relaunch Chrome. 4) Check chrome://on-device-internals for model download status.";
             } else if (detectedBrowser === "edge") {
-              downloadInstruction = "Visit edge://components in this Edge window to trigger the download, or wait for Edge to download it automatically.";
+              downloadInstruction = "To enable: 1) Open edge://flags/#optimization-guide-on-device-model and set to Enabled. 2) Open edge://flags/#prompt-api-for-gemini-nano and set to Enabled. 3) Restart Edge. 4) Check edge://on-device-internals for model download status.";
             } else if (detectedBrowser === "firefox") {
               downloadInstruction = "Firefox does not yet expose a manual model download page. The model will be downloaded automatically when available.";
             } else if (detectedBrowser === "safari") {
               downloadInstruction = "Safari does not yet expose a manual model download page. The model will be downloaded automatically when available.";
             } else {
-              downloadInstruction = "Visit the browser's internal components page (e.g. chrome://components or edge://components) to trigger the download, or wait for the browser to do it automatically.";
+              downloadInstruction = "Visit the browser's internal flags page to enable on-device model download, then check on-device-internals for model status.";
             }
-            tip.textContent = `Availability: downloadable — the API is detected but the on-device model has not been downloaded yet. ${downloadInstruction} The AI Prompt Simulator above works now; this status only affects real API calls.`;
+            const tipLink = document.createElement("a");
+            tipLink.href = "browser-ai-configuration.html";
+            tipLink.textContent = "Full setup guide";
+            tipLink.style.marginLeft = "0.3em";
+            tipLink.style.fontWeight = "600";
+            tip.textContent = `Availability: downloadable — the API is detected but the on-device model has not been downloaded yet. ${downloadInstruction} `;
+            tip.appendChild(tipLink);
           } else {
             tip.textContent = "Tip: API may be exposed but gated by browser version, flags, permissions, or model availability. The AI Prompt Simulator above works regardless of this status.";
           }
