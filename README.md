@@ -13,8 +13,12 @@ It is designed for live presentations where you need to:
 ## Project files
 
 - `docs/index.html`: Main UI and demo logic (served by GitHub Pages)
+- `docs/prompt-simulator.html`: AI Prompt Simulator — locally-simulated output to set expectations before testing in a real AI-enabled browser
 - `docs/browser-ai-configuration.html`: Guide for enabling/testing AI abilities in browser beta/nightly channels
 - `docs/experiment-recipes.html`: Hands-on experimentation lab with copy-ready prompts and source blocks
+- `docs/data/prompt-simulator.yml`: Prompt library used by the simulator shuffle feature
+- `docs/data/quick-scenarios.yml`: Quick scenario cards shown in the simulator
+- `docs/data/sample-corpus.yml`: Long-form source corpus for benchmark testing
 - `docs/.nojekyll`: Ensures GitHub Pages serves files as-is
 - `LICENSE`: GNU Affero General Public License v3.0 (AGPL-3.0)
 - `ACCESSIBILITY.md`: Accessibility commitments and checklist
@@ -49,6 +53,15 @@ It is designed for live presentations where you need to:
 - On-device model identity probe (best-effort, browser-dependent)
 - Responsive layout for desktop and mobile
 - CO2.js-powered sustainability footer on HTML pages with page-weight and estimated CO2e disclosure
+- AI Prompt Simulator (`prompt-simulator.html`) for setting expectations before testing in a real browser:
+	- Browser profile selector (Chrome, Firefox, Edge) with expected voice and output style
+	- Run AI Demo: locally-simulated output using JavaScript text analysis (no AI model required)
+	- Shuffle Prompt Idea: random prompt from the YAML library with no consecutive duplicates
+	- Load Benchmark Pack: loads long-form civic content for summarization testing
+	- Quick Scenarios: 4 randomly selected scenario cards that load a prompt and auto-run
+	- Reshuffle: refreshes the scenario cards from the YAML library
+	- Graceful empty-input handling with a helpful nudge message
+	- Clear "Simulator — Not Real AI Output" disclaimer throughout
 
 ## Quick start
 
