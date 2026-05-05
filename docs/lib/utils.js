@@ -130,55 +130,6 @@ function resolveObjectPath(root, path) {
   }, root);
 }
 
-/**
- * Build an AI-style simulated response for the prompt simulator.
- * Pure function – no DOM or global state accessed.
- *
- * @param {string} promptText   The user's prompt / source text.
- * @param {string} mode         One of "summarize" | "rewrite" | "compare".
- * @param {{ label: string, voice: string }} profile  Browser profile metadata.
- * @returns {string}
- */
-function generateResponse(promptText, mode, profile) {
-  const clean = promptText.replace(/\s+/g, " ").trim();
-  const clipped = clean.slice(0, 140) || "the selected page";
-  const leads = extractLeadSentences(promptText, 4);
-  const words = wordCount(promptText);
-  const paras = paragraphCount(promptText);
-
-  if (mode === "summarize") {
-    return [
-      `${profile.label} AI (${profile.voice})`,
-      `Summary signal: analyzed ${words} words across ${paras} paragraphs.`,
-      `Scope: ${clipped.toLowerCase()}.`,
-      "Lead points:",
-      leads.map((line, idx) => `${idx + 1}) ${line}`).join("\n"),
-      "Top actions:",
-      "1) Capture key points into a short brief.",
-      "2) Ask follow-up questions on risk, cost, and timeline.",
-      "3) Save an AI-generated checklist for next steps."
-    ].join("\n");
-  }
-
-  if (mode === "rewrite") {
-    return [
-      `${profile.label} AI (${profile.voice})`,
-      "Executive rewrite:",
-      `This topic can be summarized as: ${clipped}.`,
-      "Recommendation: prioritize low-risk pilots, define success metrics, and review governance before scaling.",
-      `Readability target: concise language for ${words > 700 ? "long-form" : "short-form"} input.`
-    ].join("\n");
-  }
-
-  return [
-    `${profile.label} AI (${profile.voice})`,
-    "Comparison output:",
-    "Option A: Faster rollout, lower setup effort.",
-    "Option B: Better controls, higher governance confidence.",
-    "Suggested direction: start with A, then evolve toward B for long-term resilience."
-  ].join("\n");
-}
-
 // ---------------------------------------------------------------------------
 // Node.js CommonJS export — ignored when loaded as a classic browser script.
 // ---------------------------------------------------------------------------
@@ -192,7 +143,6 @@ if (typeof module !== "undefined" && module.exports) {
     pickRandomSubset,
     normalizeAvailability,
     getCellClass,
-    resolveObjectPath,
-    generateResponse
+    resolveObjectPath
   };
 }

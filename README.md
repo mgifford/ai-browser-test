@@ -8,7 +8,6 @@ This repo contains a static, front-end-only demo that works locally and on GitHu
 It is designed for live presentations where you need to:
 
 - Compare browser AI positioning and strengths
-- Run the same prompt flow across browser profiles
 - Show what built-in AI browser interfaces are actually exposed at runtime
 
 ## Project files
@@ -16,9 +15,6 @@ It is designed for live presentations where you need to:
 - `docs/index.html`: Main UI and demo logic (served by GitHub Pages)
 - `docs/browser-ai-configuration.html`: Guide for enabling/testing AI abilities in browser beta/nightly channels
 - `docs/experiment-recipes.html`: Hands-on experimentation lab with copy-ready prompts and source blocks
-- `docs/data/prompt-simulator.yml`: Randomized starter prompts and calls to action for AI Prompt Simulator
-- `docs/data/quick-scenarios.yml`: Randomized Quick Scenarios shown on load
-- `docs/data/sample-corpus.yml`: Local long-form source documents (5+ paragraphs) used for summarize testing
 - `docs/.nojekyll`: Ensures GitHub Pages serves files as-is
 - `LICENSE`: GNU Affero General Public License v3.0 (AGPL-3.0)
 - `ACCESSIBILITY.md`: Accessibility commitments and checklist
@@ -34,14 +30,6 @@ It is designed for live presentations where you need to:
 - Runtime-first matrix ordering where the detected browser column is shown first
 - Active browser column reflects live in-page capability status where measurable
 - Clickable capability names with a Feature details panel and documentation links
-- AI prompt simulator modes:
-	- Summarize
-	- Rewrite for executive audience
-	- Compare options
-- YAML-backed randomized starter prompts with different calls to action on each load
-- Editable prompt workflow that encourages users to cut/paste and refine their own content in the textarea
-- Scenario presets:
-	- Randomized from YAML content pools on each load
 - Built-in AI API test panel with one-click detection for common interfaces:
 	- Prompt API candidates
 	- Summarizer API
@@ -55,7 +43,6 @@ It is designed for live presentations where you need to:
 - Language Detector Playground with randomized multilingual samples and custom whole-page text testing
 - Built-in assistant probe for callable capabilities and local-vs-cloud observability limits
 - On-device model identity probe (best-effort, browser-dependent)
-- Dynamic talk track for presentation flow
 - Responsive layout for desktop and mobile
 - CO2.js-powered sustainability footer on HTML pages with page-weight and estimated CO2e disclosure
 
@@ -67,7 +54,6 @@ Runtime dependencies:
 
 - Google Fonts stylesheet
 - CO2.js loaded from jsDelivr ESM CDN
-- YAML parser loaded from jsDelivr ESM CDN
 
 If external CDNs are blocked/offline, the app remains usable with reduced functionality for those features.
 
@@ -100,21 +86,6 @@ The page now includes a local AI lab that:
 2. Exposes per-API test buttons only when runnable
 3. Runs in-browser test calls for available built-in APIs
 4. Includes feature-level probes for built-in assistant behavior and on-device model identity
-
-## Customizing prompt and scenario content
-
-You can edit sample content without touching JavaScript:
-
-1. Update [docs/data/prompt-simulator.yml](docs/data/prompt-simulator.yml) to add or revise starter prompts and calls to action.
-2. Update [docs/data/quick-scenarios.yml](docs/data/quick-scenarios.yml) to add or revise scenario cards.
-3. Update [docs/data/sample-corpus.yml](docs/data/sample-corpus.yml) with richer source text for deeper summary tests.
-4. Reload the page to see different randomized selections.
-
-For summarize mode, the app now auto-injects a random local 5+ paragraph source document when a prompt is too short.
-
-For guided testing and copy-ready assets, use:
-
-- [docs/experiment-recipes.html](docs/experiment-recipes.html)
 
 ## Feature details and limits
 
