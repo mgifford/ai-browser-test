@@ -594,6 +594,12 @@
       font-size: 0.85rem;
     }
 
+    .bench-mode-select {
+      margin-top: 0.3rem;
+      margin-bottom: 0.55rem;
+      display: block;
+    }
+
     .bench h3 {
       margin: 0;
       font-size: 1rem;
@@ -800,7 +806,7 @@
       </div>
       <div class="test-table" id="liveCapabilityResults"></div>
       <div class="output" id="liveTestOutput" aria-live="polite">Run a capability scan, then launch available local API tests from this panel.</div>
-      <section class="bench" aria-label="Language detector playground" style="margin-top:0.8rem;">
+      <section class="bench" aria-label="Language detector playground">
         <h3>Language Detector Playground</h3>
         <p class="tests-note">Choose a sample from the list below, copy its text, then paste it into the text area — or type your own excerpt. This makes whole-page language checks explicit.</p>
         <label for="languageSampleSelect">Sample texts (select to preview, then copy)</label>
@@ -812,11 +818,11 @@
           <button class="cta-secondary" id="runLanguageSampleTest">Run Language Detector</button>
         </div>
       </section>
-      <section class="bench" aria-label="Prompt test bench" style="margin-top:0.8rem;">
+      <section class="bench" aria-label="Prompt test bench">
         <h3>Prompt Test Bench</h3>
         <p class="tests-note">Evaluate a prompt's quality metrics and mode fit using local JavaScript — no AI required.</p>
         <label for="promptBenchMode">Prompt mode</label>
-        <select id="promptBenchMode" style="margin-top:0.3rem;margin-bottom:0.55rem;display:block;">
+        <select id="promptBenchMode" class="bench-mode-select">
           <option value="summarize">Summarize</option>
           <option value="rewrite-exec">Rewrite for executive audience</option>
           <option value="compare">Compare options</option>
@@ -1516,6 +1522,9 @@
       }
     }
 
+    // Comparison language signals used for mode-fit assessment in "compare" mode.
+    const COMPARE_LANGUAGE_RE = /\b(vs|versus|compared|difference|between|options?|or|alternative)\b/;
+
     function getPromptQualityMetrics(promptText, mode) {
       const wc = wordCount(promptText);
       const pc = paragraphCount(promptText);
@@ -1540,7 +1549,7 @@
           modeFit = "Low fit — prompt is very short; expand before requesting an executive rewrite.";
         }
       } else if (mode === "compare") {
-        const hasCompareSignals = /\b(vs|versus|compared|difference|between|options?|or|alternative)\b/.test(lc);
+        const hasCompareSignals = COMPARE_LANGUAGE_RE.test(lc);
         if (hasCompareSignals) {
           modeFit = "Good fit — prompt contains comparison language.";
         } else {
@@ -1667,6 +1676,7 @@
 
       try {
         if (target && typeof target.availability === "function") {
+          // Guard against browser APIs (e.g. Translator) that return a Promise that never resolves.
           const AVAILABILITY_TIMEOUT_MS = 3000;
           const availabilityRaw = await Promise.race([
             target.availability(spec.availabilityOptions || {}),

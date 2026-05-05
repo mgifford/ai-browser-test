@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test';
 
+// Timeout for waiting on the async initial capability scan triggered at page load.
+const SCAN_TIMEOUT_MS = 10000;
+
 test.describe('UI Interactivity & AI Probing', () => {
   test('Page loads and has correct title', async ({ page }) => {
     await page.goto('/');
@@ -21,13 +24,13 @@ test.describe('UI Interactivity & AI Probing', () => {
   test('Run Built-in Tests button triggers a scan', async ({ page }) => {
     await page.goto('/');
     // The page auto-runs renderBuiltInTests() on load; wait for it to complete first
-    await expect(page.locator('#testsLastRun')).not.toHaveText('Not run yet.', { timeout: 10000 });
+    await expect(page.locator('#testsLastRun')).not.toHaveText('Not run yet.', { timeout: SCAN_TIMEOUT_MS });
     // Click the button to trigger a re-scan
     const runBtn = page.getByRole('button', { name: /Run Built-in Tests/i });
     await expect(runBtn).toBeVisible();
     await runBtn.click();
     // The timestamp should update to a new non-empty value
-    await expect(page.locator('#testsLastRun')).not.toHaveText('Not run yet.', { timeout: 10000 });
+    await expect(page.locator('#testsLastRun')).not.toHaveText('Not run yet.', { timeout: SCAN_TIMEOUT_MS });
   });
 
   test('Browser-specific instruction note is populated on load', async ({ page }) => {
