@@ -1,0 +1,1144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Prompt Simulator — Browser AI Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f2efe7;
+      --text: #18211f;
+      --muted: #50615c;
+      --card: rgba(255, 255, 255, 0.72);
+      --line: rgba(22, 32, 30, 0.14);
+      --accent: #ec5f3f;
+      --accent-2: #2b7f6d;
+      --accent-3: #0f5cda;
+      --chrome: #4285f4;
+      --firefox: #ff7139;
+      --edge: #0aa7ad;
+      --shadow: 0 20px 40px rgba(17, 31, 28, 0.1);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 12%, rgba(236, 95, 63, 0.2), transparent 26%),
+        radial-gradient(circle at 80% 14%, rgba(15, 92, 218, 0.16), transparent 24%),
+        radial-gradient(circle at 70% 82%, rgba(43, 127, 109, 0.16), transparent 28%),
+        var(--bg);
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      line-height: 1.45;
+      overflow-x: hidden;
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 2rem));
+      margin: 2rem auto 4rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(24, 33, 31, 0.18);
+      backdrop-filter: blur(4px);
+      background: rgba(255, 255, 255, 0.52);
+      font-size: 0.79rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .sim-badge {
+      background: rgba(236, 95, 63, 0.12);
+      border-color: rgba(236, 95, 63, 0.4);
+      color: #9c3a1c;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      padding: 1.4rem;
+      margin-top: 1.2rem;
+    }
+
+    h1, h2, h3 {
+      font-family: "Fraunces", Georgia, serif;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 4.1vw, 2.8rem);
+      margin-top: 0.5rem;
+    }
+
+    h2 {
+      font-size: clamp(1.2rem, 2.5vw, 1.65rem);
+      margin-bottom: 0.6rem;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0.5rem 0 0.9rem;
+      font-size: 0.98rem;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.82);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 600;
+      transition: background 150ms ease, border-color 150ms ease;
+    }
+
+    .nav-link:hover {
+      background: white;
+      border-color: rgba(22, 32, 30, 0.3);
+    }
+
+    .sim-notice {
+      background: rgba(236, 95, 63, 0.1);
+      border: 1px solid rgba(236, 95, 63, 0.3);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      font-size: 0.88rem;
+      color: #7a2e10;
+      margin-top: 1rem;
+    }
+
+    .sim-notice strong {
+      color: #6a2408;
+    }
+
+    /* Browser profile selector */
+    .browser-profiles {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+    }
+
+    .profile-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--line);
+      background: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+      transition: border-color 150ms ease, background 150ms ease, transform 80ms ease;
+    }
+
+    .profile-btn:hover {
+      background: white;
+      transform: translateY(-1px);
+    }
+
+    .profile-btn.active {
+      background: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .profile-btn[data-profile="chrome"].active { border-color: var(--chrome); }
+    .profile-btn[data-profile="firefox"].active { border-color: var(--firefox); }
+    .profile-btn[data-profile="edge"].active { border-color: var(--edge); }
+
+    .swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .profile-note {
+      font-size: 0.83rem;
+      color: var(--muted);
+      margin: 0.5rem 0 0;
+    }
+
+    /* Simulator form */
+    .sim-form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: start;
+      margin-top: 1rem;
+    }
+
+    .sim-form-main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 0.6rem 0.8rem;
+      font: inherit;
+      font-size: 0.93rem;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--text);
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 180px;
+    }
+
+    textarea:focus, select:focus {
+      outline: 2px solid var(--accent-3);
+      outline-offset: 1px;
+    }
+
+    .sim-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.2rem;
+    }
+
+    button {
+      padding: 0.55rem 0.95rem;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--line);
+      background: white;
+      color: var(--text);
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 120ms ease, border-color 120ms ease, transform 80ms ease;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      background: #f9f9f7;
+      border-color: rgba(22, 32, 30, 0.3);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+      font-size: 0.95rem;
+      padding: 0.65rem 1.3rem;
+    }
+
+    .btn-primary:hover {
+      background: #d44f31;
+      border-color: #d44f31;
+    }
+
+    .btn-secondary {
+      background: rgba(43, 127, 109, 0.08);
+      border-color: rgba(43, 127, 109, 0.35);
+      color: var(--accent-2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(43, 127, 109, 0.14);
+      border-color: rgba(43, 127, 109, 0.55);
+    }
+
+    .btn-muted {
+      background: rgba(80, 97, 92, 0.07);
+      border-color: rgba(80, 97, 92, 0.25);
+      color: var(--muted);
+    }
+
+    .btn-muted:hover {
+      background: rgba(80, 97, 92, 0.13);
+    }
+
+    /* Output area */
+    .sim-output-wrap {
+      margin-top: 1.1rem;
+    }
+
+    .output-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .output-label-text {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .output-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      opacity: 0.7;
+    }
+
+    .sim-output {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.1rem;
+      min-height: 120px;
+      font-size: 0.9rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--text);
+    }
+
+    .sim-output.empty {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .sim-output.running {
+      opacity: 0.7;
+    }
+
+    /* Quick scenarios */
+    .scenarios-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .scenarios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 0.8rem;
+      margin-top: 0.85rem;
+    }
+
+    .scenario-card {
+      background: rgba(255, 255, 255, 0.82);
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+      transition: border-color 150ms ease, box-shadow 150ms ease, transform 100ms ease;
+      text-align: left;
+      width: 100%;
+      font: inherit;
+    }
+
+    .scenario-card:hover {
+      border-color: var(--accent-3);
+      box-shadow: 0 4px 14px rgba(15, 92, 218, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .scenario-card:active {
+      transform: translateY(0);
+    }
+
+    .scenario-label {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 0.97rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+
+    .scenario-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.4;
+      margin: 0;
+    }
+
+    .scenario-mode {
+      display: inline-block;
+      margin-top: 0.45rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.73rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: rgba(15, 92, 218, 0.1);
+      color: var(--accent-3);
+    }
+
+    .scenario-mode.summarize { background: rgba(43, 127, 109, 0.1); color: var(--accent-2); }
+    .scenario-mode.rewrite { background: rgba(236, 95, 63, 0.1); color: var(--accent); }
+    .scenario-mode.compare { background: rgba(15, 92, 218, 0.1); color: var(--accent-3); }
+
+    /* Compare section */
+    .compare-panel {
+      background: linear-gradient(135deg, rgba(43, 127, 109, 0.06), rgba(15, 92, 218, 0.06));
+      border: 1px solid var(--line);
+    }
+
+    .compare-panel h2 {
+      color: var(--accent-2);
+    }
+
+    .compare-steps {
+      list-style: none;
+      padding: 0;
+      margin: 0.75rem 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .compare-steps li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      font-size: 0.9rem;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 1.6em;
+      height: 1.6em;
+      border-radius: 50%;
+      background: var(--accent-2);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-top: 0.05em;
+    }
+
+    .compare-cta {
+      margin-top: 1rem;
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .cta-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.55rem 1.1rem;
+      border-radius: var(--radius-md);
+      background: var(--accent-2);
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background 150ms ease;
+    }
+
+    .cta-link:hover {
+      background: #226b5b;
+    }
+
+    .cta-link.secondary {
+      background: transparent;
+      border: 1.5px solid var(--accent-2);
+      color: var(--accent-2);
+    }
+
+    .cta-link.secondary:hover {
+      background: rgba(43, 127, 109, 0.08);
+    }
+
+    /* Footers */
+    .sustainability-footer,
+    .collab-footer {
+      margin-top: 1rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--card);
+      padding: 0.65rem 0.95rem;
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .sustainability-disclosure,
+    .collab-disclosure {
+      display: flex;
+      align-items: center;
+      gap: 0.42rem;
+      flex-wrap: wrap;
+      margin: 0;
+    }
+
+    .sustainability-disclosure a,
+    .collab-disclosure a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .sustainability-disclosure a:hover,
+    .collab-disclosure a:hover {
+      text-decoration: underline;
+    }
+
+    /* Visually hidden */
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 700px) {
+      .sim-form {
+        grid-template-columns: 1fr;
+      }
+      .scenarios-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @keyframes reveal {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel {
+      animation: reveal 500ms ease both;
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <noscript>
+      <p style="padding:1rem;background:#fff3d6;border:1px solid #d4a020;border-radius:8px;margin-bottom:1rem;">
+        JavaScript is required for this simulator. Please enable JavaScript in your browser settings.
+      </p>
+    </noscript>
+
+    <!-- Header -->
+    <section class="panel" style="padding:1.2rem 1.4rem;">
+      <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+        <span class="badge sim-badge">⚗ Simulator — Not Real AI Output</span>
+      </div>
+      <h1>AI Prompt Simulator</h1>
+      <p class="subtitle">
+        Explore what AI-assisted browser output should look like when built-in APIs are working correctly.
+        Use this page to set expectations before testing in a real AI-enabled browser.
+      </p>
+      <nav class="nav-links" aria-label="Page navigation">
+        <a class="nav-link" href="index.html">← Main Demo</a>
+        <a class="nav-link" href="browser-ai-configuration.html">Browser Setup Guide</a>
+        <a class="nav-link" href="experiment-recipes.html">Experiment Lab</a>
+      </nav>
+      <div class="sim-notice" role="note" aria-label="Simulator disclaimer">
+        <strong>Simulator notice:</strong> This page generates <em>locally simulated</em> output using JavaScript — no AI model is running.
+        Use it to understand expected output structure and response quality, then compare with your own browser
+        using the <a href="index.html" style="color:inherit;font-weight:700;">Main Demo page</a>.
+      </div>
+    </section>
+
+    <!-- Browser Profile -->
+    <section class="panel" aria-label="Browser profile selector">
+      <h2>Browser Profile</h2>
+      <p class="subtitle" style="margin:0.25rem 0 0;">Select the profile you want to simulate output for. Each profile reflects the expected AI voice and response style for that browser.</p>
+      <div class="browser-profiles" role="group" aria-label="Browser profile buttons" id="profileGroup">
+        <button class="profile-btn active" data-profile="chrome" type="button">
+          <span class="swatch" style="background:var(--chrome)"></span>
+          Chrome
+        </button>
+        <button class="profile-btn" data-profile="firefox" type="button">
+          <span class="swatch" style="background:var(--firefox)"></span>
+          Firefox
+        </button>
+        <button class="profile-btn" data-profile="edge" type="button">
+          <span class="swatch" style="background:var(--edge)"></span>
+          Edge
+        </button>
+      </div>
+      <p class="profile-note" id="profileNote">Chrome: Concise and structured output, optimised for speed. Gemini Nano-powered on-device summarization.</p>
+    </section>
+
+    <!-- Main Simulator -->
+    <section class="panel" aria-label="AI prompt simulator">
+      <div class="sim-form">
+        <div class="sim-form-main">
+          <div>
+            <label for="simMode">Output mode</label>
+            <select id="simMode">
+              <option value="summarize">Summarize</option>
+              <option value="rewrite">Rewrite for executive audience</option>
+              <option value="compare">Compare options</option>
+            </select>
+          </div>
+          <div>
+            <label for="simPrompt">Prompt / input text</label>
+            <textarea id="simPrompt" rows="8" placeholder="Enter a prompt or paste source text here. Use the buttons below to load a sample prompt or benchmark content."></textarea>
+          </div>
+          <div class="sim-actions">
+            <button class="btn-primary" id="runSimBtn" type="button">▶ Run AI Demo</button>
+            <button class="btn-secondary" id="shuffleBtn" type="button">⟳ Shuffle Prompt Idea</button>
+            <button class="btn-muted" id="benchmarkBtn" type="button">📄 Load Benchmark Pack</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sim-output-wrap">
+        <div class="output-label">
+          <span class="output-label-text">Simulated output</span>
+          <span class="output-meta" id="outputMeta"></span>
+        </div>
+        <div
+          class="sim-output empty"
+          id="simOutput"
+          aria-live="polite"
+          aria-label="Simulated AI output"
+          role="region"
+        >Enter a prompt above and click "Run AI Demo" to see simulated output.</div>
+      </div>
+    </section>
+
+    <!-- Quick Scenarios -->
+    <section class="panel" aria-label="Quick scenarios">
+      <div class="scenarios-header">
+        <div>
+          <h2>Quick Scenarios</h2>
+          <p class="subtitle" style="margin:0.25rem 0 0;font-size:0.88rem;">Click a scenario card to load its prompt and run the demo automatically.</p>
+        </div>
+        <button class="btn-muted" id="reshuffleBtn" type="button">⟳ Reshuffle</button>
+      </div>
+      <div class="scenarios-grid" id="scenariosGrid" role="list" aria-label="Scenario cards"></div>
+    </section>
+
+    <!-- Compare with your browser -->
+    <section class="panel compare-panel" aria-label="Compare with your browser">
+      <h2>Compare With Your Own Browser</h2>
+      <p class="subtitle" style="margin:0.25rem 0 0;">
+        Once you know what to expect, open the main demo in a browser with built-in AI enabled and run the same prompts.
+      </p>
+      <ol class="compare-steps">
+        <li>
+          <span class="step-num" aria-hidden="true">1</span>
+          <span>Use this simulator to understand expected output structure and quality for a given prompt and mode.</span>
+        </li>
+        <li>
+          <span class="step-num" aria-hidden="true">2</span>
+          <span>Open the <a href="index.html" style="color:var(--accent-2);font-weight:700;">Main Demo</a> in Chrome Canary, Firefox Nightly, or Edge with AI flags enabled.</span>
+        </li>
+        <li>
+          <span class="step-num" aria-hidden="true">3</span>
+          <span>Click <strong>Run Built-in Tests</strong> to confirm which AI APIs are active in your browser runtime.</span>
+        </li>
+        <li>
+          <span class="step-num" aria-hidden="true">4</span>
+          <span>Run the same prompt in your browser and compare: does real AI output match or improve on the simulated version?</span>
+        </li>
+        <li>
+          <span class="step-num" aria-hidden="true">5</span>
+          <span>Try the <a href="experiment-recipes.html" style="color:var(--accent-2);font-weight:700;">Experiment Lab</a> for structured test packs and a result-logging template.</span>
+        </li>
+      </ol>
+      <div class="compare-cta">
+        <a class="cta-link" href="index.html">Open Main Demo</a>
+        <a class="cta-link secondary" href="browser-ai-configuration.html">Browser Setup Guide</a>
+      </div>
+    </section>
+
+    <footer class="sustainability-footer" aria-label="Sustainability metrics footer">
+      <p class="sustainability-disclosure">
+        <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17 8C8 10 5.9 16.17 3.82 22c1.95-1.8 4.6-3 7.68-3C16.5 19 21 14.5 21 9c0-.38-.03-.76-.07-1.13C20.12 8.3 18.61 8 17 8z"/>
+        </svg>
+        This page transferred approximately <strong id="co2-estimate">calculating...</strong>
+        (<span id="page-weight">calculating...</span>).
+        Hosting source: <strong id="hosting-source">unknown</strong>.
+        <a href="https://mgifford.github.io/SUSTAINABILITY.md/reporting-sustainability-metrics/" target="_blank" rel="noopener noreferrer">Methodology</a>.
+      </p>
+    </footer>
+
+    <footer class="collab-footer" aria-label="Collaboration footer">
+      <p class="collab-disclosure">
+        <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        This project is open source. <a href="https://github.com/mgifford/ai-browser-test/" target="_blank" rel="noopener noreferrer">Contribute on GitHub</a> — issues, ideas, and pull requests are welcome.
+      </p>
+    </footer>
+  </main>
+
+  <script src="lib/utils.js"></script>
+  <script>
+    // ---------------------------------------------------------------------------
+    // Data — mirrored from docs/data/*.yml
+    // ---------------------------------------------------------------------------
+
+    const simulatorPrompts = [
+      {
+        id: "board-briefing-risk",
+        mode: "summarize",
+        prompt: "Summarize this browser capability report for a board briefing.\nInclude top opportunities, top risks, and one recommendation for the next 30 days."
+      },
+      {
+        id: "procurement-comparison",
+        mode: "compare",
+        prompt: "Compare these two browser AI rollout options.\nOption A: Fast pilot with limited controls.\nOption B: Slower rollout with stricter governance.\nProvide tradeoffs in cost, security, and user adoption."
+      },
+      {
+        id: "policy-rewrite",
+        mode: "rewrite",
+        prompt: "Rewrite this policy excerpt for non-technical staff.\nKeep the legal meaning, but make it plain language and actionable.\nEnd with a three-item checklist."
+      },
+      {
+        id: "accessibility-audit",
+        mode: "summarize",
+        prompt: "Summarize this accessibility review.\nGroup issues by severity and include quick wins vs structural fixes.\nReturn output as: Findings, Impact, Next Step."
+      },
+      {
+        id: "security-incident-draft",
+        mode: "rewrite",
+        prompt: "Rewrite this incident timeline into a clear customer update.\nKeep it transparent and concise.\nInclude what happened, what was impacted, and what happens next."
+      },
+      {
+        id: "innovation-pitch",
+        mode: "compare",
+        prompt: "Compare three AI browser pilot ideas for a public sector team.\nScore each idea for public value, privacy risk, and implementation effort.\nEnd with a recommended pilot order."
+      }
+    ];
+
+    const quickScenarios = [
+      {
+        id: "newsroom-digest",
+        label: "Newsroom Digest",
+        description: "Summarize several articles and produce an editor-ready brief.",
+        mode: "summarize",
+        prompt: "You are supporting a newsroom editor.\nSummarize the pasted articles into one briefing with: top story, context, and open questions."
+      },
+      {
+        id: "grant-review",
+        label: "Grant Review Assistant",
+        description: "Compare proposals and identify strongest community outcomes.",
+        mode: "compare",
+        prompt: "Compare these grant proposals.\nRank them by expected impact, feasibility, and equity outcomes.\nExplain why each rank was assigned."
+      },
+      {
+        id: "service-announcement",
+        label: "Public Service Announcement",
+        description: "Rewrite technical updates for broad public readability.",
+        mode: "rewrite",
+        prompt: "Rewrite this technical update for the public.\nKeep it accurate, plain-language, and under 180 words."
+      },
+      {
+        id: "privacy-notice",
+        label: "Privacy Notice Clarity",
+        description: "Convert legal privacy text into practical guidance.",
+        mode: "rewrite",
+        prompt: "Rewrite this privacy notice so users can quickly understand what data is collected and why.\nAdd a short \"What you can control\" section."
+      },
+      {
+        id: "vendor-evaluation",
+        label: "Vendor Evaluation",
+        description: "Compare AI browser options for policy-sensitive environments.",
+        mode: "compare",
+        prompt: "Compare browser AI options for an organization with strict compliance requirements.\nScore each option for controls, transparency, and deployment complexity."
+      },
+      {
+        id: "classroom-support",
+        label: "Classroom Support",
+        description: "Summarize lesson resources into a one-page teaching plan.",
+        mode: "summarize",
+        prompt: "Summarize these lesson notes into a one-page teaching plan.\nInclude learning objectives, activities, and assessment prompts."
+      },
+      {
+        id: "accessibility-check",
+        label: "Accessibility Sprint",
+        description: "Turn page findings into prioritized remediation actions.",
+        mode: "summarize",
+        prompt: "Summarize this accessibility review and return:\n1) critical blockers\n2) moderate issues\n3) quick improvements for this week"
+      },
+      {
+        id: "incident-war-room",
+        label: "Incident War Room",
+        description: "Compare incident response paths and recommend next action.",
+        mode: "compare",
+        prompt: "Compare these incident response options.\nEvaluate user impact, legal risk, and recovery time.\nRecommend what to do in the next 2 hours."
+      }
+    ];
+
+    const benchmarkContent = `A regional civic services team evaluated AI-assisted browser workflows across support and policy units. The trial focused on summarization quality, writing clarity, and response consistency under repeated runs. Teams tracked whether generated outputs preserved source qualifiers and whether recommendations remained actionable without oversimplifying risk.
+
+During testing, teams noticed that short prompts produced generic summaries, while structured prompts with explicit output requirements delivered better results. Requests specifying sections such as findings, risks, and next steps were easier to compare across browsers. Teams also observed that adding audience context improved readability and reduced ambiguous wording.
+
+Governance review highlighted that availability signals and feature labels can vary by browser channel. In some runtimes, APIs were detectable but not ready, while in others they were callable but did not expose model identity details. This made direct local-vs-cloud attribution difficult and reinforced the need for explicit probe outputs in the demo workflow.
+
+Accessibility reviewers noted that generated summaries often improved scanability but occasionally removed nuance from legally sensitive text. To mitigate this, teams added constraints requiring preservation of uncertainty language and specific terms. Structured prompts helped maintain critical detail while still improving readability for non-technical audiences.
+
+The final recommendation emphasized repeatable test design: use the same long-form source, run the same prompt across browsers, compare structure and fidelity, and document what is directly measurable versus inferred. This allowed stakeholders to evaluate browser AI behavior based on observable evidence rather than assumptions.`;
+
+    // ---------------------------------------------------------------------------
+    // Browser profile metadata
+    // ---------------------------------------------------------------------------
+
+    const profileMeta = {
+      chrome: {
+        note: "Chrome: Concise and structured output, optimised for speed. Gemini Nano-powered on-device summarization.",
+        voice: "Concise and structured",
+        color: "var(--chrome)"
+      },
+      firefox: {
+        note: "Firefox: Privacy-aware and transparent output. Explicitly acknowledges data handling and user control context.",
+        voice: "Privacy-aware and transparent",
+        color: "var(--firefox)"
+      },
+      edge: {
+        note: "Edge: Workflow-oriented and enterprise-ready. Strong Microsoft 365 alignment and structured action items.",
+        voice: "Workflow-oriented and enterprise-ready",
+        color: "var(--edge)"
+      }
+    };
+
+    // ---------------------------------------------------------------------------
+    // State
+    // ---------------------------------------------------------------------------
+
+    let currentProfile = "chrome";
+    let lastShuffledId = null;
+    let currentScenarioIds = [];
+
+    // ---------------------------------------------------------------------------
+    // DOM refs
+    // ---------------------------------------------------------------------------
+
+    const profileGroup   = document.getElementById("profileGroup");
+    const profileNote    = document.getElementById("profileNote");
+    const simMode        = document.getElementById("simMode");
+    const simPrompt      = document.getElementById("simPrompt");
+    const runSimBtn      = document.getElementById("runSimBtn");
+    const shuffleBtn     = document.getElementById("shuffleBtn");
+    const benchmarkBtn   = document.getElementById("benchmarkBtn");
+    const simOutput      = document.getElementById("simOutput");
+    const outputMeta     = document.getElementById("outputMeta");
+    const reshuffleBtn   = document.getElementById("reshuffleBtn");
+    const scenariosGrid  = document.getElementById("scenariosGrid");
+
+    // ---------------------------------------------------------------------------
+    // Simulation engine (local JS — no AI model)
+    // ---------------------------------------------------------------------------
+
+    function simulateOutput(promptText, mode, profile) {
+      const meta = profileMeta[profile] || profileMeta.chrome;
+      const wc   = wordCount(promptText);
+      const sc   = sentenceCount(promptText);
+      const leads = extractLeadSentences(promptText, 5);
+      const now  = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+      const lines = [
+        `[Simulated output — ${profile.charAt(0).toUpperCase() + profile.slice(1)} profile | ${now}]`,
+        `Voice style: ${meta.voice}`,
+        `Input: ${wc} words, ${sc} sentences`,
+        ``
+      ];
+
+      if (mode === "summarize") {
+        lines.push("Summary");
+        lines.push("-------");
+        if (leads.length === 0) {
+          lines.push("No content to summarize. Paste source text into the prompt field above.");
+        } else {
+          leads.forEach((sentence, i) => {
+            lines.push(`${i + 1}. ${sentence}`);
+          });
+          if (wc >= 50) {
+            lines.push("");
+            lines.push("Key insight: Input contained sufficient length and multi-paragraph structure for structured summarization.");
+          }
+        }
+
+      } else if (mode === "rewrite") {
+        lines.push("Rewritten for executive audience");
+        lines.push("--------------------------------");
+        if (leads.length === 0) {
+          lines.push("No content to rewrite. Add source text to the prompt field.");
+        } else {
+          lines.push(leads[0]);
+          if (leads.length > 1) {
+            lines.push("");
+            lines.push("Key points:");
+            leads.slice(1, 4).forEach((s) => lines.push(`• ${s}`));
+          }
+          lines.push("");
+          lines.push("Recommendation: Review this output for accuracy before sharing with leadership.");
+        }
+
+      } else if (mode === "compare") {
+        lines.push("Comparison summary");
+        lines.push("------------------");
+        if (leads.length >= 2) {
+          lines.push("Option A — " + leads[0]);
+          lines.push("");
+          lines.push("Option B — " + (leads[1] || "Described in input."));
+        } else if (leads.length === 1) {
+          lines.push("Option A — " + leads[0]);
+          lines.push("");
+          lines.push("Option B — Expand the input to provide a second option for comparison.");
+        } else {
+          lines.push("Paste two or more options into the prompt field to generate a comparison.");
+        }
+        lines.push("");
+        lines.push("Recommendation: Evaluate both options against your specific requirements before deciding.");
+      }
+
+      lines.push("");
+      lines.push("---");
+      lines.push("⚗ This is simulated output — no AI model was invoked.");
+      lines.push("Open the Main Demo in a browser with AI APIs enabled to see real results.");
+
+      return lines.join("\n");
+    }
+
+    // ---------------------------------------------------------------------------
+    // Run simulator
+    // ---------------------------------------------------------------------------
+
+    function runSimulator() {
+      const text = simPrompt ? simPrompt.value.trim() : "";
+      const mode = simMode ? simMode.value : "summarize";
+
+      if (!text) {
+        setOutput(
+          "Please enter a prompt or paste source text before running the demo.\n\nUse \"Shuffle Prompt Idea\" to load a sample prompt, \"Load Benchmark Pack\" for long-form content, or click a Quick Scenario card below.",
+          true
+        );
+        return;
+      }
+
+      setOutput("Running simulation...", false, true);
+
+      // Small delay to let the UI update before the synchronous work runs
+      setTimeout(() => {
+        const result = simulateOutput(text, mode, currentProfile);
+        setOutput(result, false, false, text.length);
+      }, 120);
+    }
+
+    function setOutput(text, isEmpty, running, inputLen) {
+      if (!simOutput) return;
+      simOutput.textContent = text;
+      simOutput.classList.toggle("empty", Boolean(isEmpty));
+      simOutput.classList.toggle("running", Boolean(running));
+      if (outputMeta) {
+        outputMeta.textContent = inputLen != null ? `Input: ${inputLen} chars` : "";
+      }
+    }
+
+    // ---------------------------------------------------------------------------
+    // Shuffle prompt idea (no consecutive duplicates)
+    // ---------------------------------------------------------------------------
+
+    function shufflePrompt() {
+      const available = simulatorPrompts.filter((p) => p.id !== lastShuffledId);
+      const pool = available.length ? available : simulatorPrompts;
+      const picked = pickRandom(pool);
+      if (!picked) return;
+      lastShuffledId = picked.id;
+      if (simPrompt) simPrompt.value = picked.prompt.trim();
+      if (simMode) simMode.value = picked.mode;
+    }
+
+    // ---------------------------------------------------------------------------
+    // Load benchmark pack
+    // ---------------------------------------------------------------------------
+
+    function loadBenchmark() {
+      if (simPrompt) simPrompt.value = benchmarkContent;
+      if (simMode) simMode.value = "summarize";
+    }
+
+    // ---------------------------------------------------------------------------
+    // Browser profile selection
+    // ---------------------------------------------------------------------------
+
+    function selectProfile(profile) {
+      currentProfile = profile;
+      document.querySelectorAll(".profile-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.profile === profile);
+      });
+      const meta = profileMeta[profile];
+      if (profileNote && meta) profileNote.textContent = meta.note;
+    }
+
+    // ---------------------------------------------------------------------------
+    // Quick scenarios
+    // ---------------------------------------------------------------------------
+
+    const SCENARIO_CARD_COUNT = 4;
+
+    function renderScenarios(count) {
+      if (!scenariosGrid) return;
+
+      // Pick a fresh set that doesn't repeat the previously shown set when possible
+      const notShown = quickScenarios.filter((s) => !currentScenarioIds.includes(s.id));
+      const pool = notShown.length >= count ? notShown : quickScenarios;
+      const picked = pickRandomSubset(pool, count);
+      currentScenarioIds = picked.map((s) => s.id);
+
+      scenariosGrid.innerHTML = "";
+      picked.forEach((scenario) => {
+        const card = document.createElement("button");
+        card.className = "scenario-card";
+        card.type = "button";
+        card.setAttribute("role", "listitem");
+        card.setAttribute("aria-label", `Load scenario: ${scenario.label}`);
+
+        const labelEl = document.createElement("div");
+        labelEl.className = "scenario-label";
+        labelEl.textContent = scenario.label;
+
+        const descEl = document.createElement("p");
+        descEl.className = "scenario-desc";
+        descEl.textContent = scenario.description;
+
+        const modeEl = document.createElement("span");
+        modeEl.className = `scenario-mode ${scenario.mode}`;
+        modeEl.textContent = scenario.mode;
+
+        card.appendChild(labelEl);
+        card.appendChild(descEl);
+        card.appendChild(modeEl);
+
+        card.addEventListener("click", () => {
+          if (simPrompt) simPrompt.value = scenario.prompt.trim();
+          if (simMode) simMode.value = scenario.mode;
+          // Auto-run the demo
+          runSimulator();
+          // Scroll to output
+          if (simOutput) simOutput.scrollIntoView({ behavior: "smooth", block: "center" });
+        });
+
+        scenariosGrid.appendChild(card);
+      });
+    }
+
+    // ---------------------------------------------------------------------------
+    // Sustainability footer
+    // ---------------------------------------------------------------------------
+
+    async function initSustainabilityFooter() {
+      const co2El          = document.getElementById("co2-estimate");
+      const pageWeightEl   = document.getElementById("page-weight");
+      const hostingSourceEl = document.getElementById("hosting-source");
+      if (!co2El || !pageWeightEl || !hostingSourceEl) return;
+
+      const hostIsGreen = false;
+      hostingSourceEl.textContent = hostIsGreen ? "verified renewable" : "unknown";
+
+      const navEntry = performance.getEntriesByType("navigation")[0];
+      const resourceEntries = performance.getEntriesByType("resource");
+      const navBytes = navEntry && navEntry.transferSize ? navEntry.transferSize : 0;
+      const resourceBytes = resourceEntries.reduce((sum, e) => sum + (e.transferSize || 0), 0);
+      const totalBytes = navBytes + resourceBytes;
+
+      if (!totalBytes) {
+        co2El.textContent = "insufficient data";
+        pageWeightEl.textContent = "transfer size unavailable";
+        return;
+      }
+
+      const kb = totalBytes / 1024;
+      pageWeightEl.textContent = kb > 1024 ? `${(kb / 1024).toFixed(2)} MB` : `${kb.toFixed(0)} KB`;
+
+      try {
+        const pkg = await import("https://cdn.jsdelivr.net/npm/@tgwf/co2/+esm");
+        const swd = new pkg.co2({ model: "swd" });
+        const grams = swd.perVisit(totalBytes, hostIsGreen);
+        co2El.textContent = `${grams.toFixed(4)} g CO2e`;
+      } catch (_error) {
+        co2El.textContent = "CO2.js unavailable";
+      }
+    }
+
+    // ---------------------------------------------------------------------------
+    // Event wiring
+    // ---------------------------------------------------------------------------
+
+    if (runSimBtn)    runSimBtn.addEventListener("click", runSimulator);
+    if (shuffleBtn)   shuffleBtn.addEventListener("click", shufflePrompt);
+    if (benchmarkBtn) benchmarkBtn.addEventListener("click", loadBenchmark);
+    if (reshuffleBtn) reshuffleBtn.addEventListener("click", () => renderScenarios(SCENARIO_CARD_COUNT));
+
+    if (profileGroup) {
+      profileGroup.addEventListener("click", (e) => {
+        const btn = e.target.closest(".profile-btn");
+        if (btn && btn.dataset.profile) selectProfile(btn.dataset.profile);
+      });
+    }
+
+    // ---------------------------------------------------------------------------
+    // Init
+    // ---------------------------------------------------------------------------
+
+    renderScenarios(SCENARIO_CARD_COUNT);
+    initSustainabilityFooter();
+  </script>
+</body>
+</html>
