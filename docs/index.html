@@ -75,10 +75,7 @@
 
     .hero-panel,
     .browser-panel,
-    .tests,
-    .simulator,
-    .scenario,
-    .log {
+    .tests {
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
       background: var(--card);
@@ -496,58 +493,9 @@
       cursor: not-allowed;
     }
 
-    .grid {
-      margin-top: 1.4rem;
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 1.1rem;
-    }
-
-    .simulator,
-    .scenario,
-    .log {
-      padding: 1rem;
-      animation: reveal 1.1s ease both;
-    }
-
-    .sim-header,
-    .scenario-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.8rem;
-      margin-bottom: 0.8rem;
-    }
-
-    .sim-meta {
+    .profile-meta {
       font-size: 0.86rem;
       color: var(--muted);
-    }
-
-    .sim-meta[title] {
-      cursor: help;
-      border-bottom: 1px dotted var(--muted);
-    }
-
-    .sim-desc {
-      margin: 0 0 0.9rem;
-      font-size: 0.88rem;
-      color: #3a4b47;
-      line-height: 1.5;
-    }
-
-    .sim-workflow {
-      margin: 0.6rem 0 0;
-      padding: 0.6rem 0.75rem;
-      border-left: 3px solid var(--accent-2);
-      background: rgba(43, 127, 109, 0.07);
-      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-      font-size: 0.83rem;
-      color: #2b4a43;
-    }
-
-    .sim-workflow strong {
-      color: var(--text);
     }
 
     textarea,
@@ -584,32 +532,6 @@
       min-height: 2.6rem;
     }
 
-    .control-row {
-      margin-top: 0.7rem;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 0.65rem;
-      align-items: end;
-    }
-
-    .pill-select {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 0.35rem 0.6rem;
-      background: rgba(255, 255, 255, 0.9);
-      font-size: 0.85rem;
-    }
-
-    .pill-select select {
-      border: none;
-      background: transparent;
-      color: var(--text);
-      outline: none;
-    }
-
     .cta {
       border: none;
       background: var(--accent);
@@ -635,40 +557,6 @@
       background: rgba(255, 255, 255, 0.88);
       min-height: 102px;
       white-space: pre-wrap;
-    }
-
-    .scenario-grid {
-      margin-top: 0.8rem;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 0.6rem;
-    }
-
-    .scenario-btn {
-      border: 1px solid var(--line);
-      border-radius: var(--radius-md);
-      background: rgba(255, 255, 255, 0.8);
-      text-align: left;
-      padding: 0.7rem;
-      cursor: pointer;
-      transition: background 0.2s ease, transform 0.2s ease;
-    }
-
-    .scenario-btn:hover {
-      background: rgba(255, 255, 255, 0.95);
-      transform: translateX(2px);
-    }
-
-    .scenario-btn span {
-      display: block;
-      color: var(--muted);
-      margin-top: 0.22rem;
-      font-size: 0.84rem;
-    }
-
-    .log {
-      margin-top: 1rem;
-      animation: reveal 1.2s ease both;
     }
 
     .experiment-panel {
@@ -697,12 +585,6 @@
       color: #32413d;
     }
 
-    .hint {
-      margin-top: 0.85rem;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
     .bench {
       margin-top: 0.8rem;
       border: 1px solid var(--line);
@@ -715,44 +597,6 @@
     .bench h3 {
       margin: 0;
       font-size: 1rem;
-    }
-
-    .bench-grid {
-      margin-top: 0.55rem;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.45rem;
-    }
-
-    .bench-stat {
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      padding: 0.45rem;
-      background: rgba(255, 255, 255, 0.95);
-    }
-
-    .bench-stat strong {
-      display: block;
-      margin-top: 0.15rem;
-      font-size: 0.97rem;
-    }
-
-    .bench-list {
-      margin-top: 0.6rem;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      padding: 0.55rem;
-      min-height: 72px;
-      background: rgba(255, 255, 255, 0.95);
-      white-space: pre-wrap;
-      color: #344640;
-    }
-
-    .bench-actions {
-      margin-top: 0.55rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.45rem;
     }
 
     .sustainability-footer {
@@ -825,8 +669,7 @@
     }
 
     @media (max-width: 920px) {
-      .hero,
-      .grid {
+      .hero {
         grid-template-columns: 1fr;
       }
 
@@ -843,10 +686,6 @@
       }
 
       .browser-group {
-        grid-template-columns: 1fr;
-      }
-
-      .control-row {
         grid-template-columns: 1fr;
       }
 
@@ -881,10 +720,6 @@
       }
 
       .context-probe-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .bench-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -922,7 +757,7 @@
             <small>Copilot and sidebar workflows</small>
           </button>
         </div>
-        <p class="sim-meta" id="browserSummary"></p>
+        <p class="profile-meta" id="browserSummary"></p>
         <p class="runtime-chip" id="runtimeChip">Detecting runtime browser...</p>
         <div class="runtime-debug" id="runtimeDebug">
           Runtime debug pending...
@@ -962,7 +797,6 @@
       <p class="tests-note">
         Open this same page in Chrome, Firefox, and Edge, then click "Run Built-in Tests" in each browser to see which native AI interfaces are actually exposed.
       </p>
-      <p class="tests-note" style="margin-top:0.4rem;">Note: API readiness shown here only affects <em>real</em> API calls. The <strong>AI Prompt Simulator</strong> above always works — it uses local JavaScript patterns, not live APIs.</p>
       <div class="test-table" id="testResults"></div>
       <p class="test-meta" id="testsLastRun">Not run yet.</p>
       <div class="tests-actions">
@@ -985,85 +819,13 @@
       </section>
     </section>
 
-    <section class="grid">
-      <article class="simulator">
-        <div class="sim-header">
-          <h2>AI Prompt Simulator</h2>
-          <span class="sim-meta" title="This demo runs entirely in your browser using simulated responses — no external AI service or backend is called. The real Prompt API tests are in the capability table below." aria-describedby="simDesc">Simulated · works in all browsers</span>
-        </div>
-
-        <p class="sim-desc" id="simDesc">This simulator shows how browser AI responses vary across Chrome, Firefox, and Edge using <strong>local JavaScript patterns</strong> — it works in every browser regardless of whether the Prompt API shows "Detected and ready", "Detected but not ready", or "Not detected". To test the <em>real</em> Prompt API, use the capability table further down this page.</p>
-
-        <p class="sim-workflow"><strong>How to use:</strong> <strong>Quick Scenarios</strong> (right panel) load a prompt and run the demo immediately. <strong>Shuffle Prompt Idea</strong> and <strong>Load Benchmark Pack</strong> load content into the text box — then press <strong>Run AI Demo</strong> to generate a response. Switch the browser profile at the top of the page and rerun to compare browser-specific outputs.</p>
-
-        <label for="promptInput">Prompt or page excerpt</label>
-        <textarea id="promptInput">Summarize this page and list three actions I should take next.</textarea>
-
-        <div class="control-row">
-          <label class="pill-select" for="taskType">
-            Mode
-            <select id="taskType">
-              <option value="summarize">Summarize</option>
-              <option value="rewrite">Rewrite for executive audience</option>
-              <option value="compare">Compare options</option>
-            </select>
-          </label>
-          <div style="display:flex; gap:0.55rem; flex-wrap:wrap; justify-content:flex-end;">
-            <button class="cta-secondary" id="loadBenchmark" title="Load a long-form sample document into the text box for a consistent cross-browser summarization test — then press Run AI Demo">Load Benchmark Pack</button>
-            <button class="cta-secondary" id="shufflePrompt" title="Replace the text box with a random pre-set prompt idea — then press Run AI Demo to generate a response">Shuffle Prompt Idea</button>
-            <button class="cta" id="runPrompt" title="Generate a simulated browser-specific AI response based on the current prompt and selected mode">Run AI Demo</button>
-          </div>
-        </div>
-
-        <div class="output" id="outputBox" aria-live="polite">Press "Run AI Demo" to generate a browser-specific response.</div>
-        <p class="hint" id="promptHint">Tip: copy this prompt, paste your own page text, and edit before running. Switch browser profile and rerun to compare behavior.</p>
-
-        <section class="bench" aria-label="Prompt simulator test bench">
-          <h3>Prompt Test Bench</h3>
-          <div class="bench-grid">
-            <div class="bench-stat">Input length<strong id="benchLength">-</strong></div>
-            <div class="bench-stat">Paragraphs<strong id="benchParagraphs">-</strong></div>
-            <div class="bench-stat">Mode fit<strong id="benchModeFit">-</strong></div>
-          </div>
-          <div class="bench-actions">
-            <button class="cta-secondary" id="evaluatePrompt">Evaluate Prompt Quality</button>
-            <button class="cta-secondary" id="rerunSamePrompt">Run Twice Consistency Check</button>
-          </div>
-          <div class="bench-list" id="benchNotes">Run an evaluation to see what the browser AI demo is expected to show.</div>
-        </section>
-      </article>
-
-      <aside class="scenario">
-        <div class="scenario-header">
-          <h2>Quick Scenarios</h2>
-          <button class="cta-secondary" id="reshuffleScenarios" title="Show a different random set of 4 scenarios">Reshuffle</button>
-        </div>
-        <p class="sim-desc" style="margin-bottom:0.6rem;">Each card loads a ready-made prompt <strong>and runs the demo immediately</strong>. Use <strong>Reshuffle</strong> to see more scenarios from the full library.</p>
-
-        <div class="scenario-grid">
-          <div class="note">Loading randomized scenarios from YAML...</div>
-        </div>
-        <div class="bench" style="margin-top:0.7rem;">
-          <h3>Scenario Debug</h3>
-          <div class="bench-list" id="scenarioDebug">Waiting for YAML content...</div>
-        </div>
-      </aside>
-    </section>
-
-    <section class="log">
-      <h2>Optional Demo Script</h2>
-      <p class="sim-meta">This section is a presenter script. Use it if you are running a live demo for others. If you are experimenting solo, skip to the experiment panel below.</p>
-      <ol class="timeline" id="talkTrack"></ol>
-    </section>
 
     <section class="experiment-panel" aria-label="How to experiment">
       <h2>How To Experiment Today</h2>
       <ol class="timeline">
-        <li>The <strong>AI Prompt Simulator</strong> works in every browser — the output is a deterministic simulation, not a live AI call. No API access is needed to try it.</li>
-        <li>Press <strong>Run AI Demo</strong> to generate a response. Use <strong>Shuffle Prompt Idea</strong> or <strong>Load Benchmark Pack</strong> to load content first, then press the button. <strong>Quick Scenarios</strong> load and run immediately.</li>
-        <li>Switch the browser profile (Chrome / Firefox / Edge) at the top and rerun to see how simulated outputs differ across browser personalities.</li>
-        <li>The <strong>Prompt API</strong> status ("Detected and ready", "Detected but not ready / downloadable", "Not detected") only affects the <em>real</em> API tests in the capability table — not the simulator above.</li>
-        <li>Use <strong>Load Benchmark Pack</strong> for a consistent long-form summarization test you can repeat across browsers or browser channels.</li>
+        <li>Click <strong>Run Built-in Tests</strong> to probe which native AI interfaces are actually exposed in your current browser runtime.</li>
+        <li>Open this page in Chrome, Firefox, and Edge, then run built-in tests in each to compare which APIs are available.</li>
+        <li>The <strong>Prompt API</strong> status ("Detected and ready", "Detected but not ready / downloadable", "Not detected") reflects what is truly available in your browser — no simulation.</li>
         <li>Run built-in API probes and local tests to verify what is actually available in your current runtime.</li>
         <li>Use the experimentation page for copy-ready prompts, source blocks, and test workflows.</li>
       </ol>
@@ -1112,12 +874,6 @@
           "Enterprise policy controls": "Strong"
         },
         stats: ["Fast release cadence", "Best for broad compatibility", "Strong extension ecosystem"],
-        talkTrack: [
-          "Open with Chrome to demonstrate broad compatibility and frequent feature delivery.",
-          "Run summarize mode to show quick digest behavior on long pages.",
-          "Switch to compare mode to highlight decision support in shopping/research scenarios.",
-          "Mention policy tooling for managed deployments in enterprise settings."
-        ],
         voice: "Crisp and productivity-oriented"
       },
       firefox: {
@@ -1133,12 +889,6 @@
           "Enterprise policy controls": "Medium"
         },
         stats: ["Strong privacy story", "Open-web friendly narrative", "Good for governance discussions"],
-        talkTrack: [
-          "Start with Firefox when your audience prioritizes privacy and transparency.",
-          "Use rewrite mode to show safe, controlled output for communication tasks.",
-          "Call out consent and data-handling choices to reinforce trust posture.",
-          "Position Firefox as a pragmatic option for policy-sensitive environments."
-        ],
         voice: "Transparent and control-focused"
       },
       edge: {
@@ -1154,12 +904,6 @@
           "Enterprise policy controls": "Strong"
         },
         stats: ["Tight M365 integration", "Great for enterprise demos", "Clear assistant UX"],
-        talkTrack: [
-          "Use Edge to emphasize AI assistance embedded in day-to-day work.",
-          "Demonstrate summarize and compare in business decision workflows.",
-          "Show how assistant responses connect to collaboration and docs context.",
-          "Close with enterprise management controls and deployment readiness."
-        ],
         voice: "Workflow-oriented and enterprise-ready"
       }
     };
@@ -1243,10 +987,6 @@
     const matrix = document.getElementById("capabilityMatrix");
     const browserSummary = document.getElementById("browserSummary");
     const quickStats = document.getElementById("quickStats");
-    const talkTrack = document.getElementById("talkTrack");
-    const outputBox = document.getElementById("outputBox");
-    const promptInput = document.getElementById("promptInput");
-    const taskType = document.getElementById("taskType");
     const testResults = document.getElementById("testResults");
     const userAgentText = document.getElementById("userAgentText");
     const testsLastRun = document.getElementById("testsLastRun");
@@ -1256,8 +996,6 @@
     const runtimeDebug = document.getElementById("runtimeDebug");
     const channelOverride = document.getElementById("channelOverride");
     const browserGroup = document.querySelector(".browser-group");
-    const scenarioGrid = document.querySelector(".scenario-grid");
-    const promptHint = document.getElementById("promptHint");
     const featureInfoTitle = document.getElementById("featureInfoTitle");
     const featureInfoText = document.getElementById("featureInfoText");
     const featureInfoLinks = document.getElementById("featureInfoLinks");
@@ -1267,11 +1005,6 @@
     const languageSampleSelect = document.getElementById("languageSampleSelect");
     const languageSampleInput = document.getElementById("languageSampleInput");
     const languageSamplePreview = document.getElementById("languageSamplePreview");
-    const benchLength = document.getElementById("benchLength");
-    const benchParagraphs = document.getElementById("benchParagraphs");
-    const benchModeFit = document.getElementById("benchModeFit");
-    const benchNotes = document.getElementById("benchNotes");
-    const scenarioDebug = document.getElementById("scenarioDebug");
     const channelLabels = {
       unknown: "Unknown",
       stable: "Stable",
@@ -1281,15 +1014,6 @@
       nightly: "Nightly"
     };
 
-    const yamlContentFiles = {
-      prompts: "data/prompt-simulator.yml",
-      scenarios: "data/quick-scenarios.yml",
-      corpus: "data/sample-corpus.yml"
-    };
-
-    let loadedPromptIdeas = [];
-    let loadedScenarios = [];
-    let loadedCorpusDocs = [];
     let onDeviceModelIdentity = "Not probed";
     const languageSamples = [
       {
@@ -1661,13 +1385,6 @@
         div.textContent = stat;
         quickStats.appendChild(div);
       });
-
-      talkTrack.innerHTML = "";
-      profile.talkTrack.forEach((line) => {
-        const li = document.createElement("li");
-        li.textContent = line;
-        talkTrack.appendChild(li);
-      });
     }
 
     function renderDemoBadgeDate() {
@@ -1752,188 +1469,6 @@
     }
 
     // paragraphCount, wordCount, sentenceCount, extractLeadSentences are provided by lib/utils.js
-
-    function evaluatePromptQuality() {
-      const text = promptInput.value;
-      const mode = taskType.value;
-      const words = wordCount(text);
-      const paragraphs = paragraphCount(text);
-      const sentences = sentenceCount(text);
-
-      benchLength.textContent = `${words} words / ${sentences} sentences`;
-      benchParagraphs.textContent = `${paragraphs}`;
-
-      const hasConstraint = /(include|format|return|limit|under|exactly|must)/i.test(text);
-      const hasAudience = /(audience|public|executive|staff|customer|resident)/i.test(text);
-      const longEnough = paragraphs >= 5;
-
-      let fit = "Good";
-      if (mode === "summarize" && !longEnough) fit = "Weak";
-      if (!hasConstraint) fit = fit === "Good" ? "Fair" : fit;
-      benchModeFit.textContent = fit;
-
-      const notes = [];
-      notes.push(`Mode: ${mode}`);
-      notes.push(longEnough ? "- Source depth: good for summarization (5+ paragraphs)." : "- Source depth: add more content for stronger summary signal.");
-      notes.push(hasConstraint ? "- Instruction constraints: present." : "- Instruction constraints: missing. Add output format/limits.");
-      notes.push(hasAudience ? "- Audience targeting: present." : "- Audience targeting: missing. Specify target reader.");
-      notes.push("- What to notice: fidelity to source, structure quality, and actionability of output.");
-
-      benchNotes.textContent = notes.join("\n");
-    }
-
-    function describeScenarioPool() {
-      if (!scenarioDebug) return;
-      const scenarioCount = loadedScenarios.length;
-      const promptCount = loadedPromptIdeas.length;
-      const corpusCount = loadedCorpusDocs.length;
-      const avgPromptWords = loadedScenarios.length
-        ? Math.round(loadedScenarios.reduce((sum, s) => sum + wordCount(s.prompt || ""), 0) / loadedScenarios.length)
-        : 0;
-
-      scenarioDebug.textContent = [
-        `Prompt starters loaded: ${promptCount}`,
-        `Quick scenarios loaded: ${scenarioCount}`,
-        `Long-form corpus docs loaded: ${corpusCount}`,
-        `Average scenario prompt size: ${avgPromptWords} words`,
-        "What to notice: are scenarios varied, specific, and long enough to test quality consistently?"
-      ].join("\n");
-    }
-
-    function loadBenchmarkPack() {
-      const doc = pickRandom(loadedCorpusDocs);
-      if (!doc) return;
-      taskType.value = "summarize";
-      promptInput.value = [
-        "Summarize this source into:",
-        "1) Three key findings",
-        "2) Two risks",
-        "3) One recommendation with a 30-day action",
-        "Return output with clear headings and concise bullets.",
-        "",
-        "Source content for analysis:",
-        doc.content
-      ].join("\n");
-      evaluatePromptQuality();
-    }
-
-    function buildSummarizationInput(promptText) {
-      const selectedDoc = pickRandom(loadedCorpusDocs);
-      if (!selectedDoc || !selectedDoc.content) return promptText;
-
-      if (paragraphCount(promptText) >= 5) return promptText;
-
-      return [
-        promptText.trim(),
-        "",
-        "Source content for analysis:",
-        selectedDoc.content.trim()
-      ].join("\n");
-    }
-
-    // pickRandomSubset is provided by lib/utils.js
-
-    async function parseYamlString(yamlText) {
-      try {
-        const yaml = await import("https://cdn.jsdelivr.net/npm/yaml@2/+esm");
-        const parsed = yaml.parse(yamlText);
-        return parsed || {};
-      } catch (_error) {
-        return {};
-      }
-    }
-
-    async function loadYamlFile(path) {
-      try {
-        const response = await fetch(path, { cache: "no-store" });
-        if (!response.ok) return {};
-        const text = await response.text();
-        return parseYamlString(text);
-      } catch (_error) {
-        return {};
-      }
-    }
-
-    function renderScenarioButtons(list) {
-      if (!scenarioGrid) return;
-      scenarioGrid.innerHTML = "";
-
-      if (!list.length) {
-        const fallback = document.createElement("div");
-        fallback.className = "note";
-        fallback.textContent = "No YAML scenarios loaded. You can still type custom prompts in the simulator.";
-        scenarioGrid.appendChild(fallback);
-        return;
-      }
-
-      list.forEach((scenario) => {
-        const button = document.createElement("button");
-        button.className = "scenario-btn";
-        button.type = "button";
-        button.dataset.prompt = scenario.prompt || "";
-        button.dataset.mode = scenario.mode || "summarize";
-
-        button.appendChild(document.createTextNode(scenario.label || "Scenario"));
-
-        const span = document.createElement("span");
-        span.textContent = scenario.description || "Load this scenario into the prompt box.";
-        button.appendChild(span);
-
-        button.addEventListener("click", () => {
-          const rawPrompt = button.dataset.prompt || promptInput.value;
-          if (button.dataset.mode) taskType.value = button.dataset.mode;
-          promptInput.value = taskType.value === "summarize"
-            ? buildSummarizationInput(rawPrompt)
-            : rawPrompt;
-          outputBox.textContent = generateResponse(promptInput.value, taskType.value, browserData[currentBrowser]);
-        });
-
-        scenarioGrid.appendChild(button);
-      });
-    }
-
-    function applyRandomPromptIdea() {
-      const idea = pickRandom(loadedPromptIdeas);
-      if (!idea) return;
-      if (idea.prompt) {
-        promptInput.value = idea.mode === "summarize"
-          ? buildSummarizationInput(idea.prompt)
-          : idea.prompt;
-      }
-      if (idea.mode) taskType.value = idea.mode;
-
-      if (promptHint) {
-        const cta = idea.call_to_action ? ` CTA: ${idea.call_to_action}` : "";
-        promptHint.textContent = `Try this starter, then cut/paste your own content and edit it before running.${cta}`;
-      }
-    }
-
-    async function initDynamicContent() {
-      const [promptDoc, scenarioDoc, corpusDoc] = await Promise.all([
-        loadYamlFile(yamlContentFiles.prompts),
-        loadYamlFile(yamlContentFiles.scenarios),
-        loadYamlFile(yamlContentFiles.corpus)
-      ]);
-
-      loadedPromptIdeas = Array.isArray(promptDoc.prompts) ? promptDoc.prompts : [];
-      loadedScenarios = Array.isArray(scenarioDoc.scenarios) ? scenarioDoc.scenarios : [];
-      loadedCorpusDocs = Array.isArray(corpusDoc.documents)
-        ? corpusDoc.documents
-        : [];
-
-      if (loadedPromptIdeas.length) applyRandomPromptIdea();
-      if (loadedScenarios.length) renderScenarioButtons(pickRandomSubset(loadedScenarios, 4));
-      if (!loadedScenarios.length) renderScenarioButtons([]);
-      describeScenarioPool();
-
-      if (promptHint && loadedCorpusDocs.length) {
-        promptHint.textContent = "Tip: each summarize starter now includes a local 5+ paragraph sample text. Cut/paste your own content, edit, then rerun across browsers.";
-      }
-
-      evaluatePromptQuality();
-    }
-
-    // generateResponse is provided by lib/utils.js; call with browserData[browser] as profile
 
     function resolvePath(path) {
       return resolveObjectPath(window, path);
@@ -2154,7 +1689,7 @@
           const isDownloadable = rowData.downloadable && !isDownloading;
           const detectedBrowser = (runtimeContext && runtimeContext.browser) || "unknown";
           if (isDownloading) {
-            tip.textContent = "Availability: downloading — the on-device model is currently being downloaded. The AI Prompt Simulator above works now; real API calls will become available once the download completes.";
+            tip.textContent = "Availability: downloading — the on-device model is currently being downloaded. Real API calls will become available once the download completes.";
           } else if (isDownloadable) {
             let downloadInstruction;
             if (detectedBrowser === "chrome") {
@@ -2176,7 +1711,7 @@
             tip.textContent = `Availability: downloadable — the API is detected but the on-device model has not been downloaded yet. ${downloadInstruction} `;
             tip.appendChild(tipLink);
           } else {
-            tip.textContent = "Tip: API may be exposed but gated by browser version, flags, permissions, or model availability. The AI Prompt Simulator above works regardless of this status.";
+            tip.textContent = "Tip: API may be exposed but gated by browser version, flags, permissions, or model availability. See the Channel Setup Guide for steps to enable it.";
           }
           detailsCell.appendChild(tip);
         }
@@ -2462,40 +1997,6 @@
       });
     });
 
-    document.getElementById("runPrompt").addEventListener("click", () => {
-      outputBox.textContent = generateResponse(promptInput.value, taskType.value, browserData[currentBrowser]);
-      evaluatePromptQuality();
-    });
-
-    document.getElementById("shufflePrompt").addEventListener("click", () => {
-      applyRandomPromptIdea();
-      evaluatePromptQuality();
-    });
-
-    document.getElementById("evaluatePrompt").addEventListener("click", evaluatePromptQuality);
-    document.getElementById("loadBenchmark").addEventListener("click", loadBenchmarkPack);
-    document.getElementById("rerunSamePrompt").addEventListener("click", () => {
-      const once = generateResponse(promptInput.value, taskType.value, browserData[currentBrowser]);
-      const twice = generateResponse(promptInput.value, taskType.value, browserData[currentBrowser]);
-      const consistent = once === twice;
-      benchNotes.textContent = [
-        `Consistency check: ${consistent ? "pass" : "fail"}`,
-        "What to notice: deterministic output across repeated runs in this demo harness.",
-        "If outputs differ in real browser AI systems, compare grounding, structure, and omitted details."
-      ].join("\n");
-      outputBox.textContent = once;
-    });
-    document.getElementById("reshuffleScenarios").addEventListener("click", () => {
-      renderScenarioButtons(pickRandomSubset(loadedScenarios, 4));
-      describeScenarioPool();
-    });
-    promptInput.addEventListener("input", () => {
-      evaluatePromptQuality();
-    });
-    taskType.addEventListener("change", () => {
-      evaluatePromptQuality();
-    });
-
     document.getElementById("runTests").addEventListener("click", () => {
       renderBuiltInTests();
     });
@@ -2520,7 +2021,6 @@
     applyDetectedRuntimeToProfile();
     renderBuiltInTests();
     initSustainabilityFooter();
-    initDynamicContent();
     initLanguagePlayground();
     renderFeatureInfo("Page summarize");
   </script>
