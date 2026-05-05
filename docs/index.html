@@ -806,8 +806,8 @@
         <button class="cta-secondary" id="runAllLocalTests">Run All Available Local Tests</button>
       </div>
       <div class="test-table" id="liveCapabilityResults"></div>
-      <div class="output" id="liveTestOutput" aria-live="polite">Run a capability scan, then launch available local API tests from this panel.</div>
-      <section class="bench" aria-label="Language detector playground">
+      <div class="output" id="liveTestOutput" aria-live="polite" style="display:none">Run a capability scan, then launch available local API tests from this panel.</div>
+      <section class="bench" id="languageDetectorSection" aria-label="Language detector playground" style="display:none">
         <h3>Language Detector Playground</h3>
         <p class="tests-note">Choose a sample from the list below, copy its text, then paste it into the text area — or type your own excerpt. This makes whole-page language checks explicit.</p>
         <label for="languageSampleSelect">Sample texts (select to preview, then copy)</label>
@@ -819,7 +819,7 @@
           <button class="cta-secondary" id="runLanguageSampleTest">Run Language Detector</button>
         </div>
       </section>
-      <section class="bench" aria-label="Prompt test bench">
+      <section class="bench" id="promptBenchSection" aria-label="Prompt test bench" style="display:none">
         <h3>Prompt Test Bench</h3>
         <p class="tests-note">Evaluate a prompt's quality metrics and mode fit using local JavaScript — no AI required.</p>
         <label for="promptBenchMode">Prompt mode</label>
@@ -1792,6 +1792,29 @@
       }
     }
 
+    function updateConditionalSections() {
+      const langDetector = liveCapabilityState.find((e) => e.id === "language-detector");
+      const langSection = document.getElementById("languageDetectorSection");
+      if (langSection) {
+        langSection.style.display = (langDetector && langDetector.detectedPath) ? "" : "none";
+      }
+
+      // liveTestOutput is shared by all API tests (Translator, Language Detector, etc.),
+      // so show it whenever any API is detected — not just Language Detector.
+      const liveOutput = document.getElementById("liveTestOutput");
+      if (liveOutput) {
+        const anyDetected = liveCapabilityState.some((e) => e.detectedPath);
+        liveOutput.style.display = anyDetected ? "" : "none";
+      }
+
+      const promptIds = ["prompt", "summarizer", "writer", "rewriter"];
+      const anyPromptReady = liveCapabilityState.some((e) => promptIds.includes(e.id) && e.canRunTest);
+      const promptSection = document.getElementById("promptBenchSection");
+      if (promptSection) {
+        promptSection.style.display = anyPromptReady ? "" : "none";
+      }
+    }
+
     function renderLiveCapabilityTable() {
       liveCapabilityResults.innerHTML = "";
       const headerRow = document.createElement("div");
@@ -1951,6 +1974,7 @@
       liveCapabilityState.length = 0;
       liveRows.forEach((entry) => liveCapabilityState.push(entry));
       renderLiveCapabilityTable();
+      updateConditionalSections();
       renderMatrix();
 
       const now = new Date();
