@@ -727,6 +727,11 @@
 </head>
 <body>
   <main class="shell">
+    <noscript>
+      <p style="padding:1rem;background:#fff3d6;border:1px solid #d4a020;border-radius:8px;margin-bottom:1rem;">
+        JavaScript is required for this demo. Please enable JavaScript in your browser settings to use the AI Browser Capability Demo.
+      </p>
+    </noscript>
     <span class="badge" id="demoBadge">Interactive Demo | AI Browsers</span>
     <section class="hero">
       <article class="hero-panel">
@@ -776,16 +781,6 @@
       </aside>
     </section>
 
-    <section class="matrix" id="capabilityMatrix" aria-label="Capability matrix"></section>
-
-    <section class="feature-info" aria-label="Feature details">
-      <h3 id="featureInfoTitle">Feature details: Page summarize</h3>
-      <p id="featureInfoText">Select a capability in the matrix to see what it does and where feature specifics are documented.</p>
-      <div class="feature-links" id="featureInfoLinks"></div>
-      <div class="tests-actions" id="featureInfoActions"></div>
-      <div class="feature-runtime" id="featureRuntimeInfo">Runtime probe not run yet.</div>
-    </section>
-
     <section class="tests" aria-label="Built-in AI browser API tests">
       <div class="tests-header">
         <h2>Built-in AI API Tests</h2>
@@ -794,7 +789,7 @@
           <span class="ua" id="userAgentText"></span>
         </div>
       </div>
-      <p class="tests-note">
+      <p class="tests-note" id="testsNoteRuntime">
         Open this same page in Chrome, Firefox, and Edge, then click "Run Built-in Tests" in each browser to see which native AI interfaces are actually exposed.
       </p>
       <div class="test-table" id="testResults"></div>
@@ -817,6 +812,33 @@
           <button class="cta-secondary" id="runLanguageSampleTest">Run Language Detector</button>
         </div>
       </section>
+      <section class="bench" aria-label="Prompt test bench" style="margin-top:0.8rem;">
+        <h3>Prompt Test Bench</h3>
+        <p class="tests-note">Evaluate a prompt's quality metrics and mode fit using local JavaScript — no AI required.</p>
+        <label for="promptBenchMode">Prompt mode</label>
+        <select id="promptBenchMode" style="margin-top:0.3rem;margin-bottom:0.55rem;display:block;">
+          <option value="summarize">Summarize</option>
+          <option value="rewrite-exec">Rewrite for executive audience</option>
+          <option value="compare">Compare options</option>
+        </select>
+        <label for="promptBenchInput">Prompt text</label>
+        <textarea id="promptBenchInput" rows="5" placeholder="Paste or type a prompt here, then click Evaluate Prompt Quality."></textarea>
+        <div class="tests-actions">
+          <button class="cta-secondary" id="evalPromptQuality">Evaluate Prompt Quality</button>
+          <button class="cta-secondary" id="runTwiceConsistency">Run Twice Consistency Check</button>
+        </div>
+        <div class="output" id="promptBenchOutput" aria-live="polite">Enter a prompt above and click Evaluate Prompt Quality to see metrics.</div>
+      </section>
+    </section>
+
+    <section class="matrix" id="capabilityMatrix" aria-label="Capability matrix"></section>
+
+    <section class="feature-info" aria-label="Feature details">
+      <h3 id="featureInfoTitle">Feature details: Page summarize</h3>
+      <p id="featureInfoText">Select a capability in the matrix to see what it does and where feature specifics are documented.</p>
+      <div class="feature-links" id="featureInfoLinks"></div>
+      <div class="tests-actions" id="featureInfoActions"></div>
+      <div class="feature-runtime" id="featureRuntimeInfo">Runtime probe not run yet.</div>
     </section>
 
 
@@ -1005,6 +1027,10 @@
     const languageSampleSelect = document.getElementById("languageSampleSelect");
     const languageSampleInput = document.getElementById("languageSampleInput");
     const languageSamplePreview = document.getElementById("languageSamplePreview");
+    const testsNoteRuntime = document.getElementById("testsNoteRuntime");
+    const promptBenchMode = document.getElementById("promptBenchMode");
+    const promptBenchInput = document.getElementById("promptBenchInput");
+    const promptBenchOutput = document.getElementById("promptBenchOutput");
     const channelLabels = {
       unknown: "Unknown",
       stable: "Stable",
@@ -1474,6 +1500,110 @@
       return resolveObjectPath(window, path);
     }
 
+    function renderBrowserSpecificNote() {
+      if (!testsNoteRuntime) return;
+      const browser = runtimeContext.browser;
+      if (browser === "chrome") {
+        testsNoteRuntime.textContent = "You're running Chrome. Click \"Run Built-in Tests\" to see which Gemini Nano APIs are available in this runtime. For full access, use Chrome Canary with the Prompt API flag enabled at chrome://flags/#prompt-api-for-gemini-nano.";
+      } else if (browser === "edge") {
+        testsNoteRuntime.textContent = "You're running Edge. Click \"Run Built-in Tests\" to see which AI APIs are exposed in page scope. Note: Copilot features appear in the sidebar and are not accessible via page-scope JavaScript. See the Channel Setup Guide for flag-based API access.";
+      } else if (browser === "firefox") {
+        testsNoteRuntime.textContent = "You're running Firefox. Click \"Run Built-in Tests\" to see which AI interfaces are available. Firefox AI features require enabling in browser settings. See the Channel Setup Guide for steps.";
+      } else if (browser === "safari") {
+        testsNoteRuntime.textContent = "You're running Safari. Click \"Run Built-in Tests\" to check which AI APIs are available in this runtime. Safari AI API support is limited; most built-in APIs are not currently exposed to page-scope JavaScript.";
+      } else {
+        testsNoteRuntime.textContent = "Open this same page in Chrome, Firefox, and Edge, then click \"Run Built-in Tests\" in each browser to compare which native AI interfaces are actually exposed.";
+      }
+    }
+
+    function getPromptQualityMetrics(promptText, mode) {
+      const wc = wordCount(promptText);
+      const pc = paragraphCount(promptText);
+      const sc = sentenceCount(promptText);
+      const inputLen = promptText.length;
+      const lc = promptText.toLowerCase();
+      let modeFit;
+      if (mode === "summarize") {
+        if (wc >= 50 && pc >= 2) {
+          modeFit = "Good fit — prompt has sufficient length and multi-paragraph structure for summarization.";
+        } else if (wc >= 20) {
+          modeFit = "Moderate fit — prompt may be too short for a rich summary. Consider expanding the content.";
+        } else {
+          modeFit = "Low fit — prompt is very short; summarization adds little value at this length.";
+        }
+      } else if (mode === "rewrite-exec") {
+        if (wc >= 30) {
+          modeFit = "Good fit — prompt has enough substance to rewrite for an executive audience.";
+        } else if (wc >= 10) {
+          modeFit = "Moderate fit — consider expanding to give the rewriter more context.";
+        } else {
+          modeFit = "Low fit — prompt is very short; expand before requesting an executive rewrite.";
+        }
+      } else if (mode === "compare") {
+        const hasCompareSignals = /\b(vs|versus|compared|difference|between|options?|or|alternative)\b/.test(lc);
+        if (hasCompareSignals) {
+          modeFit = "Good fit — prompt contains comparison language.";
+        } else {
+          modeFit = "Low fit — prompt does not contain obvious comparison language. Consider adding \"vs\", \"compared to\", or \"options\".";
+        }
+      } else {
+        modeFit = "Unknown mode.";
+      }
+      return { inputLength: inputLen, wordCount: wc, paragraphCount: pc, sentenceCount: sc, modeFit };
+    }
+
+    function formatPromptMetrics(metrics, mode) {
+      const modeLabel = mode === "summarize" ? "Summarize" : mode === "rewrite-exec" ? "Rewrite for executive audience" : "Compare options";
+      return [
+        "Prompt Quality Metrics",
+        `Mode: ${modeLabel}`,
+        "",
+        `Input length: ${metrics.inputLength} characters`,
+        `Word count: ${metrics.wordCount}`,
+        `Paragraph count: ${metrics.paragraphCount}`,
+        `Sentence count: ${metrics.sentenceCount}`,
+        "",
+        `Mode fit: ${metrics.modeFit}`
+      ].join("\n");
+    }
+
+    function handleEvalPromptQuality() {
+      if (!promptBenchInput || !promptBenchOutput || !promptBenchMode) return;
+      const text = promptBenchInput.value.trim();
+      if (!text) {
+        promptBenchOutput.textContent = "Enter a prompt in the text area above, then click Evaluate Prompt Quality.";
+        return;
+      }
+      const mode = promptBenchMode.value;
+      const metrics = getPromptQualityMetrics(text, mode);
+      promptBenchOutput.textContent = formatPromptMetrics(metrics, mode);
+    }
+
+    function handleRunTwiceConsistency() {
+      if (!promptBenchInput || !promptBenchOutput || !promptBenchMode) return;
+      const text = promptBenchInput.value.trim();
+      if (!text) {
+        promptBenchOutput.textContent = "Enter a prompt in the text area above, then click Run Twice Consistency Check.";
+        return;
+      }
+      const mode = promptBenchMode.value;
+      const first = getPromptQualityMetrics(text, mode);
+      const second = getPromptQualityMetrics(text, mode);
+      const match = JSON.stringify(first) === JSON.stringify(second);
+      const lines = [
+        "Twice Consistency Check",
+        "",
+        "Run 1:",
+        formatPromptMetrics(first, mode),
+        "",
+        "Run 2:",
+        formatPromptMetrics(second, mode),
+        "",
+        `Consistency: ${match ? "✓ Both runs produced identical results (deterministic evaluation)." : "✗ Results differed between runs — unexpected for local evaluation."}`
+      ];
+      promptBenchOutput.textContent = lines.join("\n");
+    }
+
     const liveApiSpecs = [
       {
         id: "prompt",
@@ -1537,7 +1667,13 @@
 
       try {
         if (target && typeof target.availability === "function") {
-          const availabilityRaw = await target.availability(spec.availabilityOptions || {});
+          const AVAILABILITY_TIMEOUT_MS = 3000;
+          const availabilityRaw = await Promise.race([
+            target.availability(spec.availabilityOptions || {}),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error("availability() timed out")), AVAILABILITY_TIMEOUT_MS)
+            )
+          ]);
           const normalized = normalizeAvailability(availabilityRaw);
           availabilityText = normalized.text;
           ready = normalized.ready;
@@ -1981,6 +2117,8 @@
           runtimeDebug.appendChild(controls);
         }
       }
+
+      renderBrowserSpecificNote();
     }
 
     document.querySelectorAll(".browser-btn").forEach((button) => {
@@ -2005,6 +2143,8 @@
     });
     document.getElementById("runAllLocalTests").addEventListener("click", runAllAvailableLocalTests);
     document.getElementById("runLanguageSampleTest").addEventListener("click", runLanguageDetectorSampleTest);
+    document.getElementById("evalPromptQuality").addEventListener("click", handleEvalPromptQuality);
+    document.getElementById("runTwiceConsistency").addEventListener("click", handleRunTwiceConsistency);
     if (languageSampleSelect) {
       languageSampleSelect.addEventListener("change", () => {
         const selected = languageSamples.find((sample) => sample.id === languageSampleSelect.value);

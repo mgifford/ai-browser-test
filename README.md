@@ -41,6 +41,10 @@ It is designed for live presentations where you need to:
 - Live runtime capability probe that checks API readiness state
 - One-click local API test runners for detected and ready interfaces
 - Language Detector Playground with randomized multilingual samples and custom whole-page text testing
+- Prompt Test Bench with local JavaScript quality analysis:
+	- Evaluate Prompt Quality: shows input length, word count, paragraph count, sentence count, and mode fit
+	- Run Twice Consistency Check: runs the evaluation twice and confirms identical deterministic results
+	- Modes: Summarize, Rewrite for executive audience, Compare options
 - Built-in assistant probe for callable capabilities and local-vs-cloud observability limits
 - On-device model identity probe (best-effort, browser-dependent)
 - Responsive layout for desktop and mobile
