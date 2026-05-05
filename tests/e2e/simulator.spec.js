@@ -154,7 +154,7 @@ test.describe('AI Prompt Simulator', () => {
     const initialLabels = await page.locator('.scenario-card .scenario-label').allTextContents();
 
     // Reshuffle multiple times to increase chance of a new set
-    let newLabels = initialLabels;
+    let newLabels = [];
     for (let attempt = 0; attempt < 5; attempt++) {
       await page.locator('#reshuffleBtn').click();
       newLabels = await page.locator('.scenario-card .scenario-label').allTextContents();
