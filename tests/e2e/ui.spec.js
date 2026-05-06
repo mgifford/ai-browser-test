@@ -50,6 +50,15 @@ test.describe('UI Interactivity & AI Probing', () => {
 
   test('Prompt Test Bench evaluates prompt quality metrics', async ({ page }) => {
     await page.goto('/');
+    // Wait for the capability scan to complete before manipulating the section
+    await expect(page.locator('#testsLastRun')).not.toHaveText('Not run yet.', { timeout: SCAN_TIMEOUT_MS });
+    // The section is shown only when prompt-related AI APIs are ready.
+    // In the headless test environment those APIs are absent, so we reveal the section
+    // programmatically to exercise the pure-JS evaluation logic.
+    await page.evaluate(() => {
+      const section = document.getElementById('promptBenchSection');
+      if (section) section.style.display = '';
+    });
     const textarea = page.locator('#promptBenchInput');
     await expect(textarea).toBeVisible();
     await textarea.fill('This is a sample prompt for testing. It contains multiple sentences to provide enough content. We want to see if the evaluation works correctly across different modes.');
@@ -64,6 +73,11 @@ test.describe('UI Interactivity & AI Probing', () => {
 
   test('Prompt Test Bench run-twice consistency check produces identical results', async ({ page }) => {
     await page.goto('/');
+    await expect(page.locator('#testsLastRun')).not.toHaveText('Not run yet.', { timeout: SCAN_TIMEOUT_MS });
+    await page.evaluate(() => {
+      const section = document.getElementById('promptBenchSection');
+      if (section) section.style.display = '';
+    });
     const textarea = page.locator('#promptBenchInput');
     await textarea.fill('Compare option A versus option B for enterprise deployment. What are the trade-offs between them?');
     const modeSelect = page.locator('#promptBenchMode');
@@ -74,12 +88,20 @@ test.describe('UI Interactivity & AI Probing', () => {
     await expect(output).toContainText('Both runs produced identical results');
   });
 
-  test('Language Detector Playground section is present', async ({ page }) => {
+  test('Language Detector Playground section visibility matches Language Detector detection', async ({ page }) => {
     await page.goto('/');
-    const playground = page.locator('section[aria-label="Language detector playground"]');
-    await expect(playground).toBeVisible();
-    await expect(page.locator('#languageSampleSelect')).toBeVisible();
-    await expect(page.locator('#languageSampleInput')).toBeVisible();
+    await expect(page.locator('#testsLastRun')).not.toHaveText('Not run yet.', { timeout: SCAN_TIMEOUT_MS });
+    // Verify that section visibility matches whether LanguageDetector is present in the runtime.
+    // `typeof window.LanguageDetector !== 'undefined'` mirrors probeInterface()'s candidate check,
+    // which sets detectedPath = "LanguageDetector" when the global exists — the same condition
+    // used by updateConditionalSections() to show the section.
+    const { isDetected, sectionVisible } = await page.evaluate(() => {
+      const detected = typeof window.LanguageDetector !== 'undefined';
+      const section = document.getElementById('languageDetectorSection');
+      const visible = section ? section.style.display !== 'none' : false;
+      return { isDetected: detected, sectionVisible: visible };
+    });
+    expect(sectionVisible).toBe(isDetected);
   });
 
   test('Capability matrix renders after page load', async ({ page }) => {
