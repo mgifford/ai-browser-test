@@ -23,6 +23,7 @@ It is designed for live presentations where you need to:
 - `LICENSE`: GNU Affero General Public License v3.0 (AGPL-3.0)
 - `ACCESSIBILITY.md`: Accessibility commitments and checklist
 - `SUSTAINABILITY.md`: Sustainability goals and practices
+- `DEFINITION_OF_DONE.md`: Completion criteria for report-quality deliverables
 - `AGENTS.md`: Agent workflow and repository conventions
 
 ## Demo features
@@ -145,6 +146,7 @@ See `LICENSE` for full text.
 
 - [ACCESSIBILITY.md](ACCESSIBILITY.md)
 - [SUSTAINABILITY.md](SUSTAINABILITY.md)
+- [DEFINITION_OF_DONE.md](DEFINITION_OF_DONE.md)
 - [AGENTS.md](AGENTS.md)
 - [STYLES.md](STYLES.md)
 
