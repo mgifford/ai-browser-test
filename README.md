@@ -12,6 +12,12 @@ It is designed for live presentations where you need to:
 
 ## Project files
 
+- `src/ai-detector.js`: Zero-dependency detector module (UMD: works as a `<script>`, CommonJS `require`, and via the ESM wrapper)
+- `src/ai-detector.mjs`: Native ES module wrapper with named exports
+- `src/ai-detector.d.ts`: TypeScript type definitions for the report shape
+- `docs/ai-detector.html`: Interactive diagnostic dashboard (test runner) served by GitHub Pages
+- `docs/lib/ai-detector.js`: Auto-synced copy of the detector for the static site (do not edit by hand)
+- `scripts/sync-detector.js`: Copies `src/ai-detector.js` into `docs/lib/` and can verify they are in sync
 - `docs/index.html`: Main UI and demo logic (served by GitHub Pages)
 - `docs/prompt-simulator.html`: AI Prompt Simulator — locally-simulated output to set expectations before testing in a real AI-enabled browser
 - `docs/browser-ai-configuration.html`: Guide for enabling/testing AI abilities in browser beta/nightly channels
@@ -105,6 +111,138 @@ The page now includes a local AI lab that:
 3. Runs in-browser test calls for available built-in APIs
 4. Includes feature-level probes for built-in assistant behavior and on-device model identity
 
+## `ai-detector` module
+
+`src/ai-detector.js` is a lightweight, zero-dependency module that runs a full
+feature-detection, DOM-readiness, and privacy audit and returns a single
+structured report. It powers the interactive dashboard at
+[docs/ai-detector.html](docs/ai-detector.html) and can be reused in your own
+projects.
+
+### Import options
+
+```js
+// ES module / bundler / Node ESM
+import { detectBrowserAI } from "ai-browser-test";
+
+// CommonJS
+const { detectBrowserAI } = require("ai-browser-test");
+```
+
+```html
+<!-- Classic script tag / CDN: attaches window.aiDetector -->
+<script src="https://cdn.jsdelivr.net/gh/mgifford/ai-browser-test/src/ai-detector.js"></script>
+<script>
+  window.aiDetector.detectBrowserAI().then((report) => console.log(report));
+</script>
+```
+
+### Basic usage
+
+```js
+const report = await detectBrowserAI();
+console.log(report.browser);                    // "Chrome" | "Edge" | "Firefox" | ...
+console.log(report.chromeBuiltInAI.promptApi);  // "readily" | "after-download" | "no" | "unsupported"
+console.log(report.contextReadiness.score);     // 0-100
+
+// Optional: run a safe end-to-end "ping" of the Prompt API.
+const withPing = await detectBrowserAI({ ping: true, allowDownload: false });
+console.log(withPing.promptPing); // { ok, status, output? , error? }
+```
+
+### Report shape
+
+```ts
+interface AIBrowserReport {
+  browser: string;
+  secureContext: boolean;               // built-in AI requires https/localhost
+  timestamp: string;                    // ISO time the report was produced
+  chromeBuiltInAI: {
+    promptApi: "readily" | "after-download" | "no" | "unsupported";
+    summarizer: boolean;
+    translator: boolean;
+    languageDetector: boolean;
+    writer: boolean;
+    rewriter: boolean;
+  };
+  contextReadiness: {
+    score: number;                      // 0-100
+    hasSemanticMain: boolean;
+    hasAriaLandmarks: boolean;
+    headingCount: number;
+    landmarkCount: number;
+    textToCodeRatio: number;            // 0-1
+  };
+  extensionContext: {
+    inExtensionContext: boolean;
+    hasSidebarAction: boolean;
+    hasRuntimeMessaging: boolean;
+  };
+  privacyControls: {
+    noAiMeta: boolean;
+    noImageAiMeta: boolean;
+    noSnippetMeta: boolean;
+    noSnippetElements: number;
+    robotsContent: string;
+  };
+  writingTools: {
+    textInputs: number;
+    textAreas: number;
+    contentEditables: number;
+    riskyContentEditables: number;      // contenteditable without role="textbox"
+  };
+  structuredData: {
+    jsonLdBlocks: number;
+    microdataItems: number;
+    rdfaItems: number;
+    hasStructuredData: boolean;
+  };
+  promptPing?: { ok: boolean; status: string; output?: string; error?: string };
+}
+```
+
+### API reference
+
+| Export | Returns | Purpose |
+|---|---|---|
+| `detectBrowserAI(options?)` | `Promise<AIBrowserReport>` | Run the full suite. Options: `{ ping, allowDownload, document }`. |
+| `detectBrowser()` | `string` | Best-effort browser family from the user agent. |
+| `detectChromeBuiltInAI()` | `Promise<ChromeBuiltInAI>` | Built-in AI capability block only. |
+| `pingPromptApi(options?)` | `Promise<PromptPingResult>` | Safe execution test of the Prompt API. |
+| `auditContextReadiness(document?)` | `ContextReadiness` | DOM semantic-density score. |
+| `detectExtensionContext()` | `ExtensionContext` | WebExtension / sidebar signals. |
+| `auditPrivacyControls(document?)` | `PrivacyControls` | `noai`/`nosnippet` opt-out audit. |
+| `auditWritingTools(document?)` | `WritingToolsAudit` | Editable-surface inventory (Apple Intelligence). |
+| `auditStructuredData(document?)` | `StructuredDataAudit` | schema.org / microdata / RDFa audit. |
+| `isSecureContext()` | `boolean` | Whether AI APIs can run in this context. |
+
+### Design notes
+
+- **Strict feature detection.** APIs are resolved by presence
+  (`'LanguageModel' in window`) and never touched when missing.
+- **Current API surface with legacy fallback.** Modern global constructors
+  (`LanguageModel`, `Summarizer`, `Translator`, `LanguageDetector`, `Writer`,
+  `Rewriter`) with `.availability()` are probed first; the older
+  `window.ai.*` / `window.ai.assistant` namespace with `.capabilities()` is a
+  fallback. Status strings from both eras normalize to the same four values.
+- **Non-blocking and safe.** Every probe is awaited inside `try/catch`, so a
+  blocked or rejecting API cannot produce an unhandled promise rejection. The
+  optional ping has a timeout and cleans up its session.
+- **Secure-context aware.** Built-in AI requires https or localhost; the report
+  flags this so `http` failures are explained rather than silent.
+
+### Browser AI capability matrix
+
+Feature detection targets these surfaces. Availability varies by browser,
+version, channel, region, account, and experiment flags.
+
+| Browser / assistant | What `ai-detector` checks |
+|---|---|
+| **Chrome / Edge (built-in on-device)** | Prompt, Summarizer, Translator, Language Detector, Writer, Rewriter APIs; availability status; optional execution ping |
+| **Firefox (AI Window / Mistral)** | Context-readiness score, semantic landmarks, extension/sidebar hooks, AI opt-out directives |
+| **Safari (Apple Intelligence)** | Writing Tools editable-surface audit, schema.org / microdata for Highlights & summarization |
+| **Edge Copilot / Brave Leo / Opera Aria / Arc** | `data-nosnippet` and `noai`/`noimageai` meta controls, text-to-code ratio for sidebar extraction |
+
 ## Feature details and limits
 
 The Feature details panel in [docs/index.html](docs/index.html):
@@ -159,6 +297,7 @@ This section discloses every AI tool used in this project — how it was used to
 | AI tool | Role |
 |---|---|
 | **GitHub Copilot** | Used as a coding assistant throughout development — generating code, writing and editing documentation, and implementing new features via Copilot-driven pull requests. |
+| **Claude Code (Claude Opus)** | Used to build the `src/ai-detector.js` detection module, its TypeScript types, the `docs/ai-detector.html` dashboard, unit and end-to-end tests, and related documentation. No external code was copied; all implementations are original. |
 
 ### AI invoked when running the demo
 
