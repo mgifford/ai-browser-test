@@ -1,11 +1,37 @@
 {
   "name": "ai-browser-test",
   "version": "1.0.0",
-  "description": "AI Browser Capability Demo — utility tests",
+  "description": "Zero-dependency detector for built-in browser AI capabilities, page context readiness, and privacy opt-out controls.",
+  "keywords": [
+    "browser-ai",
+    "feature-detection",
+    "prompt-api",
+    "on-device-ai",
+    "accessibility"
+  ],
+  "license": "AGPL-3.0",
   "private": true,
+  "type": "commonjs",
+  "main": "src/ai-detector.js",
+  "module": "src/ai-detector.mjs",
+  "types": "src/ai-detector.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/ai-detector.d.ts",
+      "import": "./src/ai-detector.mjs",
+      "require": "./src/ai-detector.js",
+      "default": "./src/ai-detector.js"
+    }
+  },
+  "files": [
+    "src/ai-detector.js",
+    "src/ai-detector.mjs",
+    "src/ai-detector.d.ts"
+  ],
   "scripts": {
-    "test": "node --test tests/*.test.js",
-    "test:e2e": "playwright test"
+    "test": "npm run sync:detector -- --check && node --test tests/*.test.js",
+    "test:e2e": "playwright test",
+    "sync:detector": "node scripts/sync-detector.js"
   },
   "engines": {
     "node": ">=18"

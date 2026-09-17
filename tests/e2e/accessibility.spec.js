@@ -5,7 +5,8 @@ test.describe('Accessibility Analysis', () => {
   const pages = [
     '/',
     '/browser-ai-configuration.html',
-    '/experiment-recipes.html'
+    '/experiment-recipes.html',
+    '/ai-detector.html'
   ];
 
   for (const pageUrl of pages) {
